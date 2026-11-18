@@ -2,132 +2,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assignments | EduConnect</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users | EduConnect</title>
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-body{background:#f4f7fb;color:#243247}
-header{background:#1554a5;color:white;padding:20px 7%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-header h2{font-size:23px}
-header a{color:white;text-decoration:none;margin-left:18px}
-main{max-width:1050px;margin:35px auto;padding:0 20px}
-.page-title{margin-bottom:25px}
-.page-title h1{color:#1554a5;margin-bottom:8px}
-.panel{background:white;padding:25px;border-radius:12px;margin-bottom:25px;box-shadow:0 3px 12px rgba(0,0,0,.05)}
-.panel h2{margin-bottom:18px}
-input,textarea,select{width:100%;padding:12px;margin:10px 0 13px;border:1px solid #d5deea;border-radius:7px;font-size:15px}
-textarea{min-height:95px;resize:vertical}
-button{border:none;padding:10px 16px;border-radius:7px;cursor:pointer;font-size:14px}
-button:disabled{opacity:.6;cursor:not-allowed}
-.primary{background:#1554a5;color:white}
-.edit{background:#e8a52b;color:white}
-.delete{background:#dc4545;color:white}
-.assignment{border:1px solid #e1e7ef;border-radius:9px;padding:18px;margin-bottom:15px}
-.assignment h3{color:#1554a5;margin-bottom:10px}
-.assignment p{margin-bottom:9px;line-height:1.5;overflow-wrap:anywhere}
-.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-#message{margin-top:12px;font-size:14px}
-.hidden{display:none}
-.subject-label{color:#1554a5;font-weight:bold}
-.submission-box{background:#f7f9fc;border:1px solid #e1e7ef;border-radius:8px;padding:15px;margin-top:15px}
-.submission-box h4{margin-bottom:10px;color:#243247}
-.submission-box a{display:inline-block;margin:5px 0 12px;color:#1554a5;overflow-wrap:anywhere}
-.status{font-weight:bold;margin:8px 0}
-.grade-display{background:#edf5ff;padding:12px;border-radius:7px;margin-top:10px}
-.feedback-display{background:#f7f9fc;padding:12px;border-radius:7px;margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere}
-.small-text{font-size:13px;color:#65748a}
-hr{border:0;border-top:1px solid #e1e7ef;margin:14px 0}
-@media(max-width:600px){
-header{padding:18px 5%}
-header a{margin-left:0;margin-right:12px}
-.panel{padding:18px}
-}
-</style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
-<header>
-    <h2>EduConnect</h2>
-    <nav>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="subjects.html">Subjects</a>
-        <a href="assignments.html">Assignments</a>
-        <a href="#" id="logoutButton">Logout</a>
-    </nav>
-</header>
+<body class="admin-users-page">
 
-<main>
-    <div class="page-title">
-        <h1>Assignments</h1>
-        <p>Manage, submit, and review your school assignments.</p>
-    </div>
+    <header class="admin-users-header">
+        <h1>EduConnect</h1>
+        <a href="dashboard.html">Back to Dashboard</a>
+    </header>
 
-    <section class="panel hidden" id="formPanel">
-        <h2 id="formTitle">Create Assignment</h2>
+    <main class="admin-users-content">
 
-        <form id="assignmentForm">
-            <label for="subjectId">Select Subject</label>
-            <select id="subjectId" required>
-                <option value="">Loading subjects...</option>
+        <h2>Manage Users</h2>
+
+        <p>
+            Manage and view students, teachers, and administrators
+            of Philippine Christian University.
+        </p>
+
+        <!-- USER STATISTICS -->
+        <div class="user-stats">
+
+            <div class="user-stat-card">
+                <h3>Total Users</h3>
+                <p id="total-users">0</p>
+            </div>
+
+            <div class="user-stat-card">
+                <h3>Students</h3>
+                <p id="total-students">0</p>
+            </div>
+
+            <div class="user-stat-card">
+                <h3>Teachers</h3>
+                <p id="total-teachers">0</p>
+            </div>
+
+            <div class="user-stat-card">
+                <h3>Admins</h3>
+                <p id="total-admins">0</p>
+            </div>
+
+        </div>
+
+        <div class="admin-users-card">
+
+        <div class="user-directory-header">
+
+            <h3>User Directory</h3>
+
+            <button
+                type="button"
+                id="add-user-btn"
+                class="view-user-btn">
+                + Add New User
+            </button>
+
+        </div>
+
+        
+        <div class="user-search">
+
+            <input
+                type="text"
+                id="search-users"
+                placeholder="Search users by name..."
+            >
+
+            <select id="role-filter">
+                <option value="all">All Users</option>
+                <option value="student">Students</option>
+                <option value="teacher">Teachers</option>
+                <option value="admin">Admins</option>
             </select>
 
-            <label for="title">Assignment Title</label>
-            <input type="text" id="title" placeholder="Assignment Title" required>
+        </div>
 
-            <label for="description">Description</label>
-            <textarea id="description" placeholder="Assignment Description"></textarea>
 
-            <label for="dueDate">Due Date and Time</label>
-            <input type="datetime-local" id="dueDate" required>
+        <div id="users-message">Loading users...</div>
 
-            <button type="submit" class="primary" id="saveButton">
-                Add Assignment
-            </button>
 
-            <button type="button" class="edit hidden" id="cancelButton">
-                Cancel Edit
-            </button>
-        </form>
+            <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Section</th>
+                    <th>Account Status</th>
+                    <th>Date Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+                <tbody id="users-table-body">
+                </tbody>
+            </table>
 
-        <p id="message"></p>
-    </section>
+        </div>
 
-    <section class="panel">
-        <h2 id="listTitle">Assignment List</h2>
-        <div id="assignmentList">Loading assignments...</div>
-    </section>
-</main>
 
-<script>
-const formPanel = document.getElementById("formPanel");
-const assignmentForm = document.getElementById("assignmentForm");
-const assignmentList = document.getElementById("assignmentList");
-const message = document.getElementById("message");
-const subjectSelect = document.getElementById("subjectId");
+    <!-- ADD NEW USER MODAL -->
+    <div id="add-user-modal" class="user-modal" hidden>
 
-let currentUser = null;
-let currentProfile = null;
-let editingId = null;
+        <div class="user-modal-content">
 
-function showMessage(text, isError = false) {
-    message.textContent = text;
-    message.style.color = isError ? "#dc4545" : "#16834a";
+            <div class="user-modal-header">
+                <h2>Add New User</h2>
+
+                <button
+                    type="button"
+                    id="close-add-user-modal"
+                    class="close-modal-btn">
+                    &times;
+                </button>
+            </div>
+
+            <form id="add-user-form">
+
+                <div class="user-detail-item">
+                    <label for="new-full-name">Full Name</label>
+                    <input
+                        type="text"
+                        id="new-full-name"
+                        required
+                        placeholder="Enter full name">
+                </div>
+
+                <div class="user-detail-item">
+                    <label for="new-email">Email Address</label>
+                    <input
+                        type="email"
+                        id="new-email"
+                        required
+                        placeholder="Enter email address">
+                </div>
+
+                <div class="user-detail-item">
+                    <label for="new-password">Temporary Password</label>
+                    <input
+                        type="password"
+                        id="new-password"
+                        minlength="8"
+                        required
+                        placeholder="At least 8 characters">
+                </div>
+
+                <div class="user-detail-item">
+                    <label for="new-role">User Role</label>
+                    <select id="new-role" required>
+                        <option value="">Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <div class="user-detail-item" id="new-section-group" hidden>
+                    <label for="new-section">Section</label>
+                    <input
+                        type="text"
+                        id="new-section"
+                        placeholder="Example: BSBA MM-1B">
+                </div>
+
+                <button
+                    type="submit"
+                    id="save-new-user-btn"
+                    class="view-user-btn">
+                    Create User
+                </button>
+
+                <p id="add-user-message"></p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- USER DETAILS MODAL -->
+    <div id="user-details-modal" class="user-modal" hidden>
+
+        <div class="user-modal-content">
+
+            <div class="user-modal-header">
+                <h2>User Details</h2>
+
+                <button
+                    type="button"
+                    id="close-user-modal"
+                    class="close-modal-btn">
+                    &times;
+                </button>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>Full Name</strong>
+                <p id="detail-name">-</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>User Role</strong>
+                <p id="detail-role">-</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>Section</strong>
+                <p id="detail-section">-</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>School</strong>
+                <p id="detail-school">Philippine Christian University</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>Registration Date</strong>
+                <p id="detail-date">-</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <script>
+    
+let allUsers = [];
+
+
+// ADD NEW USER MODAL CONTROLS
+
+const addUserModal = document.getElementById("add-user-modal");
+const addUserButton = document.getElementById("add-user-btn");
+const closeAddUserButton = document.getElementById("close-add-user-modal");
+const newRoleSelect = document.getElementById("new-role");
+const newSectionGroup = document.getElementById("new-section-group");
+
+addUserButton.addEventListener("click", function () {
+    addUserModal.hidden = false;
+});
+
+closeAddUserButton.addEventListener("click", function () {
+    addUserModal.hidden = true;
+});
+
+newRoleSelect.addEventListener("change", function () {
+    if (newRoleSelect.value === "student") {
+        newSectionGroup.hidden = false;
+        document.getElementById("new-section").required = true;
+    } else {
+        newSectionGroup.hidden = true;
+        document.getElementById("new-section").required = false;
+    }
+});
+
+
+// CREATE NEW USER
+
+const addUserForm = document.getElementById("add-user-form");
+const addUserMessage = document.getElementById("add-user-message");
+const saveNewUserButton = document.getElementById("save-new-user-btn");
+
+addUserForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const fullName = document.getElementById("new-full-name").value.trim();
+    const email = document.getElementById("new-email").value.trim();
+    const password = document.getElementById("new-password").value;
+    const role = newRoleSelect.value;
+    const section = document.getElementById("new-section").value.trim();
+
+    if (role === "student" && !section) {
+        addUserMessage.textContent = "Please enter the student section.";
+        return;
+    }
+
+    saveNewUserButton.disabled = true;
+    saveNewUserButton.textContent = "Creating...";
+    addUserMessage.textContent = "Creating user account...";
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke(
+            "admin-create-user",
+            {
+                body: {
+                    full_name: fullName,
+                    email: email,
+                    password: password,
+                    role: role,
+                    section: section
+                }
+            }
+        );
+
+        if (error) {
+            console.error(error);
+            addUserMessage.textContent =
+                data?.error || error.message || "Unable to create user.";
+            return;
+        }
+
+        if (data?.error) {
+            addUserMessage.textContent = data.error;
+            return;
+        }
+
+        alert("New user created successfully!");
+
+        addUserForm.reset();
+        addUserModal.hidden = true;
+        newSectionGroup.hidden = true;
+
+        window.location.reload();
+
+    } catch (error) {
+        console.error(error);
+        addUserMessage.textContent = "Something went wrong. Please try again.";
+
+    } finally {
+        saveNewUserButton.disabled = false;
+        saveNewUserButton.textContent = "Create User";
+    }
+});
+
+
+
+// Show User Details
+function showUserDetails(user) {
+
+    document.getElementById("detail-name").textContent =
+        user.full_name || "N/A";
+
+    document.getElementById("detail-role").textContent =
+        user.role || "N/A";
+
+    document.getElementById("detail-section").textContent =
+        user.section || "Not Assigned";
+
+    document.getElementById("detail-school").textContent =
+        "Philippine Christian University";
+
+    document.getElementById("detail-date").textContent =
+        user.created_at
+            ? new Date(user.created_at).toLocaleDateString()
+            : "N/A";
+
+    document.getElementById("user-details-modal").hidden = false;
 }
 
-function formatDate(date) {
-    if (!date) return "No deadline";
+// Close User Details Popup
+document.getElementById("close-user-modal").addEventListener("click", function () {
+    document.getElementById("user-details-modal").hidden = true;
+});
 
-    return new Date(date).toLocaleString("en-PH", {
-        dateStyle: "medium",
-        timeStyle: "short"
-    });
-}
 
-async function initializePage() {
+async function loadAdminUsers() {
+
+    const message = document.getElementById("users-message");
+    const tableBody = document.getElementById("users-table-body");
+
+    // Check logged-in user
     const { data: { user }, error: authError } =
         await supabaseClient.auth.getUser();
 
@@ -136,741 +380,281 @@ async function initializePage() {
         return;
     }
 
-    currentUser = user;
-
+    // Check admin profile and account status
     const { data: profile, error: profileError } =
         await supabaseClient
             .from("profiles")
-            .select("full_name, role, school_id, is_active")
+            .select("role, is_active")
             .eq("id", user.id)
             .single();
 
-    if (profileError || !profile || !profile.school_id ||
-        profile.is_active === false) {
-        assignmentList.textContent =
-            "Unable to load your active school profile.";
-        return;
-    }
-
-    currentProfile = profile;
-
-    if (["teacher", "admin"].includes(profile.role)) {
-        formPanel.classList.remove("hidden");
-        await loadSubjects();
-    }
-
-    await loadAssignments();
-}
-
-async function loadSubjects() {
-    subjectSelect.innerHTML =
-        '<option value="">Loading subjects...</option>';
-
-    let query = supabaseClient
-        .from("subjects")
-        .select("id, subject_name, subject_code")
-        .eq("school_id", currentProfile.school_id)
-        .order("subject_name");
-
-    if (currentProfile.role === "teacher") {
-        query = query.eq("teacher_id", currentUser.id);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-        subjectSelect.innerHTML =
-            '<option value="">Unable to load subjects</option>';
-        showMessage(error.message, true);
-        return;
-    }
-
-    subjectSelect.innerHTML =
-        '<option value="">Select a subject</option>';
-
-    (data || []).forEach(subject => {
-        const option = document.createElement("option");
-        option.value = subject.id;
-        option.textContent =
-            subject.subject_name + " (" + subject.subject_code + ")";
-        subjectSelect.appendChild(option);
-    });
-
-    if (!data || data.length === 0) {
-        subjectSelect.innerHTML =
-            '<option value="">No assigned subjects available</option>';
-    }
-}
-
-async function loadAssignments() {
-    assignmentList.textContent = "Loading assignments...";
-
-    let query = supabaseClient
-        .from("assignments")
-        .select(`
-            id,
-            school_id,
-            teacher_id,
-            subject_id,
-            title,
-            description,
-            due_date,
-            subjects (
-                subject_name,
-                subject_code
-            )
-        `)
-        .eq("school_id", currentProfile.school_id)
-        .order("due_date", { ascending: true });
-
-    if (currentProfile.role === "teacher") {
-        query = query.eq("teacher_id", currentUser.id);
-    }
-
-    if (currentProfile.role === "student") {
-        const { data: enrollments, error: enrollmentError } =
-            await supabaseClient
-                .from("subject_enrollments")
-                .select("subject_id")
-                .eq("student_id", currentUser.id)
-                .eq("school_id", currentProfile.school_id);
-
-        if (enrollmentError) {
-            assignmentList.textContent =
-                "Unable to load enrolled subjects: " +
-                enrollmentError.message;
-            return;
-        }
-
-        const subjectIds = (enrollments || []).map(
-            item => item.subject_id
-        );
-
-        if (subjectIds.length === 0) {
-            assignmentList.textContent =
-                "You are not enrolled in any subjects yet.";
-            return;
-        }
-
-        query = query.in("subject_id", subjectIds);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-        assignmentList.textContent =
-            "Error loading assignments: " + error.message;
-        return;
-    }
-
-    assignmentList.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        assignmentList.textContent =
-            "No assignments available for your subjects yet.";
-        return;
-    }
-
-    for (const item of data) {
-        const card = document.createElement("div");
-        card.className = "assignment";
-
-        const title = document.createElement("h3");
-        title.textContent = item.title;
-
-        const subject = document.createElement("p");
-        subject.className = "subject-label";
-        subject.textContent = "Subject: " +
-            (item.subjects?.subject_name || "Subject not available") +
-            (item.subjects?.subject_code
-                ? " (" + item.subjects.subject_code + ")"
-                : "");
-
-        const description = document.createElement("p");
-        description.textContent =
-            item.description || "No description provided.";
-
-        const deadline = document.createElement("p");
-        deadline.textContent = "Due: " + formatDate(item.due_date);
-
-        card.append(title, subject, description, deadline);
-
-        if (currentProfile.role === "student") {
-            await renderStudentSubmission(card, item);
-        }
-
-        const canManage =
-            ["teacher", "admin"].includes(currentProfile.role) &&
-            (item.teacher_id === currentUser.id ||
-             currentProfile.role === "admin");
-
-        if (canManage) {
-            const actions = document.createElement("div");
-            actions.className = "actions";
-
-            const editButton = document.createElement("button");
-            editButton.className = "edit";
-            editButton.textContent = "Edit";
-            editButton.addEventListener("click", () => editAssignment(item));
-
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "delete";
-            deleteButton.textContent = "Delete";
-            deleteButton.addEventListener("click", () =>
-                deleteAssignment(item.id)
-            );
-
-            actions.append(editButton, deleteButton);
-            card.appendChild(actions);
-        }
-
-        if (["teacher", "admin"].includes(currentProfile.role)) {
-            await renderTeacherSubmissions(card, item);
-        }
-
-        assignmentList.appendChild(card);
-    }
-}
-
-/* STUDENT SUBMISSION AND GRADE DISPLAY */
-
-async function renderStudentSubmission(card, assignment) {
-    const { data: submissions, error } = await supabaseClient
-        .from("assignment_submissions")
-        .select("id, file_name, file_path, submitted_at, grade, feedback")
-        .eq("assignment_id", assignment.id)
-        .eq("student_id", currentUser.id)
-        .limit(1);
-
-    if (error) {
-        const errorText = document.createElement("p");
-        errorText.textContent =
-            "Unable to load submission details: " + error.message;
-        card.appendChild(errorText);
-        return;
-    }
-
-    const submission = submissions?.[0];
-
-    if (submission) {
-        const box = document.createElement("div");
-        box.className = "submission-box";
-
-        const heading = document.createElement("h4");
-        heading.textContent = "Your Submission";
-
-        const status = document.createElement("p");
-        status.className = "status";
-        status.textContent =
-            submission.grade !== null
-                ? "Graded"
-                : "Submitted - Waiting for teacher's grade";
-
-        const fileName = document.createElement("p");
-        fileName.textContent = "File: " + submission.file_name;
-
-        const submittedAt = document.createElement("p");
-        submittedAt.className = "small-text";
-        submittedAt.textContent =
-            "Submitted: " + formatDate(submission.submitted_at);
-
-        box.append(heading, status, fileName, submittedAt);
-
-        const { data: signedData, error: signedError } =
-            await supabaseClient
-                .storage
-                .from("assignment-files")
-                .createSignedUrl(submission.file_path, 60 * 60);
-
-        if (!signedError && signedData?.signedUrl) {
-            const fileLink = document.createElement("a");
-            fileLink.href = signedData.signedUrl;
-            fileLink.target = "_blank";
-            fileLink.rel = "noopener noreferrer";
-            fileLink.textContent = "Open Submitted File";
-            box.appendChild(fileLink);
-        }
-
-        if (submission.grade !== null) {
-            const grade = document.createElement("div");
-            grade.className = "grade-display";
-
-            const gradeTitle = document.createElement("strong");
-            gradeTitle.textContent = "Your Grade: ";
-
-            const gradeValue = document.createElement("span");
-            gradeValue.textContent = submission.grade;
-
-            grade.append(gradeTitle, gradeValue);
-            box.appendChild(grade);
-        }
-
-        if (submission.feedback) {
-            const feedback = document.createElement("div");
-            feedback.className = "feedback-display";
-
-            const feedbackTitle = document.createElement("strong");
-            feedbackTitle.textContent = "Teacher Feedback";
-
-            const feedbackText = document.createElement("p");
-            feedbackText.textContent = submission.feedback;
-
-            feedback.append(feedbackTitle, feedbackText);
-            box.appendChild(feedback);
-        }
-
-        card.appendChild(box);
-        return;
-    }
-
-    const submitButton = document.createElement("button");
-    submitButton.textContent = "Submit Assignment";
-    submitButton.className = "primary";
-
-    submitButton.addEventListener("click", () => {
-        openSubmissionForm(assignment);
-    });
-
-    card.appendChild(submitButton);
-}
-
-/* TEACHER / ADMIN SUBMISSION REVIEW AND GRADING */
-
-async function renderTeacherSubmissions(card, assignment) {
-    const box = document.createElement("div");
-    box.className = "submission-box";
-
-    const heading = document.createElement("h4");
-    heading.textContent = "Student Submissions";
-
-    const loading = document.createElement("p");
-    loading.textContent = "Loading submissions...";
-
-    box.append(heading, loading);
-    card.appendChild(box);
-
-    const { data: submissions, error } = await supabaseClient
-        .from("assignment_submissions")
-        .select(`
-            id,
-            student_id,
-            file_name,
-            file_path,
-            submitted_at,
-            grade,
-            feedback
-        `)
-        .eq("assignment_id", assignment.id)
-        .order("submitted_at", { ascending: false });
-
-    loading.remove();
-
-    if (error) {
-        const errorText = document.createElement("p");
-        errorText.textContent =
-            "Unable to load submissions: " + error.message;
-        box.appendChild(errorText);
-        return;
-    }
-
-    if (!submissions || submissions.length === 0) {
-        const empty = document.createElement("p");
-        empty.textContent = "No students have submitted this assignment yet.";
-        box.appendChild(empty);
-        return;
-    }
-
-    const count = document.createElement("p");
-    count.className = "small-text";
-    count.textContent =
-        "Total submissions: " + submissions.length;
-    box.appendChild(count);
-
-    for (const submission of submissions) {
-        const item = document.createElement("div");
-        item.className = "submission-box";
-
-        const student = document.createElement("p");
-        student.textContent =
-            "Student ID: " + submission.student_id;
-
-        const fileName = document.createElement("p");
-        fileName.textContent = "File: " + submission.file_name;
-
-        const submittedAt = document.createElement("p");
-        submittedAt.className = "small-text";
-        submittedAt.textContent =
-            "Submitted: " + formatDate(submission.submitted_at);
-
-        item.append(student, fileName, submittedAt);
-
-        const { data: signedData, error: signedError } =
-            await supabaseClient
-                .storage
-                .from("assignment-files")
-                .createSignedUrl(submission.file_path, 60 * 60);
-
-        if (!signedError && signedData?.signedUrl) {
-            const fileLink = document.createElement("a");
-            fileLink.href = signedData.signedUrl;
-            fileLink.target = "_blank";
-            fileLink.rel = "noopener noreferrer";
-            fileLink.textContent = "Open Student File";
-            item.appendChild(fileLink);
-        } else {
-            const fileError = document.createElement("p");
-            fileError.className = "small-text";
-            fileError.textContent =
-                "Unable to create file link: " + signedError.message;
-            item.appendChild(fileError);
-        }
-
-        const gradeLabel = document.createElement("label");
-        gradeLabel.textContent = "Grade";
-
-        const gradeInput = document.createElement("input");
-        gradeInput.type = "number";
-        gradeInput.step = "any";
-        gradeInput.placeholder = "Enter grade";
-        gradeInput.value =
-            submission.grade !== null ? submission.grade : "";
-
-        const feedbackLabel = document.createElement("label");
-        feedbackLabel.textContent = "Feedback";
-
-        const feedbackInput = document.createElement("textarea");
-        feedbackInput.placeholder = "Write feedback for the student...";
-        feedbackInput.value = submission.feedback || "";
-
-        const saveButton = document.createElement("button");
-        saveButton.type = "button";
-        saveButton.className = "primary";
-        saveButton.textContent =
-            submission.grade !== null || submission.feedback
-                ? "Update Grade and Feedback"
-                : "Save Grade and Feedback";
-
-        const status = document.createElement("p");
-        status.className = "small-text";
-
-        saveButton.addEventListener("click", async () => {
-            const gradeText = gradeInput.value.trim();
-            const feedbackText = feedbackInput.value.trim();
-
-            if (gradeText === "" && feedbackText === "") {
-                status.style.color = "#dc4545";
-                status.textContent =
-                    "Please enter a grade or feedback before saving.";
-                return;
-            }
-
-            let gradeValue = null;
-
-            if (gradeText !== "") {
-                gradeValue = Number(gradeText);
-
-                if (!Number.isFinite(gradeValue)) {
-                    status.style.color = "#dc4545";
-                    status.textContent = "Please enter a valid numerical grade.";
-                    return;
-                }
-            }
-
-            saveButton.disabled = true;
-            status.style.color = "#65748a";
-            status.textContent = "Saving grade and feedback...";
-
-            const { error: updateError } = await supabaseClient
-                .from("assignment_submissions")
-                .update({
-                    grade: gradeValue,
-                    feedback: feedbackText || null,
-                    graded_by: currentUser.id
-                })
-                .eq("id", submission.id);
-
-            if (updateError) {
-                status.style.color = "#dc4545";
-                status.textContent =
-                    "Unable to save: " + updateError.message;
-                saveButton.disabled = false;
-                return;
-            }
-
-            status.style.color = "#16834a";
-            status.textContent =
-                "Grade and feedback saved successfully!";
-
-            saveButton.textContent = "Update Grade and Feedback";
-            saveButton.disabled = false;
-        });
-
-        item.append(
-            gradeLabel,
-            gradeInput,
-            feedbackLabel,
-            feedbackInput,
-            saveButton,
-            status
-        );
-
-        box.appendChild(item);
-    }
-}
-
-/* STUDENT FILE UPLOAD */
-
-function openSubmissionForm(assignment) {
-    const existingForm = document.getElementById("submission-form");
-
-    if (existingForm) existingForm.remove();
-
-    const form = document.createElement("div");
-    form.id = "submission-form";
-    form.className = "assignment";
-
-    const heading = document.createElement("h3");
-    heading.textContent = "Submit Assignment";
-
-    const assignmentTitle = document.createElement("p");
-    assignmentTitle.textContent = assignment.title;
-
-    const label = document.createElement("label");
-    label.textContent = "Choose your file:";
-
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.id = "submission-file";
-    fileInput.accept = ".pdf,.doc,.docx,.jpg,.jpeg,.png";
-
-    const uploadButton = document.createElement("button");
-    uploadButton.type = "button";
-    uploadButton.className = "primary";
-    uploadButton.textContent = "Upload and Submit";
-
-    const cancelButton = document.createElement("button");
-    cancelButton.type = "button";
-    cancelButton.className = "edit";
-    cancelButton.textContent = "Cancel";
-
-    const status = document.createElement("p");
-    status.id = "submission-message";
-
-    form.append(
-        heading, assignmentTitle, label,
-        fileInput, uploadButton, cancelButton, status
-    );
-
-    assignmentList.prepend(form);
-
-    cancelButton.addEventListener("click", () => form.remove());
-
-    uploadButton.addEventListener("click", async () => {
-        const file = fileInput.files[0];
-
-        if (!file) {
-            status.textContent = "Please select a file first.";
-            return;
-        }
-
-        const allowedTypes = [
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "image/jpeg",
-            "image/png"
-        ];
-
-        if (!allowedTypes.includes(file.type)) {
-            status.textContent =
-                "Only PDF, DOC, DOCX, JPG, and PNG files are allowed.";
-            return;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-            status.textContent = "File must not exceed 10 MB.";
-            return;
-        }
-
-        uploadButton.disabled = true;
-        status.textContent = "Uploading file...";
-
-        const studentId = currentUser.id;
-        const safeFileName = file.name.replace(
-            /[^a-zA-Z0-9._-]/g, "_"
-        );
-
-        const filePath =
-            `${studentId}/${assignment.id}/${Date.now()}_${safeFileName}`;
-
-        try {
-            const { error: uploadError } = await supabaseClient
-                .storage
-                .from("assignment-files")
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { error: insertError } = await supabaseClient
-                .from("assignment_submissions")
-                .insert({
-                    assignment_id: assignment.id,
-                    student_id: studentId,
-                    file_name: file.name,
-                    file_path: filePath
-                });
-
-            if (insertError) {
-                await supabaseClient
-                    .storage
-                    .from("assignment-files")
-                    .remove([filePath]);
-
-                throw insertError;
-            }
-
-            status.textContent =
-                "Assignment submitted successfully!";
-
-            fileInput.disabled = true;
-            uploadButton.disabled = true;
-
-            await loadAssignments();
-
-        } catch (error) {
-            status.textContent =
-                "Submission failed: " + error.message;
-            uploadButton.disabled = false;
-        }
-    });
-}
-
-/* CREATE / EDIT ASSIGNMENT */
-
-assignmentForm.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (!currentProfile ||
-        !["teacher", "admin"].includes(currentProfile.role)) {
-        showMessage("Only teachers and admins can manage assignments.", true);
-        return;
-    }
-
-    const subjectId = subjectSelect.value;
-    const title = document.getElementById("title").value.trim();
-    const description =
-        document.getElementById("description").value.trim();
-    const dueDate = document.getElementById("dueDate").value;
-
-    if (!subjectId || !title || !dueDate) {
-        showMessage(
-            "Please select a subject, enter a title and deadline.",
-            true
-        );
-        return;
-    }
-
-    const assignmentData = {
-        school_id: currentProfile.school_id,
-        teacher_id: currentUser.id,
-        subject_id: subjectId,
-        title,
-        description,
-        due_date: new Date(dueDate).toISOString()
-    };
-
-    let result;
-
-    if (editingId) {
-        result = await supabaseClient
-            .from("assignments")
-            .update(assignmentData)
-            .eq("id", editingId);
-    } else {
-        result = await supabaseClient
-            .from("assignments")
-            .insert([assignmentData]);
-    }
-
-    if (result.error) {
-        showMessage(result.error.message, true);
-        return;
-    }
-
-    showMessage(editingId
-        ? "Assignment updated successfully!"
-        : "Assignment added successfully!");
-
-    resetForm();
-    await loadAssignments();
-});
-
-function editAssignment(item) {
-    editingId = item.id;
-
-    subjectSelect.value = item.subject_id || "";
-    document.getElementById("title").value = item.title;
-    document.getElementById("description").value =
-        item.description || "";
-
-    document.getElementById("dueDate").value =
-        item.due_date
-            ? new Date(item.due_date).toISOString().slice(0, 16)
-            : "";
-
-    document.getElementById("formTitle").textContent =
-        "Edit Assignment";
-
-    document.getElementById("saveButton").textContent =
-        "Update Assignment";
-
-    document.getElementById("cancelButton").classList.remove("hidden");
-    formPanel.scrollIntoView({ behavior: "smooth" });
-}
-
-async function deleteAssignment(id) {
-    if (!confirm("Are you sure you want to delete this assignment?")) {
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from("assignments")
-        .delete()
-        .eq("id", id);
-
-    if (error) {
-        alert("Error deleting assignment: " + error.message);
-        return;
-    }
-
-    alert("Assignment deleted successfully!");
-    await loadAssignments();
-}
-
-function resetForm() {
-    editingId = null;
-    assignmentForm.reset();
-
-    document.getElementById("formTitle").textContent =
-        "Create Assignment";
-
-    document.getElementById("saveButton").textContent =
-        "Add Assignment";
-
-    document.getElementById("cancelButton").classList.add("hidden");
-}
-
-document.getElementById("cancelButton")
-    .addEventListener("click", resetForm);
-
-document.getElementById("logoutButton")
-    .addEventListener("click", async event => {
-        event.preventDefault();
+    if (profileError || !profile) {
         await supabaseClient.auth.signOut();
         window.location.href = "login.html";
-    });
+        return;
+    }
 
-initializePage();
+    // Check account status
+    if (profile.is_active === false) {
+        alert("Your account has been deactivated. Please contact your school administrator.");
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Check admin role
+    if (profile.role !== "admin") {
+    alert("Access denied. Administrators only.");
+
+    window.location.replace("dashboard.html");
+    return;
+}
+
+
+    // Get users from Supabase
+    const { data, error } = await supabaseClient
+        .rpc("get_admin_users");
+
+    if (error) {
+        console.error(error);
+        message.textContent = "Unable to load users: " + error.message;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        message.textContent = "No users found.";
+        tableBody.replaceChildren();
+        return;
+    }
+
+    allUsers = data;
+
+    // Update User Statistics
+    document.getElementById("total-users").textContent =
+        allUsers.length;
+
+    document.getElementById("total-students").textContent =
+        allUsers.filter(user => user.role === "student").length;
+
+    document.getElementById("total-teachers").textContent =
+        allUsers.filter(user => user.role === "teacher").length;
+
+    document.getElementById("total-admins").textContent =
+        allUsers.filter(user => user.role === "admin").length;
+
+
+    // Display users
+    function displayUsers(users) {
+
+        tableBody.replaceChildren();
+
+        if (users.length === 0) {
+            message.textContent = "No matching users found.";
+            return;
+        }
+
+        users.forEach(user => {
+
+            const row = document.createElement("tr");
+
+            const nameCell = document.createElement("td");
+            nameCell.textContent = user.full_name || "N/A";
+
+            const roleCell = document.createElement("td");
+            const roleBadge = document.createElement("span");
+            roleBadge.className = "admin-role";
+            roleBadge.textContent = user.role || "N/A";
+            roleCell.appendChild(roleBadge);
+
+            const sectionCell = document.createElement("td");
+            sectionCell.textContent = user.section || "N/A";
+
+            // Account Status
+            const statusCell = document.createElement("td");
+            const statusBadge = document.createElement("span");
+
+            statusBadge.textContent = user.is_active ? "Active" : "Deactivated";
+            statusBadge.className = user.is_active ? "admin-role" : "admin-role";
+            statusCell.appendChild(statusBadge);
+
+            // Deactivate / Reactivate Button
+            const statusButton = document.createElement("button");
+
+            statusButton.textContent = user.is_active ? "Deactivate" : "Reactivate";
+            statusButton.className = "view-user-btn";
+
+            statusButton.addEventListener("click", async function () {
+
+                const newStatus = !user.is_active;
+
+                const confirmStatus = confirm(
+                    "Are you sure you want to " +
+                    (newStatus ? "reactivate " : "deactivate ") +
+                    user.full_name + "'s account?"
+                );
+
+                if (!confirmStatus) {
+                    return;
+                }
+
+                statusButton.disabled = true;
+
+                const { error } = await supabaseClient.rpc(
+                    "admin_set_user_status",
+                    {
+                        target_user_id: user.user_id,
+                        new_status: newStatus
+                    }
+                );
+
+                if (error) {
+                    alert("Unable to update account status: " + error.message);
+                    statusButton.disabled = false;
+                    return;
+                }
+
+                alert("Account status updated successfully!");
+
+                await loadAdminUsers();
+            });
+
+            const dateCell = document.createElement("td");
+            dateCell.textContent = user.created_at
+                ? new Date(user.created_at).toLocaleDateString()
+                : "N/A";
+
+            
+            const actionCell = document.createElement("td");
+
+            const viewButton = document.createElement("button");
+            viewButton.textContent = "View Details";
+            viewButton.className = "view-user-btn";
+
+            viewButton.addEventListener("click", function () {
+                showUserDetails(user);
+            });
+
+            actionCell.appendChild(viewButton);
+            actionCell.appendChild(statusButton);
+
+
+            // Role Selection
+            const roleSelect = document.createElement("select");
+            roleSelect.className = "role-select";
+
+            const roles = ["student", "teacher", "admin"];
+
+            roles.forEach(role => {
+                const option = document.createElement("option");
+                option.value = role;
+                option.textContent =
+                    role.charAt(0).toUpperCase() + role.slice(1);
+
+                if (role === user.role) {
+                    option.selected = true;
+                }
+
+                roleSelect.appendChild(option);
+            });
+
+            // Change Role Button
+            const changeRoleButton = document.createElement("button");
+            changeRoleButton.textContent = "Change Role";
+            changeRoleButton.className = "view-user-btn";
+
+            changeRoleButton.addEventListener("click", async function () {
+
+                const newRole = roleSelect.value;
+
+                if (newRole === user.role) {
+                    alert("This user already has that role.");
+                    return;
+                }
+
+                const confirmChange = confirm(
+                    "Are you sure you want to change " +
+                    user.full_name + "'s role to " + newRole + "?"
+                );
+
+                if (!confirmChange) {
+                    return;
+                }
+
+                const { error } = await supabaseClient.rpc(
+                    "admin_update_user_role",
+                    {
+                        target_user_id: user.user_id,
+                        new_role: newRole
+                    }
+                );
+
+                if (error) {
+                    alert("Unable to change role: " + error.message);
+                    return;
+                }
+
+                alert("User role updated successfully!");
+                window.location.reload();
+            });
+
+            actionCell.appendChild(roleSelect);
+            actionCell.appendChild(changeRoleButton);
+
+
+            row.append(
+            nameCell,
+            roleCell,
+            sectionCell,
+            statusCell,
+            dateCell,
+            actionCell
+        );
+
+            tableBody.appendChild(row);
+
+        });
+
+        message.textContent = users.length + " user(s) found.";
+    }
+
+    // Show all users initially
+    displayUsers(allUsers);
+
+    
+        // Search and Role Filter
+        const searchInput = document.getElementById("search-users");
+        const roleFilter = document.getElementById("role-filter");
+
+        function filterUsers() {
+
+            const searchValue = searchInput.value.toLowerCase().trim();
+            const selectedRole = roleFilter.value;
+
+            const filteredUsers = allUsers.filter(user => {
+
+                const matchesName = (user.full_name || "")
+                    .toLowerCase()
+                    .includes(searchValue);
+
+                const matchesRole =
+                    selectedRole === "all" || user.role === selectedRole;
+
+                return matchesName && matchesRole;
+            });
+
+            displayUsers(filteredUsers);
+        }
+
+searchInput.addEventListener("input", filterUsers);
+roleFilter.addEventListener("change", filterUsers);
+
+}
+
+loadAdminUsers();
+
 </script>
+
 </body>
 </html>
