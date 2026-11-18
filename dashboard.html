@@ -2188,23 +2188,6 @@ document.querySelectorAll(".filter-button").forEach(button => {
 
 });
 
-
-document.getElementById("showUnreadBtn").addEventListener(
-    "click",
-    function() {
-
-        currentNotificationFilter = "unread";
-
-        this.classList.add("active");
-
-        document.getElementById("showAllBtn")
-            .classList.remove("active");
-
-        displayNotifications();
-    }
-);
-
-
 // ========================================
 // ANNOUNCEMENTS PREVIEW
 // ========================================
