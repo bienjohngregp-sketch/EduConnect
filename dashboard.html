@@ -44,6 +44,31 @@
             gap: 15px;
         }
 
+        /* HEADER PROFILE PICTURE */
+
+        .header-avatar {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #155eef;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: bold;
+            border: 2px solid #dbe7ff;
+        }
+
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         .user-summary {
             text-align: right;
             font-size: 13px;
@@ -381,6 +406,8 @@
 
     <div class="header-right">
 
+        <div class="header-avatar" id="headerAvatar">U</div>
+
         <div class="user-summary">
             <strong id="headerUserName">Loading...</strong>
             <span id="headerUserRole">Loading...</span>
@@ -533,7 +560,6 @@
 
         </div>
 
-
         <!-- STUDENT ENROLLED SUBJECTS -->
         <div class="section">
 
@@ -547,7 +573,6 @@
             </div>
 
         </div>
-
 
         <!-- STUDENT ATTENDANCE SUMMARY -->
         <div class="section">
@@ -747,7 +772,7 @@
 
     </section>
 
-    <!-- IMPROVED NOTIFICATIONS -->
+    <!-- NOTIFICATIONS -->
     <section class="notification-section" id="notifications-section">
 
         <div class="notification-header">
@@ -770,7 +795,6 @@
             Loading notifications...
         </div>
 
-        
         <div class="notification-controls">
 
             <button type="button" class="filter-button active" data-filter="all">
@@ -802,7 +826,6 @@
             </button>
 
         </div>
-
 
         <div id="notifications-list">
             Loading notifications...
@@ -841,7 +864,6 @@
 
 </main>
 
-
 <script>
 
 // ========================================
@@ -872,7 +894,7 @@ async function loadDashboard() {
 
     const { data: profile, error } = await supabaseClient
         .from("profiles")
-        .select("full_name, role, school_id, is_active")
+        .select("full_name, role, school_id, is_active, avatar_url")
         .eq("id", user.id)
         .single();
 
@@ -888,6 +910,37 @@ async function loadDashboard() {
         await supabaseClient.auth.signOut();
         window.location.href = "login.html";
         return;
+    }
+
+    // DISPLAY HEADER PROFILE PICTURE
+
+    const headerAvatar = document.getElementById("headerAvatar");
+
+    const userInitial = (profile.full_name || "U")
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+    headerAvatar.textContent = userInitial;
+
+    if (profile.avatar_url) {
+
+        const { data } = supabaseClient
+            .storage
+            .from("profile-avatars")
+            .getPublicUrl(profile.avatar_url);
+
+        const avatarImage = document.createElement("img");
+
+        avatarImage.src = data.publicUrl;
+        avatarImage.alt = "Profile Picture";
+
+        avatarImage.onerror = function() {
+            headerAvatar.textContent = userInitial;
+        };
+
+        headerAvatar.textContent = "";
+        headerAvatar.appendChild(avatarImage);
     }
 
     document.getElementById("admin-dashboard").hidden =
@@ -1064,9 +1117,6 @@ async function loadStudentStats() {
     document.getElementById("student-graded-count").textContent =
         stats?.graded_assignments ?? 0;
 
-    
-    // Calculate Assignment Completion Rate
-
     const completionRateElement = document.getElementById(
         "student-completion-rate"
     );
@@ -1087,7 +1137,6 @@ async function loadStudentStats() {
         totalAssignments > 0
             ? completionRate.toFixed(2) + "%"
             : "No assignments yet";
-    
 }
 
 
@@ -1095,18 +1144,14 @@ async function loadStudentStats() {
 // STUDENT ENROLLED SUBJECTS
 // ========================================
 
-
 async function loadStudentSubjects(studentId, schoolId) {
 
-    const container = document.getElementById(
-        "student-my-subjects"
-    );
+    const container = document.getElementById("student-my-subjects");
 
     if (!container) return;
 
     if (!schoolId) {
-        container.textContent =
-            "Your account has no assigned school.";
+        container.textContent = "Your account has no assigned school.";
         return;
     }
 
@@ -1135,14 +1180,11 @@ async function loadStudentSubjects(studentId, schoolId) {
 
     if (error) {
         console.error("Student subjects error:", error);
-        container.textContent =
-            "Unable to load your enrolled subjects.";
+        container.textContent = "Unable to load your enrolled subjects.";
         return;
     }
 
-    const enrollments = (data || []).filter(
-        item => item.subjects
-    );
+    const enrollments = (data || []).filter(item => item.subjects);
 
     studentEnrolledSubjectIds = enrollments.map(
         item => item.subjects.id
@@ -1158,8 +1200,6 @@ async function loadStudentSubjects(studentId, schoolId) {
         return;
     }
 
-    // Load assignments from enrolled subjects.
-
     const { data: assignments, error: assignmentError } =
         await supabaseClient
             .from("assignments")
@@ -1169,18 +1209,13 @@ async function loadStudentSubjects(studentId, schoolId) {
 
     if (assignmentError) {
         console.error("Subject assignments error:", assignmentError);
-        container.textContent =
-            "Unable to load subject progress.";
+        container.textContent = "Unable to load subject progress.";
         return;
     }
 
     const allAssignments = assignments || [];
 
-    // Load student's submissions.
-
-    const assignmentIds = allAssignments.map(
-        item => item.id
-    );
+    const assignmentIds = allAssignments.map(item => item.id);
 
     let submissions = [];
 
@@ -1195,8 +1230,7 @@ async function loadStudentSubjects(studentId, schoolId) {
 
         if (submissionError) {
             console.error("Subject submissions error:", submissionError);
-            container.textContent =
-                "Unable to load submission progress.";
+            container.textContent = "Unable to load submission progress.";
             return;
         }
 
@@ -1214,15 +1248,13 @@ async function loadStudentSubjects(studentId, schoolId) {
         const subject = item.subjects;
 
         const subjectAssignments = allAssignments.filter(
-            assignment =>
-                assignment.subject_id === subject.id
+            assignment => assignment.subject_id === subject.id
         );
 
         const total = subjectAssignments.length;
 
         const submitted = subjectAssignments.filter(
-            assignment =>
-                submittedIds.has(assignment.id)
+            assignment => submittedIds.has(assignment.id)
         ).length;
 
         const percentage = total > 0
@@ -1233,19 +1265,16 @@ async function loadStudentSubjects(studentId, schoolId) {
         card.className = "card";
 
         const title = document.createElement("h3");
-        title.textContent =
-            subject.subject_name || "Untitled Subject";
+        title.textContent = subject.subject_name || "Untitled Subject";
         title.style.color = "#155eef";
 
         const code = document.createElement("p");
-        code.textContent =
-            "Subject Code: " +
+        code.textContent = "Subject Code: " +
             (subject.subject_code || "Not provided");
 
         const description = document.createElement("p");
         description.textContent =
-            subject.description ||
-            "No subject description provided.";
+            subject.description || "No subject description provided.";
 
         const progressTitle = document.createElement("p");
         progressTitle.style.fontWeight = "bold";
@@ -1253,8 +1282,7 @@ async function loadStudentSubjects(studentId, schoolId) {
 
         const progressInfo = document.createElement("p");
         progressInfo.textContent = total > 0
-            ? submitted + " submitted out of " + total +
-              " assignments"
+            ? submitted + " submitted out of " + total + " assignments"
             : "No assignments yet.";
 
         const percentageText = document.createElement("p");
@@ -1282,8 +1310,7 @@ async function loadStudentSubjects(studentId, schoolId) {
         progressTrack.appendChild(progressBar);
 
         const enrolledDate = document.createElement("small");
-        enrolledDate.textContent =
-            "Enrolled: " +
+        enrolledDate.textContent = "Enrolled: " +
             (item.enrolled_at
                 ? new Date(item.enrolled_at).toLocaleDateString("en-PH")
                 : "Date unavailable");
@@ -1304,28 +1331,16 @@ async function loadStudentSubjects(studentId, schoolId) {
 }
 
 
-
 // ========================================
 // STUDENT ATTENDANCE SUMMARY
 // ========================================
 
 async function loadDashboardAttendance(studentId) {
 
-    const presentElement = document.getElementById(
-        "dashboard-present-count"
-    );
-
-    const absentElement = document.getElementById(
-        "dashboard-absent-count"
-    );
-
-    const lateElement = document.getElementById(
-        "dashboard-late-count"
-    );
-
-    const percentageElement = document.getElementById(
-        "dashboard-attendance-percentage"
-    );
+    const presentElement = document.getElementById("dashboard-present-count");
+    const absentElement = document.getElementById("dashboard-absent-count");
+    const lateElement = document.getElementById("dashboard-late-count");
+    const percentageElement = document.getElementById("dashboard-attendance-percentage");
 
     const { data, error } = await supabaseClient
         .from("attendance")
@@ -1333,7 +1348,6 @@ async function loadDashboardAttendance(studentId) {
         .eq("student_id", studentId);
 
     if (error) {
-
         console.error("Dashboard attendance error:", error);
 
         presentElement.textContent = "Unavailable";
@@ -1346,17 +1360,9 @@ async function loadDashboardAttendance(studentId) {
 
     const records = data || [];
 
-    const present = records.filter(
-        item => item.status === "present"
-    ).length;
-
-    const absent = records.filter(
-        item => item.status === "absent"
-    ).length;
-
-    const late = records.filter(
-        item => item.status === "late"
-    ).length;
+    const present = records.filter(item => item.status === "present").length;
+    const absent = records.filter(item => item.status === "absent").length;
+    const late = records.filter(item => item.status === "late").length;
 
     const total = records.length;
 
@@ -1369,9 +1375,7 @@ async function loadDashboardAttendance(studentId) {
     lateElement.textContent = late;
 
     percentageElement.textContent =
-        total > 0
-            ? percentage.toFixed(2) + "%"
-            : "No records yet";
+        total > 0 ? percentage.toFixed(2) + "%" : "No records yet";
 }
 
 
@@ -1379,28 +1383,14 @@ async function loadDashboardAttendance(studentId) {
 // STUDENT GRADES + PERFORMANCE CHART
 // ========================================
 
-
 async function loadStudentGrades(studentId, schoolId) {
 
-    const averageElement = document.getElementById(
-        "student-overall-average"
-    );
-
-    const totalElement = document.getElementById(
-        "student-total-graded"
-    );
-
-    const listElement = document.getElementById(
-        "student-grades-list"
-    );
-
-    const chartMessage = document.getElementById(
-        "student-chart-message"
-    );
+    const averageElement = document.getElementById("student-overall-average");
+    const totalElement = document.getElementById("student-total-graded");
+    const listElement = document.getElementById("student-grades-list");
+    const chartMessage = document.getElementById("student-chart-message");
 
     if (!averageElement || !totalElement || !listElement) return;
-
-    // Get enrolled subject IDs.
 
     const { data: enrollments, error: enrollmentError } =
         await supabaseClient
@@ -1415,12 +1405,10 @@ async function loadStudentGrades(studentId, schoolId) {
 
         averageElement.textContent = "Unavailable";
         totalElement.textContent = "Unavailable";
-        listElement.textContent =
-            "Unable to load your enrolled subjects.";
+        listElement.textContent = "Unable to load your enrolled subjects.";
 
         if (chartMessage) {
-            chartMessage.textContent =
-                "Unable to load academic performance.";
+            chartMessage.textContent = "Unable to load academic performance.";
         }
 
         return;
@@ -1434,9 +1422,7 @@ async function loadStudentGrades(studentId, schoolId) {
 
         averageElement.textContent = "No enrolled subjects";
         totalElement.textContent = "0";
-
-        listElement.textContent =
-            "You have no enrolled subjects yet.";
+        listElement.textContent = "You have no enrolled subjects yet.";
 
         if (studentPerformanceChart) {
             studentPerformanceChart.destroy();
@@ -1450,8 +1436,6 @@ async function loadStudentGrades(studentId, schoolId) {
 
         return;
     }
-
-    // Load the student's graded submissions.
 
     const { data, error } = await supabaseClient
         .from("assignment_submissions")
@@ -1478,14 +1462,11 @@ async function loadStudentGrades(studentId, schoolId) {
         listElement.textContent = "Unable to load grades.";
 
         if (chartMessage) {
-            chartMessage.textContent =
-                "Unable to load chart data.";
+            chartMessage.textContent = "Unable to load chart data.";
         }
 
         return;
     }
-
-    // Keep only grades from enrolled subjects.
 
     const enrolledSubjectSet = new Set(enrolledSubjectIds);
 
@@ -1495,7 +1476,6 @@ async function loadStudentGrades(studentId, schoolId) {
     );
 
     totalElement.textContent = grades.length;
-
     listElement.innerHTML = "";
 
     if (grades.length === 0) {
@@ -1518,8 +1498,6 @@ async function loadStudentGrades(studentId, schoolId) {
         return;
     }
 
-    // Calculate average using enrolled-subject grades only.
-
     const totalGrade = grades.reduce(
         (sum, item) => sum + Number(item.grade),
         0
@@ -1527,10 +1505,7 @@ async function loadStudentGrades(studentId, schoolId) {
 
     const average = totalGrade / grades.length;
 
-    averageElement.textContent =
-        average.toFixed(2) + " / 100";
-
-    // Display graded assignments.
+    averageElement.textContent = average.toFixed(2) + " / 100";
 
     grades.forEach(item => {
 
@@ -1538,8 +1513,7 @@ async function loadStudentGrades(studentId, schoolId) {
         card.className = "card assignment-card";
 
         const title = document.createElement("h3");
-        title.textContent =
-            item.assignments?.title || "Untitled Assignment";
+        title.textContent = item.assignments?.title || "Untitled Assignment";
 
         const grade = document.createElement("p");
 
@@ -1547,9 +1521,7 @@ async function loadStudentGrades(studentId, schoolId) {
         gradeLabel.textContent = "Grade: ";
 
         const gradeValue = document.createElement("span");
-        gradeValue.textContent =
-            Number(item.grade).toFixed(2) + " / 100";
-
+        gradeValue.textContent = Number(item.grade).toFixed(2) + " / 100";
         gradeValue.style.color = "#155eef";
         gradeValue.style.fontWeight = "bold";
 
@@ -1561,28 +1533,21 @@ async function loadStudentGrades(studentId, schoolId) {
         feedbackLabel.textContent = "Teacher Feedback: ";
 
         const feedbackText = document.createElement("span");
-        feedbackText.textContent =
-            item.feedback || "No feedback provided.";
+        feedbackText.textContent = item.feedback || "No feedback provided.";
 
         feedback.append(feedbackLabel, feedbackText);
 
         const submittedDate = document.createElement("p");
-        submittedDate.textContent =
-            "Submitted: " +
+        submittedDate.textContent = "Submitted: " +
             (item.submitted_at
                 ? new Date(item.submitted_at).toLocaleString("en-PH")
                 : "Not available");
 
         card.append(title, grade, feedback, submittedDate);
-
         listElement.appendChild(card);
     });
 
-    // Update academic performance chart.
-
-    const canvas = document.getElementById(
-        "student-performance-chart"
-    );
+    const canvas = document.getElementById("student-performance-chart");
 
     if (!canvas || typeof Chart === "undefined") {
 
@@ -1659,8 +1624,7 @@ async function loadStudentGrades(studentId, schoolId) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return "Grade: " +
-                                context.raw + " / 100";
+                            return "Grade: " + context.raw + " / 100";
                         }
                     }
                 }
@@ -1676,7 +1640,6 @@ async function loadStudentGrades(studentId, schoolId) {
 }
 
 
-
 // ========================================
 // STUDENT UPCOMING ASSIGNMENTS
 // ENROLLED SUBJECTS ONLY
@@ -1684,24 +1647,19 @@ async function loadStudentGrades(studentId, schoolId) {
 
 async function loadUpcomingAssignments(studentId, schoolId) {
 
-    const container = document.getElementById(
-        "student-upcoming-assignments"
-    );
+    const container = document.getElementById("student-upcoming-assignments");
 
     if (!container) return;
 
     container.innerHTML = "";
 
     if (!schoolId) {
-        container.textContent =
-            "Your account has no assigned school.";
+        container.textContent = "Your account has no assigned school.";
         return;
     }
 
     container.innerHTML =
         '<div class="card"><p>Loading upcoming assignments...</p></div>';
-
-    // Get the student's enrolled subject IDs.
 
     const { data: enrollments, error: enrollmentError } =
         await supabaseClient
@@ -1713,16 +1671,11 @@ async function loadUpcomingAssignments(studentId, schoolId) {
     if (enrollmentError) {
 
         console.error("Enrollment loading error:", enrollmentError);
-
-        container.textContent =
-            "Unable to load your enrolled subjects.";
-
+        container.textContent = "Unable to load your enrolled subjects.";
         return;
     }
 
-    const subjectIds = (enrollments || []).map(
-        item => item.subject_id
-    );
+    const subjectIds = (enrollments || []).map(item => item.subject_id);
 
     if (subjectIds.length === 0) {
 
@@ -1735,8 +1688,6 @@ async function loadUpcomingAssignments(studentId, schoolId) {
 
         return;
     }
-
-    // Get future assignments belonging only to enrolled subjects.
 
     const { data: assignments, error } = await supabaseClient
         .from("assignments")
@@ -1759,10 +1710,7 @@ async function loadUpcomingAssignments(studentId, schoolId) {
     if (error) {
 
         console.error("Upcoming assignments error:", error);
-
-        container.textContent =
-            "Unable to load upcoming assignments.";
-
+        container.textContent = "Unable to load upcoming assignments.";
         return;
     }
 
@@ -1779,9 +1727,7 @@ async function loadUpcomingAssignments(studentId, schoolId) {
         return;
     }
 
-    const assignmentIds = assignments.map(
-        assignment => assignment.id
-    );
+    const assignmentIds = assignments.map(assignment => assignment.id);
 
     const { data: submissions, error: submissionError } =
         await supabaseClient
@@ -1793,17 +1739,12 @@ async function loadUpcomingAssignments(studentId, schoolId) {
     if (submissionError) {
 
         console.error("Submission status error:", submissionError);
-
-        container.textContent =
-            "Unable to load submission statuses.";
-
+        container.textContent = "Unable to load submission statuses.";
         return;
     }
 
     const submittedIds = new Set(
-        (submissions || []).map(
-            submission => submission.assignment_id
-        )
+        (submissions || []).map(submission => submission.assignment_id)
     );
 
     assignments.forEach(assignment => {
@@ -1812,12 +1753,10 @@ async function loadUpcomingAssignments(studentId, schoolId) {
         card.className = "card assignment-card";
 
         const title = document.createElement("h3");
-        title.textContent =
-            assignment.title || "Untitled Assignment";
+        title.textContent = assignment.title || "Untitled Assignment";
 
         const subject = document.createElement("p");
-        subject.textContent =
-            "Subject: " +
+        subject.textContent = "Subject: " +
             (assignment.subjects?.subject_name || "Subject");
 
         const description = document.createElement("p");
@@ -1825,8 +1764,7 @@ async function loadUpcomingAssignments(studentId, schoolId) {
             assignment.description || "No description provided.";
 
         const dueDate = document.createElement("p");
-        dueDate.textContent =
-            "Due Date: " +
+        dueDate.textContent = "Due Date: " +
             new Date(assignment.due_date).toLocaleString("en-PH", {
                 dateStyle: "medium",
                 timeStyle: "short"
@@ -1849,37 +1787,8 @@ async function loadUpcomingAssignments(studentId, schoolId) {
         viewButton.textContent = "View Assignment";
         viewButton.className = "view-button";
 
-        card.append(
-            title,
-            subject,
-            description,
-            dueDate,
-            status,
-            viewButton
-        );
-
+        card.append(title, subject, description, dueDate, status, viewButton);
         container.appendChild(card);
-    });
-}
-
-
-// ========================================
-// HELPER: ESCAPE HTML
-// ========================================
-
-function escapeHTML(value) {
-
-    return String(value ?? "").replace(/[&<>"']/g, character => {
-
-        const replacements = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        };
-
-        return replacements[character];
     });
 }
 
@@ -1894,19 +1803,15 @@ function updateNotificationCounters() {
         item => !item.is_read
     ).length;
 
-    const countElement =
-        document.getElementById("notification-count");
-
-    const badgeElement =
-        document.getElementById("headerNotificationBadge");
+    const countElement = document.getElementById("notification-count");
+    const badgeElement = document.getElementById("headerNotificationBadge");
 
     countElement.textContent =
         unreadCount + " unread notification(s) • " +
         allNotifications.length + " total";
 
     if (unreadCount > 0) {
-        badgeElement.textContent =
-            unreadCount > 99 ? "99+" : unreadCount;
+        badgeElement.textContent = unreadCount > 99 ? "99+" : unreadCount;
     } else {
         badgeElement.textContent = "";
     }
@@ -1920,11 +1825,9 @@ function updateNotificationCounters() {
 // DISPLAY NOTIFICATIONS
 // ========================================
 
-
 function displayNotifications() {
 
-    const listElement =
-        document.getElementById("notifications-list");
+    const listElement = document.getElementById("notifications-list");
 
     listElement.innerHTML = "";
 
@@ -1981,8 +1884,7 @@ function displayNotifications() {
         message.textContent = item.message || "";
 
         const type = document.createElement("small");
-        type.textContent =
-            "Category: " +
+        type.textContent = "Category: " +
             (item.type || "general").replace(/_/g, " ");
 
         type.style.display = "block";
@@ -2033,7 +1935,6 @@ function displayNotifications() {
                 }
 
                 await loadNotifications();
-
             });
 
             actions.appendChild(markButton);
@@ -2071,17 +1972,14 @@ function displayNotifications() {
             }
 
             await loadNotifications();
-
         });
 
         actions.appendChild(deleteButton);
         card.appendChild(actions);
 
         listElement.appendChild(card);
-
     });
 }
-
 
 
 // ========================================
@@ -2090,8 +1988,7 @@ function displayNotifications() {
 
 async function loadNotifications() {
 
-    const listElement =
-        document.getElementById("notifications-list");
+    const listElement = document.getElementById("notifications-list");
 
     listElement.textContent = "Loading notifications...";
 
@@ -2110,14 +2007,12 @@ async function loadNotifications() {
         listElement.textContent = error.message;
 
         console.error("Notifications error:", error);
-
         return;
     }
 
     allNotifications = data || [];
 
     updateNotificationCounters();
-
     displayNotifications();
 }
 
@@ -2154,7 +2049,6 @@ document.getElementById("markAllReadBtn").addEventListener(
 
             button.disabled = false;
             button.textContent = "Mark All as Read";
-
             return;
         }
 
@@ -2182,10 +2076,9 @@ document.querySelectorAll(".filter-button").forEach(button => {
         this.classList.add("active");
 
         displayNotifications();
-
     });
-
 });
+
 
 // ========================================
 // ANNOUNCEMENTS PREVIEW
@@ -2193,9 +2086,7 @@ document.querySelectorAll(".filter-button").forEach(button => {
 
 async function loadAnnouncementsPreview() {
 
-    const container = document.getElementById(
-        "dashboard-announcements"
-    );
+    const container = document.getElementById("dashboard-announcements");
 
     if (!container) return;
 
@@ -2207,11 +2098,8 @@ async function loadAnnouncementsPreview() {
 
     if (error) {
 
-        container.textContent =
-            "Unable to load announcements.";
-
+        container.textContent = "Unable to load announcements.";
         console.error("Announcements error:", error);
-
         return;
     }
 
@@ -2234,11 +2122,9 @@ async function loadAnnouncementsPreview() {
         content.textContent = item.content;
 
         const date = document.createElement("small");
-        date.textContent =
-            new Date(item.created_at).toLocaleString("en-PH");
+        date.textContent = new Date(item.created_at).toLocaleString("en-PH");
 
         card.append(title, content, date);
-
         container.appendChild(card);
     });
 }
@@ -2252,8 +2138,7 @@ document.getElementById("logoutBtn").addEventListener(
     "click",
     async () => {
 
-        const { error } =
-            await supabaseClient.auth.signOut();
+        const { error } = await supabaseClient.auth.signOut();
 
         if (error) {
             alert(error.message);
@@ -2272,7 +2157,6 @@ document.getElementById("logoutBtn").addEventListener(
 loadDashboard();
 
 </script>
-
 
 </body>
 </html>
