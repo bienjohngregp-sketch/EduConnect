@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Announcements</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: #1d4ed8;
+            margin-bottom: 5px;
+        }
+
+        .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button, .back-link {
+            display: inline-block;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 4px;
+        }
+
+        button:hover, .back-link:hover {
+            opacity: 0.9;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .edit-btn {
+            background: #475569;
+        }
+
+        .announcement {
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .announcement h3 {
+            margin-top: 0;
+            color: #1d4ed8;
+        }
+
+        .announcement small {
+            color: #64748b;
+        }
+
+        #status {
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Announcements</h1>
+            <p>Stay informed with school updates.</p>
+        </div>
+
+        <a href="dashboard.html" class="back-link">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <p id="status">Loading announcements...</p>
+
+    <section class="panel" id="announcement-form-panel" hidden>
+        <h2 id="form-heading">Create Announcement</h2>
+
+        <form id="announcement-form">
+            <label for="announcement-title">Announcement Title</label>
+            <input
+                type="text"
+                id="announcement-title"
+                required
+                placeholder="Enter announcement title"
+            >
+
+            <label for="announcement-content">Announcement Details</label>
+            <textarea
+                id="announcement-content"
+                required
+                placeholder="Write your announcement here..."
+            ></textarea>
+
+            <button type="submit" id="save-button">
+                Publish Announcement
+            </button>
+
+            <button type="button" id="cancel-button" hidden>
+                Cancel Edit
+            </button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Latest Announcements</h2>
+        <div id="announcements-list"></div>
+    </section>
+
+</div>
+
+<script>
+let currentUser = null;
+let currentProfile = null;
+let editingId = null;
+
+async function initializeAnnouncements() {
+    const status = document.getElementById("status");
+
+    const { data: { user }, error: authError } =
+        await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    currentUser = user;
+
+    const { data: profile, error: profileError } =
+        await supabaseClient
+            .from("profiles")
+            .select("id, role, school_id, full_name, is_active")
+            .eq("id", currentUser.id)
+            .single();
+
+    if (profileError || !profile) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Check account status
+    if (profile.is_active === false) {
+        alert("Your account has been deactivated. Please contact your school administrator.");
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Check school profile
+    if (!profile.school_id) {
+        status.textContent = "Unable to load your school profile.";
+        return;
+    }
+
+    currentProfile = profile;
+
+    if (profile.role === "teacher" || profile.role === "admin") {
+        document.getElementById(
+            "announcement-form-panel"
+        ).hidden = false;
+    }
+
+    await loadAnnouncements();
+
+    status.textContent = "Welcome, " + profile.full_name;
+}
+
+async function loadAnnouncements() {
+    const list = document.getElementById("announcements-list");
+
+    list.textContent = "Loading...";
+
+    const { data, error } = await supabaseClient
+        .from("announcements")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        list.textContent = "Unable to load announcements.";
+        console.error(error);
+        return;
+    }
+
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        list.textContent = "No announcements yet.";
+        return;
+    }
+
+    data.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "announcement";
+
+        const title = document.createElement("h3");
+        title.textContent = item.title;
+
+        const content = document.createElement("p");
+        content.textContent = item.content;
+
+        const date = document.createElement("small");
+        date.textContent =
+            "Posted: " +
+            new Date(item.created_at).toLocaleString("en-PH");
+
+        card.append(title, content, date);
+
+        if (
+            currentProfile.role === "teacher" ||
+            currentProfile.role === "admin"
+        ) {
+            const editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.className = "edit-btn";
+
+            editButton.addEventListener("click", () => {
+                startEditing(item);
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete-btn";
+
+            deleteButton.addEventListener("click", async () => {
+                const confirmed = confirm(
+                    "Are you sure you want to delete this announcement?"
+                );
+
+                if (!confirmed) return;
+
+                const { error: deleteError } = await supabaseClient
+                    .from("announcements")
+                    .delete()
+                    .eq("id", item.id);
+
+                if (deleteError) {
+                    alert(deleteError.message);
+                    return;
+                }
+
+                alert("Announcement deleted successfully.");
+                await loadAnnouncements();
+            });
+
+            card.append(editButton, deleteButton);
+        }
+
+        list.appendChild(card);
+    });
+}
+
+function startEditing(item) {
+    editingId = item.id;
+
+    document.getElementById("announcement-title").value =
+        item.title;
+
+    document.getElementById("announcement-content").value =
+        item.content;
+
+    document.getElementById("form-heading").textContent =
+        "Edit Announcement";
+
+    document.getElementById("save-button").textContent =
+        "Update Announcement";
+
+    document.getElementById("cancel-button").hidden = false;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function resetAnnouncementForm() {
+    editingId = null;
+
+    document.getElementById("announcement-form").reset();
+
+    document.getElementById("form-heading").textContent =
+        "Create Announcement";
+
+    document.getElementById("save-button").textContent =
+        "Publish Announcement";
+
+    document.getElementById("cancel-button").hidden = true;
+}
+
+document.getElementById("announcement-form")
+    .addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (
+            !currentProfile ||
+            !["teacher", "admin"].includes(currentProfile.role)
+        ) {
+            alert("Only teachers and admins can publish announcements.");
+            return;
+        }
+
+        const title = document.getElementById(
+            "announcement-title"
+        ).value.trim();
+
+        const content = document.getElementById(
+            "announcement-content"
+        ).value.trim();
+
+        if (!title || !content) {
+            alert("Please complete all fields.");
+            return;
+        }
+
+        const saveButton = document.getElementById("save-button");
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+
+        let result;
+
+        if (editingId) {
+            result = await supabaseClient
+                .from("announcements")
+                .update({
+                    title: title,
+                    content: content,
+                    updated_at: new Date().toISOString()
+                })
+                .eq("id", editingId);
+        } else {
+            result = await supabaseClient
+                .from("announcements")
+                .insert({
+                    school_id: currentProfile.school_id,
+                    created_by: currentUser.id,
+                    title: title,
+                    content: content
+                });
+        }
+
+        saveButton.disabled = false;
+
+        if (result.error) {
+            alert(result.error.message);
+            saveButton.textContent = editingId
+                ? "Update Announcement"
+                : "Publish Announcement";
+            return;
+        }
+
+        alert(
+            editingId
+                ? "Announcement updated successfully!"
+                : "Announcement published successfully!"
+        );
+
+        resetAnnouncementForm();
+        await loadAnnouncements();
+    });
+
+document.getElementById("cancel-button")
+    .addEventListener("click", resetAnnouncementForm);
+
+initializeAnnouncements();
+</script>
+
+</body>
+</html>

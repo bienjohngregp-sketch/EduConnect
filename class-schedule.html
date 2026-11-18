@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule | EduConnect</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #263445;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #173b67;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #64748b;
+        }
+
+        .schedule-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .schedule-card h2 {
+            margin-bottom: 15px;
+            color: #173b67;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .day-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            min-height: 100px;
+        }
+
+        .day-card h3 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        #schedule-list {
+            color: #64748b;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 15px;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1>Class Schedule</h1>
+            <p>View your weekly class schedule in EduConnect.</p>
+        </div>
+
+        
+<!-- Add Schedule Form -->
+    <div class="schedule-card" id="schedule-form-card" hidden>
+        <h2>Add Class Schedule</h2>
+
+        <form id="schedule-form">
+
+            <label>Subject</label>
+            <select id="subject_id" required>
+                <option value="">Select Subject</option>
+            </select>
+
+            <label>Teacher</label>
+            <select id="teacher_id" required>
+                <option value="">Select Teacher</option>
+            </select>
+
+            <label>Section</label>
+            <input
+                type="text"
+                id="section"
+                value="BSBA MM-1B"
+                required
+            >
+
+            <label>Day</label>
+            <select id="day_of_week" required>
+                <option value="">Select Day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
+
+            <label>Start Time</label>
+            <input type="time" id="start_time" required>
+
+            <label>End Time</label>
+            <input type="time" id="end_time" required>
+
+            <label>Room</label>
+            <input
+                type="text"
+                id="room"
+                placeholder="Example: Room 201"
+            >
+
+            <button type="submit">Save Schedule</button>
+
+            <p id="schedule-message"></p>
+
+        </form>
+    </div>
+
+    <!-- Weekly Schedule -->
+    <div class="schedule-card">
+        <h2>Weekly Schedule</h2>
+
+        <div id="schedule-list">
+            Loading class schedules...
+        </div>
+    </div>
+
+
+    </div>
+<script src="js/class-schedule.js"></script>
+</body>
+</html>

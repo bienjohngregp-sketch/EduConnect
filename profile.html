@@ -1,0 +1,640 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | EduConnect</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #243247;
+        }
+
+        header {
+            background: #1554a5;
+            color: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        main {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            color: #1554a5;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 18px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            background: #1554a5;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        .profile-item {
+            margin-bottom: 18px;
+        }
+
+        .profile-item label {
+            display: block;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .profile-item p {
+            background: #f4f7fb;
+            padding: 12px;
+            border-radius: 7px;
+            overflow-wrap: anywhere;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd7e5;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1554a5;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .primary {
+            background: #1554a5;
+            color: white;
+        }
+
+        .secondary {
+            background: #e5eaf1;
+            color: #243247;
+        }
+
+        .success {
+            background: #16834a;
+            color: white;
+        }
+
+        .status {
+            margin-top: 12px;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-text {
+            color: #dc2626;
+        }
+
+        .success-text {
+            color: #16834a;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            header nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            header a {
+                margin-left: 0;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>EduConnect</h2>
+
+    <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="#" id="logoutButton">Logout</a>
+    </nav>
+</header>
+
+<main>
+
+    <section class="panel">
+        <div class="profile-header">
+            <div class="avatar" id="avatar">U</div>
+            <h1 id="profileName">My Profile</h1>
+            <p>Manage your EduConnect account information.</p>
+        </div>
+    </section>
+
+    <section class="panel">
+
+        <h2>Personal Information</h2>
+
+        <div class="profile-item">
+            <label>Full Name</label>
+            <p id="displayName">Loading...</p>
+        </div>
+
+        <div class="profile-item">
+            <label>Email Address</label>
+            <p id="displayEmail">Loading...</p>
+        </div>
+
+        <div class="profile-item">
+            <label>School</label>
+            <p id="displaySchool">Loading...</p>
+        </div>
+
+        <div class="profile-item">
+            <label>Section</label>
+            <p id="displaySection">Loading...</p>
+        </div>
+
+        <div class="profile-item">
+            <label>Account Role</label>
+            <p id="displayRole">Loading...</p>
+        </div>
+
+        <button class="primary" id="editProfileButton" disabled>
+            Edit Profile
+        </button>
+
+    </section>
+
+    <section class="panel hidden" id="editProfilePanel">
+
+        <h2>Edit Profile</h2>
+
+        <form id="profileForm">
+
+            <div class="profile-item">
+                <label for="fullNameInput">Full Name</label>
+                <input
+                    type="text"
+                    id="fullNameInput"
+                    maxlength="100"
+                    required
+                >
+            </div>
+
+            <div class="profile-item">
+                <label for="sectionInput">Section</label>
+                <input
+                    type="text"
+                    id="sectionInput"
+                    maxlength="50"
+                    placeholder="Example: BSBA MM-1B"
+                >
+            </div>
+
+            <button type="submit" class="success" id="saveProfileButton">
+                Save Changes
+            </button>
+
+            <button type="button" class="secondary" id="cancelEditButton">
+                Cancel
+            </button>
+
+            <p class="status" id="profileStatus"></p>
+
+        </form>
+
+    </section>
+
+    <section class="panel">
+
+        <h2>Change Password</h2>
+
+        <form id="passwordForm">
+
+            <div class="profile-item">
+                <label for="newPassword">New Password</label>
+                <input
+                    type="password"
+                    id="newPassword"
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Enter new password"
+                    required
+                >
+            </div>
+
+            <div class="profile-item">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Confirm new password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="primary" id="changePasswordButton">
+                Update Password
+            </button>
+
+            <p class="status" id="passwordStatus"></p>
+
+        </form>
+
+    </section>
+
+</main>
+
+<script>
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    // LOAD PROFILE
+
+    async function loadProfile() {
+
+        const editButton =
+            document.getElementById("editProfileButton");
+
+        editButton.disabled = true;
+
+        try {
+
+            const {
+                data: { user },
+                error: authError
+            } = await supabaseClient.auth.getUser();
+
+            if (authError || !user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = user;
+
+            const { data: profile, error } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("full_name, role, school_id, section, is_active")
+                    .eq("id", user.id)
+                    .single();
+
+            if (error || !profile) {
+                throw new Error("Unable to load your profile.");
+            }
+
+            if (profile.is_active === false) {
+                alert("Your account has been deactivated.");
+                await supabaseClient.auth.signOut();
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentProfile = profile;
+
+            document.getElementById("profileName").textContent =
+                profile.full_name || "User";
+
+            document.getElementById("displayName").textContent =
+                profile.full_name || "Not provided";
+
+            document.getElementById("displayEmail").textContent =
+                user.email || "Not available";
+
+            document.getElementById("displaySection").textContent =
+                profile.section || "Not assigned";
+
+            document.getElementById("displayRole").textContent =
+                profile.role
+                    ? profile.role.charAt(0).toUpperCase() +
+                      profile.role.slice(1)
+                    : "Not available";
+
+            document.getElementById("avatar").textContent =
+                profile.full_name
+                    ? profile.full_name.charAt(0).toUpperCase()
+                    : "U";
+
+            document.getElementById("fullNameInput").value =
+                profile.full_name || "";
+
+            document.getElementById("sectionInput").value =
+                profile.section || "";
+
+            await loadSchool(profile.school_id);
+
+            editButton.disabled = false;
+
+        } catch (error) {
+
+            alert(error.message || "Something went wrong while loading your profile.");
+
+        }
+    }
+
+
+    // LOAD SCHOOL
+
+    async function loadSchool(schoolId) {
+
+        const schoolDisplay =
+            document.getElementById("displaySchool");
+
+        if (!schoolId) {
+            schoolDisplay.textContent = "No school assigned";
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from("schools")
+            .select("name")
+            .eq("id", schoolId)
+            .single();
+
+        if (error || !data) {
+            schoolDisplay.textContent = "School information unavailable";
+            return;
+        }
+
+        schoolDisplay.textContent = data.name;
+    }
+
+
+    // SHOW EDIT PROFILE
+
+    document.getElementById("editProfileButton")
+        .addEventListener("click", function() {
+
+            if (!currentProfile) return;
+
+            document.getElementById("editProfilePanel")
+                .classList.remove("hidden");
+
+            document.getElementById("profileStatus").textContent = "";
+
+            document.getElementById("fullNameInput").value =
+                currentProfile.full_name || "";
+
+            document.getElementById("sectionInput").value =
+                currentProfile.section || "";
+
+        });
+
+
+    // CANCEL EDIT
+
+    document.getElementById("cancelEditButton")
+        .addEventListener("click", function() {
+
+            document.getElementById("editProfilePanel")
+                .classList.add("hidden");
+
+            document.getElementById("profileStatus").textContent = "";
+
+        });
+
+
+    // SAVE PROFILE
+
+    document.getElementById("profileForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const fullName =
+                document.getElementById("fullNameInput").value.trim();
+
+            const section =
+                document.getElementById("sectionInput").value.trim();
+
+            const status =
+                document.getElementById("profileStatus");
+
+            const button =
+                document.getElementById("saveProfileButton");
+
+            status.className = "status";
+
+            if (!fullName) {
+                status.textContent = "Please enter your full name.";
+                status.classList.add("error-text");
+                return;
+            }
+
+            if (fullName.length < 2) {
+                status.textContent = "Full name must contain at least 2 characters.";
+                status.classList.add("error-text");
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = "Saving changes...";
+
+            try {
+
+                const { error } = await supabaseClient
+                    .from("profiles")
+                    .update({
+                        full_name: fullName,
+                        section: section || null
+                    })
+                    .eq("id", currentUser.id);
+
+                if (error) {
+                    throw error;
+                }
+
+                await loadProfile();
+
+                status.textContent = "Profile updated successfully!";
+                status.className = "status success-text";
+
+                document.getElementById("editProfilePanel")
+                    .classList.add("hidden");
+
+            } catch (error) {
+
+                status.textContent =
+                    "Update failed: " + error.message;
+
+                status.className = "status error-text";
+
+            } finally {
+
+                button.disabled = false;
+
+            }
+
+        });
+
+
+    // CHANGE PASSWORD
+
+    document.getElementById("passwordForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const password =
+                document.getElementById("newPassword").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+            const status =
+                document.getElementById("passwordStatus");
+
+            const button =
+                document.getElementById("changePasswordButton");
+
+            status.className = "status";
+
+            if (password.length < 8) {
+                status.textContent =
+                    "Password must contain at least 8 characters.";
+
+                status.classList.add("error-text");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                status.textContent = "Passwords do not match.";
+                status.classList.add("error-text");
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = "Updating password...";
+
+            try {
+
+                const { error } =
+                    await supabaseClient.auth.updateUser({
+                        password: password
+                    });
+
+                if (error) {
+                    throw error;
+                }
+
+                status.textContent =
+                    "Password updated successfully!";
+
+                status.classList.add("success-text");
+
+                document.getElementById("passwordForm").reset();
+
+            } catch (error) {
+
+                status.textContent =
+                    "Password update failed: " + error.message;
+
+                status.classList.add("error-text");
+
+            } finally {
+
+                button.disabled = false;
+
+            }
+
+        });
+
+
+    // LOGOUT
+
+    document.getElementById("logoutButton")
+        .addEventListener("click", async function(event) {
+
+            event.preventDefault();
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+
+        });
+
+
+    // START PAGE
+
+    loadProfile();
+
+</script>
+
+</body>
+</html>

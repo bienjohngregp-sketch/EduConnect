@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users | EduConnect</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="admin-users-page">
+
+    <header class="admin-users-header">
+        <h1>EduConnect</h1>
+        <a href="dashboard.html">Back to Dashboard</a>
+    </header>
+
+    <main class="admin-users-content">
+
+        <h2>Manage Users</h2>
+
+        <p>
+            Manage and view students, teachers, and administrators
+            of Philippine Christian University.
+        </p>
+
+        <!-- USER STATISTICS -->
+        <div class="user-stats">
+
+            <div class="user-stat-card">
+                <h3>Total Users</h3>
+                <p id="total-users">0</p>
+            </div>
+
+            <div class="user-stat-card">
+                <h3>Students</h3>
+                <p id="total-students">0</p>
+            </div>
+
+            <div class="user-stat-card">
+                <h3>Teachers</h3>
+                <p id="total-teachers">0</p>
+            </div>
+
+            <div class="user-stat-card">
+                <h3>Admins</h3>
+                <p id="total-admins">0</p>
+            </div>
+
+        </div>
+
+        <div class="admin-users-card">
+
+        <div class="user-directory-header">
+
+            <h3>User Directory</h3>
+
+            <button
+                type="button"
+                id="add-user-btn"
+                class="view-user-btn">
+                + Add New User
+            </button>
+
+        </div>
+
+        
+        <div class="user-search">
+
+            <input
+                type="text"
+                id="search-users"
+                placeholder="Search users by name..."
+            >
+
+            <select id="role-filter">
+                <option value="all">All Users</option>
+                <option value="student">Students</option>
+                <option value="teacher">Teachers</option>
+                <option value="admin">Admins</option>
+            </select>
+
+        </div>
+
+
+        <div id="users-message">Loading users...</div>
+
+
+            <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Section</th>
+                    <th>Account Status</th>
+                    <th>Date Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+                <tbody id="users-table-body">
+                </tbody>
+            </table>
+
+        </div>
+
+
+    <!-- ADD NEW USER MODAL -->
+    <div id="add-user-modal" class="user-modal" hidden>
+
+        <div class="user-modal-content">
+
+            <div class="user-modal-header">
+                <h2>Add New User</h2>
+
+                <button
+                    type="button"
+                    id="close-add-user-modal"
+                    class="close-modal-btn">
+                    &times;
+                </button>
+            </div>
+
+            <form id="add-user-form">
+
+                <div class="user-detail-item">
+                    <label for="new-full-name">Full Name</label>
+                    <input
+                        type="text"
+                        id="new-full-name"
+                        required
+                        placeholder="Enter full name">
+                </div>
+
+                <div class="user-detail-item">
+                    <label for="new-email">Email Address</label>
+                    <input
+                        type="email"
+                        id="new-email"
+                        required
+                        placeholder="Enter email address">
+                </div>
+
+                <div class="user-detail-item">
+                    <label for="new-password">Temporary Password</label>
+                    <input
+                        type="password"
+                        id="new-password"
+                        minlength="8"
+                        required
+                        placeholder="At least 8 characters">
+                </div>
+
+                <div class="user-detail-item">
+                    <label for="new-role">User Role</label>
+                    <select id="new-role" required>
+                        <option value="">Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <div class="user-detail-item" id="new-section-group" hidden>
+                    <label for="new-section">Section</label>
+                    <input
+                        type="text"
+                        id="new-section"
+                        placeholder="Example: BSBA MM-1B">
+                </div>
+
+                <button
+                    type="submit"
+                    id="save-new-user-btn"
+                    class="view-user-btn">
+                    Create User
+                </button>
+
+                <p id="add-user-message"></p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- USER DETAILS MODAL -->
+    <div id="user-details-modal" class="user-modal" hidden>
+
+        <div class="user-modal-content">
+
+            <div class="user-modal-header">
+                <h2>User Details</h2>
+
+                <button
+                    type="button"
+                    id="close-user-modal"
+                    class="close-modal-btn">
+                    &times;
+                </button>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>Full Name</strong>
+                <p id="detail-name">-</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>User Role</strong>
+                <p id="detail-role">-</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>Section</strong>
+                <p id="detail-section">-</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>School</strong>
+                <p id="detail-school">Philippine Christian University</p>
+            </div>
+
+            <div class="user-detail-item">
+                <strong>Registration Date</strong>
+                <p id="detail-date">-</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <script>
+    
+let allUsers = [];
+
+
+// ADD NEW USER MODAL CONTROLS
+
+const addUserModal = document.getElementById("add-user-modal");
+const addUserButton = document.getElementById("add-user-btn");
+const closeAddUserButton = document.getElementById("close-add-user-modal");
+const newRoleSelect = document.getElementById("new-role");
+const newSectionGroup = document.getElementById("new-section-group");
+
+addUserButton.addEventListener("click", function () {
+    addUserModal.hidden = false;
+});
+
+closeAddUserButton.addEventListener("click", function () {
+    addUserModal.hidden = true;
+});
+
+newRoleSelect.addEventListener("change", function () {
+    if (newRoleSelect.value === "student") {
+        newSectionGroup.hidden = false;
+        document.getElementById("new-section").required = true;
+    } else {
+        newSectionGroup.hidden = true;
+        document.getElementById("new-section").required = false;
+    }
+});
+
+
+// CREATE NEW USER
+
+const addUserForm = document.getElementById("add-user-form");
+const addUserMessage = document.getElementById("add-user-message");
+const saveNewUserButton = document.getElementById("save-new-user-btn");
+
+addUserForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const fullName = document.getElementById("new-full-name").value.trim();
+    const email = document.getElementById("new-email").value.trim();
+    const password = document.getElementById("new-password").value;
+    const role = newRoleSelect.value;
+    const section = document.getElementById("new-section").value.trim();
+
+    if (role === "student" && !section) {
+        addUserMessage.textContent = "Please enter the student section.";
+        return;
+    }
+
+    saveNewUserButton.disabled = true;
+    saveNewUserButton.textContent = "Creating...";
+    addUserMessage.textContent = "Creating user account...";
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke(
+            "admin-create-user",
+            {
+                body: {
+                    full_name: fullName,
+                    email: email,
+                    password: password,
+                    role: role,
+                    section: section
+                }
+            }
+        );
+
+        if (error) {
+            console.error(error);
+            addUserMessage.textContent =
+                data?.error || error.message || "Unable to create user.";
+            return;
+        }
+
+        if (data?.error) {
+            addUserMessage.textContent = data.error;
+            return;
+        }
+
+        alert("New user created successfully!");
+
+        addUserForm.reset();
+        addUserModal.hidden = true;
+        newSectionGroup.hidden = true;
+
+        window.location.reload();
+
+    } catch (error) {
+        console.error(error);
+        addUserMessage.textContent = "Something went wrong. Please try again.";
+
+    } finally {
+        saveNewUserButton.disabled = false;
+        saveNewUserButton.textContent = "Create User";
+    }
+});
+
+
+
+// Show User Details
+function showUserDetails(user) {
+
+    document.getElementById("detail-name").textContent =
+        user.full_name || "N/A";
+
+    document.getElementById("detail-role").textContent =
+        user.role || "N/A";
+
+    document.getElementById("detail-section").textContent =
+        user.section || "Not Assigned";
+
+    document.getElementById("detail-school").textContent =
+        "Philippine Christian University";
+
+    document.getElementById("detail-date").textContent =
+        user.created_at
+            ? new Date(user.created_at).toLocaleDateString()
+            : "N/A";
+
+    document.getElementById("user-details-modal").hidden = false;
+}
+
+// Close User Details Popup
+document.getElementById("close-user-modal").addEventListener("click", function () {
+    document.getElementById("user-details-modal").hidden = true;
+});
+
+
+async function loadAdminUsers() {
+
+    const message = document.getElementById("users-message");
+    const tableBody = document.getElementById("users-table-body");
+
+    // Check logged-in user
+    const { data: { user }, error: authError } =
+        await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Check admin profile and account status
+    const { data: profile, error: profileError } =
+        await supabaseClient
+            .from("profiles")
+            .select("role, is_active")
+            .eq("id", user.id)
+            .single();
+
+    if (profileError || !profile) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Check account status
+    if (profile.is_active === false) {
+        alert("Your account has been deactivated. Please contact your school administrator.");
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Check admin role
+    if (profile.role !== "admin") {
+    alert("Access denied. Administrators only.");
+
+    window.location.replace("dashboard.html");
+    return;
+}
+
+
+    // Get users from Supabase
+    const { data, error } = await supabaseClient
+        .rpc("get_admin_users");
+
+    if (error) {
+        console.error(error);
+        message.textContent = "Unable to load users: " + error.message;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        message.textContent = "No users found.";
+        tableBody.replaceChildren();
+        return;
+    }
+
+    allUsers = data;
+
+    // Update User Statistics
+    document.getElementById("total-users").textContent =
+        allUsers.length;
+
+    document.getElementById("total-students").textContent =
+        allUsers.filter(user => user.role === "student").length;
+
+    document.getElementById("total-teachers").textContent =
+        allUsers.filter(user => user.role === "teacher").length;
+
+    document.getElementById("total-admins").textContent =
+        allUsers.filter(user => user.role === "admin").length;
+
+
+    // Display users
+    function displayUsers(users) {
+
+        tableBody.replaceChildren();
+
+        if (users.length === 0) {
+            message.textContent = "No matching users found.";
+            return;
+        }
+
+        users.forEach(user => {
+
+            const row = document.createElement("tr");
+
+            const nameCell = document.createElement("td");
+            nameCell.textContent = user.full_name || "N/A";
+
+            const roleCell = document.createElement("td");
+            const roleBadge = document.createElement("span");
+            roleBadge.className = "admin-role";
+            roleBadge.textContent = user.role || "N/A";
+            roleCell.appendChild(roleBadge);
+
+            const sectionCell = document.createElement("td");
+            sectionCell.textContent = user.section || "N/A";
+
+            // Account Status
+            const statusCell = document.createElement("td");
+            const statusBadge = document.createElement("span");
+
+            statusBadge.textContent = user.is_active ? "Active" : "Deactivated";
+            statusBadge.className = user.is_active ? "admin-role" : "admin-role";
+            statusCell.appendChild(statusBadge);
+
+            // Deactivate / Reactivate Button
+            const statusButton = document.createElement("button");
+
+            statusButton.textContent = user.is_active ? "Deactivate" : "Reactivate";
+            statusButton.className = "view-user-btn";
+
+            statusButton.addEventListener("click", async function () {
+
+                const newStatus = !user.is_active;
+
+                const confirmStatus = confirm(
+                    "Are you sure you want to " +
+                    (newStatus ? "reactivate " : "deactivate ") +
+                    user.full_name + "'s account?"
+                );
+
+                if (!confirmStatus) {
+                    return;
+                }
+
+                statusButton.disabled = true;
+
+                const { error } = await supabaseClient.rpc(
+                    "admin_set_user_status",
+                    {
+                        target_user_id: user.user_id,
+                        new_status: newStatus
+                    }
+                );
+
+                if (error) {
+                    alert("Unable to update account status: " + error.message);
+                    statusButton.disabled = false;
+                    return;
+                }
+
+                alert("Account status updated successfully!");
+
+                await loadAdminUsers();
+            });
+
+            const dateCell = document.createElement("td");
+            dateCell.textContent = user.created_at
+                ? new Date(user.created_at).toLocaleDateString()
+                : "N/A";
+
+            
+            const actionCell = document.createElement("td");
+
+            const viewButton = document.createElement("button");
+            viewButton.textContent = "View Details";
+            viewButton.className = "view-user-btn";
+
+            viewButton.addEventListener("click", function () {
+                showUserDetails(user);
+            });
+
+            actionCell.appendChild(viewButton);
+            actionCell.appendChild(statusButton);
+
+
+            // Role Selection
+            const roleSelect = document.createElement("select");
+            roleSelect.className = "role-select";
+
+            const roles = ["student", "teacher", "admin"];
+
+            roles.forEach(role => {
+                const option = document.createElement("option");
+                option.value = role;
+                option.textContent =
+                    role.charAt(0).toUpperCase() + role.slice(1);
+
+                if (role === user.role) {
+                    option.selected = true;
+                }
+
+                roleSelect.appendChild(option);
+            });
+
+            // Change Role Button
+            const changeRoleButton = document.createElement("button");
+            changeRoleButton.textContent = "Change Role";
+            changeRoleButton.className = "view-user-btn";
+
+            changeRoleButton.addEventListener("click", async function () {
+
+                const newRole = roleSelect.value;
+
+                if (newRole === user.role) {
+                    alert("This user already has that role.");
+                    return;
+                }
+
+                const confirmChange = confirm(
+                    "Are you sure you want to change " +
+                    user.full_name + "'s role to " + newRole + "?"
+                );
+
+                if (!confirmChange) {
+                    return;
+                }
+
+                const { error } = await supabaseClient.rpc(
+                    "admin_update_user_role",
+                    {
+                        target_user_id: user.user_id,
+                        new_role: newRole
+                    }
+                );
+
+                if (error) {
+                    alert("Unable to change role: " + error.message);
+                    return;
+                }
+
+                alert("User role updated successfully!");
+                window.location.reload();
+            });
+
+            actionCell.appendChild(roleSelect);
+            actionCell.appendChild(changeRoleButton);
+
+
+            row.append(
+            nameCell,
+            roleCell,
+            sectionCell,
+            statusCell,
+            dateCell,
+            actionCell
+        );
+
+            tableBody.appendChild(row);
+
+        });
+
+        message.textContent = users.length + " user(s) found.";
+    }
+
+    // Show all users initially
+    displayUsers(allUsers);
+
+    
+        // Search and Role Filter
+        const searchInput = document.getElementById("search-users");
+        const roleFilter = document.getElementById("role-filter");
+
+        function filterUsers() {
+
+            const searchValue = searchInput.value.toLowerCase().trim();
+            const selectedRole = roleFilter.value;
+
+            const filteredUsers = allUsers.filter(user => {
+
+                const matchesName = (user.full_name || "")
+                    .toLowerCase()
+                    .includes(searchValue);
+
+                const matchesRole =
+                    selectedRole === "all" || user.role === selectedRole;
+
+                return matchesName && matchesRole;
+            });
+
+            displayUsers(filteredUsers);
+        }
+
+searchInput.addEventListener("input", filterUsers);
+roleFilter.addEventListener("change", filterUsers);
+
+}
+
+loadAdminUsers();
+
+</script>
+
+</body>
+</html>

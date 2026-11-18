@@ -1,0 +1,1201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Attendance</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #263445;
+        }
+
+        header {
+            background: #1455a0;
+            color: white;
+            padding: 22px 8%;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        header p {
+            margin-top: 6px;
+            color: #dceaff;
+        }
+
+        main {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1455a0;
+            text-decoration: none;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            color: #1455a0;
+            margin-bottom: 18px;
+        }
+
+        .description {
+            color: #68778a;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin: 13px 0 7px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd5e0;
+            border-radius: 7px;
+            font-size: 15px;
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 65px;
+        }
+
+        button {
+            background: #1455a0;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #0d407e;
+        }
+
+        button:disabled {
+            background: #9aabba;
+            cursor: not-allowed;
+        }
+
+        .primary-button {
+            margin-top: 18px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .attendance-item {
+            border: 1px solid #e1e7ef;
+            border-left: 5px solid #1455a0;
+            border-radius: 9px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .attendance-item h3 {
+            color: #1455a0;
+            margin-bottom: 7px;
+        }
+
+        .attendance-item p {
+            color: #64748b;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .student-row {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1.5fr;
+            gap: 12px;
+            align-items: center;
+            border-bottom: 1px solid #e8edf3;
+            padding: 15px 0;
+        }
+
+        .student-name {
+            font-weight: bold;
+        }
+
+        .student-section {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .status-select {
+            min-width: 120px;
+        }
+
+        .remarks-input {
+            min-width: 150px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: #f4f7fb;
+            padding: 20px;
+            border-radius: 9px;
+            border: 1px solid #e4eaf2;
+        }
+
+        .stat-card p {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            color: #1455a0;
+            font-size: 27px;
+        }
+
+        .present {
+            color: #16834b;
+            font-weight: bold;
+        }
+
+        .absent {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .late {
+            color: #d28a17;
+            font-weight: bold;
+        }
+
+        .history-item {
+            border-bottom: 1px solid #e8edf3;
+            padding: 15px 0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item h3 {
+            font-size: 16px;
+            margin-bottom: 7px;
+            color: #1455a0;
+        }
+
+        .history-item p {
+            margin-top: 5px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .success {
+            color: #16834b;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .muted {
+            color: #718096;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1.5fr;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e1e7ef;
+            font-weight: bold;
+            color: #526174;
+            font-size: 13px;
+        }
+
+        .percentage-note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                width: 94%;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .student-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .table-header {
+                display: none;
+            }
+
+            .status-select,
+            .remarks-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>EduConnect</h1>
+    <p>Attendance Monitoring System</p>
+</header>
+
+<main>
+
+    <a href="dashboard.html" class="back">
+        ← Back to Dashboard
+    </a>
+
+    <section class="card">
+        <h2 id="pageHeading">Attendance Monitoring</h2>
+        <p class="description" id="welcomeMessage">
+            Loading your attendance information...
+        </p>
+    </section>
+
+    <!-- TEACHER AND ADMIN SECTION -->
+    <section class="card hidden" id="managementSection">
+
+        <h2>Record Student Attendance</h2>
+
+        <p class="description">
+            Select a subject and date to load the students
+            in your school and record their attendance.
+        </p>
+
+        <div class="filter-grid">
+
+            <div>
+                <label for="subjectSelect">Subject</label>
+                <select id="subjectSelect">
+                    <option value="">Loading subjects...</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="attendanceDate">Attendance Date</label>
+                <input type="date" id="attendanceDate">
+            </div>
+
+            <div>
+                <label for="sectionFilter">Filter by Section</label>
+                <select id="sectionFilter">
+                    <option value="">All Sections</option>
+                </select>
+            </div>
+
+        </div>
+
+        <button type="button" id="loadStudentsButton"
+            class="primary-button">
+            Load Students
+        </button>
+
+        <p id="managementMessage" class="message"></p>
+
+    </section>
+
+    <section class="card hidden" id="studentListSection">
+
+        <h2>Student Attendance List</h2>
+
+        <p class="description">
+            Choose Present, Absent, or Late for each student.
+            You can also add remarks.
+        </p>
+
+        <div class="table-header">
+            <span>Student</span>
+            <span>Attendance Status</span>
+            <span>Remarks</span>
+        </div>
+
+        <div id="studentList">
+            No students loaded.
+        </div>
+
+        <button type="button" id="saveAttendanceButton"
+            class="primary-button">
+            Save Attendance
+        </button>
+
+        <p id="saveMessage" class="message"></p>
+
+    </section>
+
+    <!-- STUDENT SECTION -->
+    <section class="card hidden" id="studentSummarySection">
+
+        <h2>My Attendance Summary</h2>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <p>Total Present</p>
+                <h3 id="totalPresent">0</h3>
+            </div>
+
+            <div class="stat-card">
+                <p>Total Absent</p>
+                <h3 id="totalAbsent">0</h3>
+            </div>
+
+            <div class="stat-card">
+                <p>Total Late</p>
+                <h3 id="totalLate">0</h3>
+            </div>
+
+            <div class="stat-card">
+                <p>Attendance Percentage</p>
+                <h3 id="attendancePercentage">0%</h3>
+            </div>
+
+        </div>
+
+        <p class="percentage-note">
+            Attendance percentage counts Present and Late as attended.
+        </p>
+
+    </section>
+
+    <section class="card hidden" id="studentHistorySection">
+
+        <h2>My Attendance History</h2>
+
+        <div id="studentHistory">
+            Loading attendance history...
+        </div>
+
+    </section>
+
+    <!-- ADMIN AND TEACHER RECORDS -->
+    <section class="card hidden" id="schoolRecordsSection">
+
+        <h2>School Attendance Records</h2>
+
+        <p class="description">
+            View attendance records available to your account.
+        </p>
+
+        <div id="schoolRecords">
+            Loading attendance records...
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+    const managementSection =
+        document.getElementById("managementSection");
+
+    const studentListSection =
+        document.getElementById("studentListSection");
+
+    const studentSummarySection =
+        document.getElementById("studentSummarySection");
+
+    const studentHistorySection =
+        document.getElementById("studentHistorySection");
+
+    const schoolRecordsSection =
+        document.getElementById("schoolRecordsSection");
+
+    const subjectSelect =
+        document.getElementById("subjectSelect");
+
+    const attendanceDate =
+        document.getElementById("attendanceDate");
+
+    const sectionFilter =
+        document.getElementById("sectionFilter");
+
+    const studentList =
+        document.getElementById("studentList");
+
+    const managementMessage =
+        document.getElementById("managementMessage");
+
+    const saveMessage =
+        document.getElementById("saveMessage");
+
+    let currentUser = null;
+    let currentProfile = null;
+    let loadedStudents = [];
+    let existingAttendance = {};
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function(char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char];
+        });
+    }
+
+    function getLocalDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function showMessage(element, message, type = "") {
+        element.textContent = message;
+        element.className = "message " + type;
+    }
+
+    async function initializePage() {
+
+        attendanceDate.value = getLocalDate();
+
+        const { data: { user }, error: authError } =
+            await supabaseClient.auth.getUser();
+
+        if (authError || !user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        currentUser = user;
+
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("full_name, role, school_id, section, is_active")
+                .eq("id", user.id)
+                .single();
+
+        if (profileError || !profile) {
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+            return;
+        }
+
+        if (profile.is_active === false) {
+            alert(
+                "Your account has been deactivated. Please contact your school administrator."
+            );
+
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+            return;
+        }
+
+        currentProfile = profile;
+
+        if (!profile.school_id) {
+            document.getElementById("welcomeMessage").textContent =
+                "Your account is not assigned to a school.";
+            return;
+        }
+
+        if (profile.role === "student") {
+
+            document.getElementById("pageHeading").textContent =
+                "My Attendance";
+
+            document.getElementById("welcomeMessage").textContent =
+                "Welcome, " + profile.full_name +
+                "! Here is your attendance summary and history.";
+
+            studentSummarySection.classList.remove("hidden");
+            studentHistorySection.classList.remove("hidden");
+
+            await loadStudentAttendance();
+
+        } else if (
+            profile.role === "teacher" ||
+            profile.role === "admin"
+        ) {
+
+            document.getElementById("pageHeading").textContent =
+                "Attendance Management";
+
+            document.getElementById("welcomeMessage").textContent =
+                "Welcome, " + profile.full_name +
+                "! Manage student attendance here.";
+
+            managementSection.classList.remove("hidden");
+            schoolRecordsSection.classList.remove("hidden");
+
+            await loadSubjects();
+            await loadSchoolRecords();
+
+        } else {
+
+            document.getElementById("welcomeMessage").textContent =
+                "Your account does not have permission to access attendance.";
+
+        }
+    }
+
+    async function loadSubjects() {
+
+        subjectSelect.innerHTML =
+            '<option value="">Select a subject</option>';
+
+        let query = supabaseClient
+            .from("subjects")
+            .select("id, subject_name, subject_code")
+            .eq("school_id", currentProfile.school_id)
+            .order("subject_name");
+
+        if (currentProfile.role === "teacher") {
+            query = query.eq("teacher_id", currentUser.id);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            subjectSelect.innerHTML =
+                '<option value="">Unable to load subjects</option>';
+
+            showMessage(
+                managementMessage,
+                "Error loading subjects: " + error.message,
+                "error"
+            );
+
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            subjectSelect.innerHTML =
+                '<option value="">No available subjects</option>';
+            return;
+        }
+
+        subjectSelect.innerHTML += data.map(subject => `
+            <option value="${escapeHTML(subject.id)}">
+                ${escapeHTML(subject.subject_code)} -
+                ${escapeHTML(subject.subject_name)}
+            </option>
+        `).join("");
+    }
+
+    async function loadSections() {
+
+        const { data, error } = await supabaseClient
+            .from("profiles")
+            .select("section")
+            .eq("school_id", currentProfile.school_id)
+            .eq("role", "student")
+            .eq("is_active", true)
+            .not("section", "is", null);
+
+        if (error) {
+            console.error("Section loading error:", error.message);
+            return;
+        }
+
+        const sections = [
+            ...new Set(
+                (data || [])
+                    .map(item => item.section)
+                    .filter(Boolean)
+            )
+        ].sort();
+
+        sectionFilter.innerHTML =
+            '<option value="">All Sections</option>';
+
+        sectionFilter.innerHTML += sections.map(section => `
+            <option value="${escapeHTML(section)}">
+                ${escapeHTML(section)}
+            </option>
+        `).join("");
+    }
+
+    async function loadStudents() {
+
+        const subjectId = subjectSelect.value;
+        const date = attendanceDate.value;
+
+        if (!subjectId || !date) {
+            showMessage(
+                managementMessage,
+                "Please select a subject and attendance date.",
+                "error"
+            );
+            return;
+        }
+
+        showMessage(
+            managementMessage,
+            "Loading students...",
+            ""
+        );
+
+        studentListSection.classList.remove("hidden");
+        studentList.textContent = "Loading students...";
+
+        const { data: students, error: studentError } =
+            await supabaseClient
+                .from("profiles")
+                .select("id, full_name, section")
+                .eq("school_id", currentProfile.school_id)
+                .eq("role", "student")
+                .eq("is_active", true)
+                .order("full_name");
+
+        if (studentError) {
+            studentList.textContent =
+                "Unable to load students: " + studentError.message;
+
+            showMessage(
+                managementMessage,
+                "Student loading failed. Check your profile access policies.",
+                "error"
+            );
+
+            return;
+        }
+
+        let filteredStudents = students || [];
+
+        const selectedSection = sectionFilter.value;
+
+        if (selectedSection) {
+            filteredStudents = filteredStudents.filter(
+                student => student.section === selectedSection
+            );
+        }
+
+        if (filteredStudents.length === 0) {
+            loadedStudents = [];
+            studentList.textContent =
+                "No active students found for this section.";
+            showMessage(managementMessage, "", "");
+            return;
+        }
+
+        const { data: records, error: attendanceError } =
+            await supabaseClient
+                .from("attendance")
+                .select("id, student_id, status, remarks")
+                .eq("subject_id", subjectId)
+                .eq("attendance_date", date);
+
+        if (attendanceError) {
+            studentList.textContent =
+                "Unable to load existing attendance: " +
+                attendanceError.message;
+
+            showMessage(
+                managementMessage,
+                "Attendance loading failed: " + attendanceError.message,
+                "error"
+            );
+
+            return;
+        }
+
+        existingAttendance = {};
+
+        (records || []).forEach(record => {
+            existingAttendance[record.student_id] = record;
+        });
+
+        loadedStudents = filteredStudents;
+
+        renderStudentList();
+
+        showMessage(
+            managementMessage,
+            filteredStudents.length + " student(s) loaded successfully.",
+            "success"
+        );
+    }
+
+    function renderStudentList() {
+
+        studentList.innerHTML = loadedStudents.map(student => {
+
+            const record = existingAttendance[student.id];
+
+            const currentStatus = record
+                ? record.status
+                : "present";
+
+            const currentRemarks = record
+                ? record.remarks || ""
+                : "";
+
+            return `
+                <div class="student-row"
+                    data-student-id="${escapeHTML(student.id)}">
+
+                    <div>
+                        <div class="student-name">
+                            ${escapeHTML(student.full_name)}
+                        </div>
+
+                        <div class="student-section">
+                            Section:
+                            ${escapeHTML(student.section || "Not assigned")}
+                        </div>
+                    </div>
+
+                    <div>
+                        <select class="status-select">
+                            <option value="present"
+                                ${currentStatus === "present" ? "selected" : ""}>
+                                Present
+                            </option>
+
+                            <option value="absent"
+                                ${currentStatus === "absent" ? "selected" : ""}>
+                                Absent
+                            </option>
+
+                            <option value="late"
+                                ${currentStatus === "late" ? "selected" : ""}>
+                                Late
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <input
+                            type="text"
+                            class="remarks-input"
+                            placeholder="Optional remarks"
+                            value="${escapeHTML(currentRemarks)}"
+                        >
+                    </div>
+
+                </div>
+            `;
+        }).join("");
+    }
+
+    async function saveAttendance() {
+
+        if (!loadedStudents.length) {
+            showMessage(
+                saveMessage,
+                "Please load students first.",
+                "error"
+            );
+            return;
+        }
+
+        const subjectId = subjectSelect.value;
+        const date = attendanceDate.value;
+
+        if (!subjectId || !date) {
+            showMessage(
+                saveMessage,
+                "Please select a subject and date.",
+                "error"
+            );
+            return;
+        }
+
+        const saveButton =
+            document.getElementById("saveAttendanceButton");
+
+        saveButton.disabled = true;
+
+        showMessage(
+            saveMessage,
+            "Saving attendance records...",
+            ""
+        );
+
+        for (const student of loadedStudents) {
+
+            const row = studentList.querySelector(
+                `[data-student-id="${student.id}"]`
+            );
+
+            if (!row) continue;
+
+            const status =
+                row.querySelector(".status-select").value;
+
+            const remarks =
+                row.querySelector(".remarks-input").value.trim();
+
+            const existingRecord =
+                existingAttendance[student.id];
+
+            let result;
+
+            if (existingRecord) {
+
+                result = await supabaseClient
+                    .from("attendance")
+                    .update({
+                        status: status,
+                        remarks: remarks || null
+                    })
+                    .eq("id", existingRecord.id);
+
+            } else {
+
+                result = await supabaseClient
+                    .from("attendance")
+                    .insert({
+                        school_id: currentProfile.school_id,
+                        student_id: student.id,
+                        subject_id: subjectId,
+                        teacher_id: currentUser.id,
+                        attendance_date: date,
+                        status: status,
+                        remarks: remarks || null
+                    });
+
+            }
+
+            if (result.error) {
+
+                saveButton.disabled = false;
+
+                showMessage(
+                    saveMessage,
+                    "Error saving attendance for " +
+                    student.full_name + ": " +
+                    result.error.message,
+                    "error"
+                );
+
+                return;
+            }
+        }
+
+        saveButton.disabled = false;
+
+        showMessage(
+            saveMessage,
+            "Attendance saved successfully!",
+            "success"
+        );
+
+        await loadStudents();
+        await loadSchoolRecords();
+    }
+
+    async function loadStudentAttendance() {
+
+        const history =
+            document.getElementById("studentHistory");
+
+        history.textContent = "Loading attendance history...";
+
+        const { data, error } = await supabaseClient
+            .from("attendance")
+            .select(`
+                id,
+                attendance_date,
+                status,
+                remarks,
+                subject_id
+            `)
+            .eq("student_id", currentUser.id)
+            .order("attendance_date", { ascending: false });
+
+        if (error) {
+            history.textContent =
+                "Unable to load attendance: " + error.message;
+            return;
+        }
+
+        const records = data || [];
+
+        const present = records.filter(
+            record => record.status === "present"
+        ).length;
+
+        const absent = records.filter(
+            record => record.status === "absent"
+        ).length;
+
+        const late = records.filter(
+            record => record.status === "late"
+        ).length;
+
+        const total = records.length;
+
+        const percentage = total
+            ? Math.round(((present + late) / total) * 100)
+            : 0;
+
+        document.getElementById("totalPresent").textContent = present;
+        document.getElementById("totalAbsent").textContent = absent;
+        document.getElementById("totalLate").textContent = late;
+
+        document.getElementById("attendancePercentage").textContent =
+            percentage + "%";
+
+        if (records.length === 0) {
+            history.textContent =
+                "No attendance records yet. Your teacher will record your attendance here.";
+            return;
+        }
+
+        const subjectIds = [
+            ...new Set(records.map(record => record.subject_id))
+        ];
+
+        const { data: subjects, error: subjectError } =
+            await supabaseClient
+                .from("subjects")
+                .select("id, subject_name, subject_code")
+                .in("id", subjectIds);
+
+        if (subjectError) {
+            history.textContent =
+                "Unable to load subject names: " + subjectError.message;
+            return;
+        }
+
+        const subjectMap = {};
+
+        (subjects || []).forEach(subject => {
+            subjectMap[subject.id] = subject;
+        });
+
+        history.innerHTML = records.map(record => {
+
+            const subject = subjectMap[record.subject_id];
+
+            const statusClass = record.status;
+
+            return `
+                <div class="history-item">
+
+                    <h3>
+                        ${escapeHTML(
+                            subject
+                                ? subject.subject_name
+                                : "Subject"
+                        )}
+                    </h3>
+
+                    <p>
+                        <strong>Date:</strong>
+                        ${escapeHTML(record.attendance_date)}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="${statusClass}">
+                            ${escapeHTML(
+                                record.status.toUpperCase()
+                            )}
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>Remarks:</strong>
+                        ${escapeHTML(record.remarks || "None")}
+                    </p>
+
+                </div>
+            `;
+        }).join("");
+    }
+
+    async function loadSchoolRecords() {
+
+        const recordsContainer =
+            document.getElementById("schoolRecords");
+
+        recordsContainer.textContent =
+            "Loading attendance records...";
+
+        const { data: records, error } = await supabaseClient
+            .from("attendance")
+            .select(`
+                id,
+                student_id,
+                subject_id,
+                attendance_date,
+                status,
+                remarks
+            `)
+            .eq("school_id", currentProfile.school_id)
+            .order("attendance_date", { ascending: false })
+            .limit(100);
+
+        if (error) {
+            recordsContainer.textContent =
+                "Unable to load records: " + error.message;
+            return;
+        }
+
+        if (!records || records.length === 0) {
+            recordsContainer.textContent =
+                "No attendance records found yet.";
+            return;
+        }
+
+        const studentIds = [
+            ...new Set(records.map(record => record.student_id))
+        ];
+
+        const subjectIds = [
+            ...new Set(records.map(record => record.subject_id))
+        ];
+
+        const [studentResult, subjectResult] = await Promise.all([
+
+            supabaseClient
+                .from("profiles")
+                .select("id, full_name")
+                .in("id", studentIds),
+
+            supabaseClient
+                .from("subjects")
+                .select("id, subject_name")
+                .in("id", subjectIds)
+
+        ]);
+
+        if (studentResult.error || subjectResult.error) {
+            recordsContainer.textContent =
+                "Unable to load student or subject details.";
+            return;
+        }
+
+        const studentMap = {};
+        const subjectMap = {};
+
+        (studentResult.data || []).forEach(student => {
+            studentMap[student.id] = student.full_name;
+        });
+
+        (subjectResult.data || []).forEach(subject => {
+            subjectMap[subject.id] = subject.subject_name;
+        });
+
+        recordsContainer.innerHTML = records.map(record => {
+
+            const statusClass = record.status;
+
+            return `
+                <div class="attendance-item">
+
+                    <h3>
+                        ${escapeHTML(
+                            studentMap[record.student_id] ||
+                            "Student"
+                        )}
+                    </h3>
+
+                    <p>
+                        <strong>Subject:</strong>
+                        ${escapeHTML(
+                            subjectMap[record.subject_id] ||
+                            "Subject"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Date:</strong>
+                        ${escapeHTML(record.attendance_date)}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="${statusClass}">
+                            ${escapeHTML(record.status.toUpperCase())}
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>Remarks:</strong>
+                        ${escapeHTML(record.remarks || "None")}
+                    </p>
+
+                </div>
+            `;
+        }).join("");
+    }
+
+    document.getElementById("loadStudentsButton")
+        .addEventListener("click", loadStudents);
+
+    document.getElementById("saveAttendanceButton")
+        .addEventListener("click", saveAttendance);
+
+    sectionFilter.addEventListener("change", function() {
+        if (studentListSection.classList.contains("hidden")) {
+            return;
+        }
+
+        loadStudents();
+    });
+
+    initializePage();
+</script>
+
+</body>
+</html>
