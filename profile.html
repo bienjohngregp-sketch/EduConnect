@@ -64,21 +64,42 @@
 
         .profile-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .avatar {
-            width: 85px;
-            height: 85px;
+            width: 120px;
+            height: 120px;
             background: #1554a5;
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 38px;
             font-weight: bold;
             margin: 0 auto 15px;
+            overflow: hidden;
+            border: 4px solid #e5eaf1;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .avatar-controls button {
+            margin-top: 0;
         }
 
         .profile-item {
@@ -195,13 +216,53 @@
 
 <main>
 
+    <!-- PROFILE PICTURE -->
+
     <section class="panel">
+
         <div class="profile-header">
+
             <div class="avatar" id="avatar">U</div>
+
             <h1 id="profileName">My Profile</h1>
+
             <p>Manage your EduConnect account information.</p>
+
         </div>
+
+        <div class="avatar-controls">
+
+            <input
+                type="file"
+                id="avatarInput"
+                accept="image/png,image/jpeg,image/webp"
+                hidden
+            >
+
+            <button
+                type="button"
+                class="primary"
+                id="uploadAvatarButton"
+            >
+                Upload Picture
+            </button>
+
+            <button
+                type="button"
+                class="secondary hidden"
+                id="removeAvatarButton"
+            >
+                Remove Picture
+            </button>
+
+        </div>
+
+        <p class="status" id="avatarStatus"></p>
+
     </section>
+
+
+    <!-- PERSONAL INFORMATION -->
 
     <section class="panel">
 
@@ -238,6 +299,9 @@
 
     </section>
 
+
+    <!-- EDIT PROFILE -->
+
     <section class="panel hidden" id="editProfilePanel">
 
         <h2>Edit Profile</h2>
@@ -246,6 +310,7 @@
 
             <div class="profile-item">
                 <label for="fullNameInput">Full Name</label>
+
                 <input
                     type="text"
                     id="fullNameInput"
@@ -256,6 +321,7 @@
 
             <div class="profile-item">
                 <label for="sectionInput">Section</label>
+
                 <input
                     type="text"
                     id="sectionInput"
@@ -278,6 +344,9 @@
 
     </section>
 
+
+    <!-- CHANGE PASSWORD -->
+
     <section class="panel">
 
         <h2>Change Password</h2>
@@ -286,6 +355,7 @@
 
             <div class="profile-item">
                 <label for="newPassword">New Password</label>
+
                 <input
                     type="password"
                     id="newPassword"
@@ -298,6 +368,7 @@
 
             <div class="profile-item">
                 <label for="confirmPassword">Confirm New Password</label>
+
                 <input
                     type="password"
                     id="confirmPassword"
@@ -320,10 +391,54 @@
 
 </main>
 
+
 <script>
 
     let currentUser = null;
     let currentProfile = null;
+
+
+    // AVATAR DISPLAY
+
+    function displayAvatar(profile) {
+
+        const avatar = document.getElementById("avatar");
+        const removeButton = document.getElementById("removeAvatarButton");
+
+        avatar.innerHTML = "";
+
+        if (profile.avatar_url) {
+
+            const { data } = supabaseClient.storage
+                .from("profile-avatars")
+                .getPublicUrl(profile.avatar_url);
+
+            const image = document.createElement("img");
+
+            image.src = data.publicUrl;
+            image.alt = "Profile Picture";
+
+            image.onerror = function() {
+                avatar.textContent = profile.full_name
+                    ? profile.full_name.charAt(0).toUpperCase()
+                    : "U";
+            };
+
+            avatar.appendChild(image);
+
+            removeButton.classList.remove("hidden");
+
+        } else {
+
+            avatar.textContent = profile.full_name
+                ? profile.full_name.charAt(0).toUpperCase()
+                : "U";
+
+            removeButton.classList.add("hidden");
+
+        }
+    }
+
 
     // LOAD PROFILE
 
@@ -351,7 +466,7 @@
             const { data: profile, error } =
                 await supabaseClient
                     .from("profiles")
-                    .select("full_name, role, school_id, section, is_active")
+                    .select("full_name, role, school_id, section, is_active, avatar_url")
                     .eq("id", user.id)
                     .single();
 
@@ -386,22 +501,21 @@
                       profile.role.slice(1)
                     : "Not available";
 
-            document.getElementById("avatar").textContent =
-                profile.full_name
-                    ? profile.full_name.charAt(0).toUpperCase()
-                    : "U";
-
             document.getElementById("fullNameInput").value =
                 profile.full_name || "";
 
             document.getElementById("sectionInput").value =
                 profile.section || "";
 
+            displayAvatar(profile);
+
             await loadSchool(profile.school_id);
 
             editButton.disabled = false;
 
         } catch (error) {
+
+            console.error("Load profile error:", error);
 
             alert(error.message || "Something went wrong while loading your profile.");
 
@@ -434,6 +548,245 @@
 
         schoolDisplay.textContent = data.name;
     }
+
+
+    // OPEN FILE SELECTOR
+
+    document.getElementById("uploadAvatarButton")
+        .addEventListener("click", function() {
+
+            document.getElementById("avatarInput").click();
+
+        });
+
+
+    // UPLOAD PROFILE PICTURE
+
+    document.getElementById("avatarInput")
+        .addEventListener("change", async function() {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const status = document.getElementById("avatarStatus");
+            const uploadButton = document.getElementById("uploadAvatarButton");
+            const removeButton = document.getElementById("removeAvatarButton");
+
+            status.className = "status";
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+
+                status.textContent =
+                    "Please select a JPG, PNG, or WEBP image.";
+
+                status.classList.add("error-text");
+                this.value = "";
+                return;
+
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+
+                status.textContent =
+                    "Image must not exceed 2 MB.";
+
+                status.classList.add("error-text");
+                this.value = "";
+                return;
+
+            }
+
+            if (!currentUser) {
+                status.textContent = "Please log in again.";
+                status.classList.add("error-text");
+                return;
+            }
+
+            uploadButton.disabled = true;
+            removeButton.disabled = true;
+
+            status.textContent = "Uploading profile picture...";
+
+            let uploadedPath = null;
+
+            try {
+
+                const extension = file.type === "image/jpeg"
+                    ? "jpg"
+                    : file.type === "image/png"
+                        ? "png"
+                        : "webp";
+
+                const filePath =
+                    currentUser.id + "/" +
+                    Date.now() + "-" +
+                    Math.random().toString(36).slice(2) +
+                    "." + extension;
+
+                const { error: uploadError } =
+                    await supabaseClient.storage
+                        .from("profile-avatars")
+                        .upload(filePath, file, {
+                            contentType: file.type,
+                            cacheControl: "3600",
+                            upsert: false
+                        });
+
+                if (uploadError) {
+                    throw uploadError;
+                }
+
+                uploadedPath = filePath;
+
+                const { error: updateError } =
+                    await supabaseClient
+                        .from("profiles")
+                        .update({
+                            avatar_url: filePath
+                        })
+                        .eq("id", currentUser.id);
+
+                if (updateError) {
+                    throw updateError;
+                }
+
+                const oldPath = currentProfile.avatar_url;
+
+                currentProfile.avatar_url = filePath;
+
+                displayAvatar(currentProfile);
+
+                if (oldPath) {
+
+                    const { error: deleteError } =
+                        await supabaseClient.storage
+                            .from("profile-avatars")
+                            .remove([oldPath]);
+
+                    if (deleteError) {
+                        console.error(
+                            "Old image cleanup error:",
+                            deleteError
+                        );
+                    }
+
+                }
+
+                status.textContent =
+                    "Profile picture uploaded successfully!";
+
+                status.classList.add("success-text");
+
+            } catch (error) {
+
+                console.error("Avatar upload error:", error);
+
+                if (uploadedPath) {
+
+                    await supabaseClient.storage
+                        .from("profile-avatars")
+                        .remove([uploadedPath]);
+
+                }
+
+                status.textContent =
+                    "Upload failed: " + error.message;
+
+                status.classList.add("error-text");
+
+            } finally {
+
+                uploadButton.disabled = false;
+                removeButton.disabled = false;
+                this.value = "";
+
+            }
+
+        });
+
+
+    // REMOVE PROFILE PICTURE
+
+    document.getElementById("removeAvatarButton")
+        .addEventListener("click", async function() {
+
+            if (!currentProfile || !currentProfile.avatar_url) {
+                return;
+            }
+
+            const confirmRemove = confirm(
+                "Are you sure you want to remove your profile picture?"
+            );
+
+            if (!confirmRemove) return;
+
+            const status = document.getElementById("avatarStatus");
+            const uploadButton = document.getElementById("uploadAvatarButton");
+
+            this.disabled = true;
+            uploadButton.disabled = true;
+
+            status.className = "status";
+            status.textContent = "Removing profile picture...";
+
+            try {
+
+                const oldPath = currentProfile.avatar_url;
+
+                const { error: updateError } =
+                    await supabaseClient
+                        .from("profiles")
+                        .update({
+                            avatar_url: null
+                        })
+                        .eq("id", currentUser.id);
+
+                if (updateError) {
+                    throw updateError;
+                }
+
+                currentProfile.avatar_url = null;
+
+                displayAvatar(currentProfile);
+
+                const { error: deleteError } =
+                    await supabaseClient.storage
+                        .from("profile-avatars")
+                        .remove([oldPath]);
+
+                if (deleteError) {
+                    console.error("Image deletion error:", deleteError);
+                }
+
+                status.textContent =
+                    "Profile picture removed successfully!";
+
+                status.classList.add("success-text");
+
+            } catch (error) {
+
+                console.error("Remove avatar error:", error);
+
+                status.textContent =
+                    "Unable to remove picture: " + error.message;
+
+                status.classList.add("error-text");
+
+            } finally {
+
+                this.disabled = false;
+                uploadButton.disabled = false;
+
+            }
+
+        });
 
 
     // SHOW EDIT PROFILE
