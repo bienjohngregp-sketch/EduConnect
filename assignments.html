@@ -2,289 +2,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignments | EduConnect</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assignments | EduConnect</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background: #f4f7fb;
-            color: #243247;
-        }
-
-        header {
-            background: #1554a5;
-            color: white;
-            padding: 20px 7%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        header h2 {
-            font-size: 23px;
-        }
-
-        header a {
-            color: white;
-            text-decoration: none;
-            margin-left: 18px;
-        }
-
-        main {
-            max-width: 1050px;
-            margin: 35px auto;
-            padding: 0 20px;
-        }
-
-        .page-title {
-            margin-bottom: 25px;
-        }
-
-        .page-title h1 {
-            color: #1554a5;
-            margin-bottom: 8px;
-        }
-
-        .panel {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
-        }
-
-        .panel h2 {
-            margin-bottom: 10px;
-            color: #243247;
-        }
-
-        .section-description {
-            color: #68778b;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 13px;
-            border: 1px solid #d5deea;
-            border-radius: 7px;
-            font-size: 15px;
-            background: white;
-        }
-
-        textarea {
-            min-height: 95px;
-            resize: vertical;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        button {
-            border: none;
-            padding: 10px 16px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .primary {
-            background: #1554a5;
-            color: white;
-        }
-
-        .edit {
-            background: #e8a52b;
-            color: white;
-        }
-
-        .delete {
-            background: #dc4545;
-            color: white;
-        }
-
-        .submit-button {
-            background: #1554a5;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .cancel {
-            background: #68778b;
-            color: white;
-        }
-
-        .preview-button {
-            background: #16834a;
-            color: white;
-        }
-
-        .download-button {
-            background: #475569;
-            color: white;
-        }
-
-        .assignment {
-            border: 1px solid #e1e7ef;
-            border-radius: 9px;
-            padding: 18px;
-            margin-bottom: 15px;
-        }
-
-        .assignment h3 {
-            color: #1554a5;
-            margin-bottom: 10px;
-        }
-
-        .assignment p {
-            margin-bottom: 9px;
-            line-height: 1.5;
-            overflow-wrap: anywhere;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .status-pending {
-            color: #d97706;
-            font-weight: bold;
-        }
-
-        .status-submitted {
-            color: #16834a;
-            font-weight: bold;
-        }
-
-        .status-overdue {
-            color: #dc4545;
-            font-weight: bold;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .empty-message {
-            color: #68778b;
-            padding: 12px 0;
-        }
-
-        #message {
-            margin-top: 12px;
-            font-size: 14px;
-        }
-
-        .submission-form {
-            background: #f8faff;
-            border: 1px solid #d5deea;
-        }
-
-        #assignmentDetailsModal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 9999;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .details-content {
-            background: white;
-            max-width: 650px;
-            width: 100%;
-            margin: 40px auto;
-            padding: 25px;
-            border-radius: 12px;
-        }
-
-        .details-content h2 {
-            color: #1554a5;
-            margin-bottom: 20px;
-        }
-
-        .details-content h3 {
-            color: #243247;
-            margin-bottom: 12px;
-        }
-
-        .details-content p {
-            line-height: 1.6;
-            overflow-wrap: anywhere;
-        }
-
-        .details-info {
-            margin-top: 12px;
-        }
-
-        .instructions-box {
-            background: #f4f7fb;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .details-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 600px) {
-            header {
-                padding: 18px 5%;
-            }
-
-            header a {
-                margin-left: 0;
-                margin-right: 12px;
-                display: inline-block;
-                margin-top: 8px;
-            }
-
-            .panel {
-                padding: 18px;
-            }
-
-            .details-content {
-                margin: 15px auto;
-                padding: 20px;
-            }
-        }
-    </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f4f7fb;color:#243247}
+header{background:#1554a5;color:white;padding:20px 7%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h2{font-size:23px}
+header a{color:white;text-decoration:none;margin-left:18px}
+main{max-width:1050px;margin:35px auto;padding:0 20px}
+.page-title{margin-bottom:25px}
+.page-title h1{color:#1554a5;margin-bottom:8px}
+.panel{background:white;padding:25px;border-radius:12px;margin-bottom:25px;box-shadow:0 3px 12px rgba(0,0,0,.05)}
+.panel h2{margin-bottom:18px}
+input,textarea,select{width:100%;padding:12px;margin:10px 0 13px;border:1px solid #d5deea;border-radius:7px;font-size:15px}
+textarea{min-height:95px;resize:vertical}
+button{border:none;padding:10px 16px;border-radius:7px;cursor:pointer;font-size:14px}
+button:disabled{opacity:.6;cursor:not-allowed}
+.primary{background:#1554a5;color:white}
+.edit{background:#e8a52b;color:white}
+.delete{background:#dc4545;color:white}
+.assignment{border:1px solid #e1e7ef;border-radius:9px;padding:18px;margin-bottom:15px}
+.assignment h3{color:#1554a5;margin-bottom:10px}
+.assignment p{margin-bottom:9px;line-height:1.5;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;margin-top:12px}
+#message{margin-top:12px;font-size:14px}
+.hidden{display:none}
+.subject-label{color:#1554a5;font-weight:bold}
+@media(max-width:600px){
+header{padding:18px 5%}
+header a{margin-left:0;margin-right:12px}
+.panel{padding:18px}
+}
+</style>
 </head>
 
 <body>
-
 <header>
     <h2>EduConnect</h2>
-
     <nav>
         <a href="dashboard.html">Dashboard</a>
         <a href="subjects.html">Subjects</a>
@@ -294,1444 +53,344 @@
 </header>
 
 <main>
-
     <div class="page-title">
         <h1>Assignments</h1>
         <p>Manage and view your school assignments.</p>
     </div>
 
-    <!-- TEACHER AND ADMIN FORM -->
     <section class="panel hidden" id="formPanel">
-
         <h2 id="formTitle">Create Assignment</h2>
 
         <form id="assignmentForm">
-
             <label for="subjectId">Select Subject</label>
-
             <select id="subjectId" required>
                 <option value="">Loading subjects...</option>
             </select>
 
-            <input
-                type="text"
-                id="title"
-                placeholder="Assignment Title"
-                maxlength="150"
-                required
-            >
+            <label for="title">Assignment Title</label>
+            <input type="text" id="title" placeholder="Assignment Title" required>
 
-            <textarea
-                id="description"
-                placeholder="Assignment Description"
-                maxlength="2000"
-            ></textarea>
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Assignment Description"></textarea>
 
             <label for="dueDate">Due Date and Time</label>
-
-            <input
-                type="datetime-local"
-                id="dueDate"
-                required
-            >
+            <input type="datetime-local" id="dueDate" required>
 
             <button type="submit" class="primary" id="saveButton">
                 Add Assignment
             </button>
 
-            <button
-                type="button"
-                class="edit hidden"
-                id="cancelButton"
-            >
+            <button type="button" class="edit hidden" id="cancelButton">
                 Cancel Edit
             </button>
-
         </form>
 
         <p id="message"></p>
-
     </section>
 
-
-    <!-- STUDENT ASSIGNMENTS -->
-    <div id="studentAssignmentPanel" class="hidden">
-
-        <section class="panel">
-
-            <h2>Find Assignments</h2>
-
-            <input
-                type="text"
-                id="assignmentSearch"
-                placeholder="Search assignment title..."
-            >
-
-            <label for="assignmentFilter">Filter Assignments</label>
-
-            <select id="assignmentFilter">
-                <option value="all">All Assignments</option>
-                <option value="pending">Pending Only</option>
-                <option value="submitted">Submitted Only</option>
-            </select>
-
-            <label for="assignmentSort">Sort By</label>
-
-            <select id="assignmentSort">
-                <option value="nearest">Nearest Deadline</option>
-                <option value="latest">Latest Deadline</option>
-            </select>
-
-        </section>
-
-        <section class="panel">
-
-            <h2>Pending Assignments</h2>
-
-            <p class="section-description">
-                Assignments that you have not submitted yet.
-            </p>
-
-            <div id="pendingAssignments">
-                Loading pending assignments...
-            </div>
-
-        </section>
-
-        <section class="panel">
-
-            <h2>Submitted Assignments</h2>
-
-            <p class="section-description">
-                Assignments that you have already submitted.
-            </p>
-
-            <div id="submittedAssignments">
-                Loading submitted assignments...
-            </div>
-
-        </section>
-
-    </div>
-
-
-    <!-- ASSIGNMENT DETAILS MODAL -->
-    <section id="assignmentDetailsModal" class="hidden">
-
-        <div class="details-content">
-
-            <h2>Assignment Details</h2>
-
-            <h3 id="detailsTitle"></h3>
-
-            <p id="detailsDescription">
-                No description provided.
-            </p>
-
-            <hr style="margin:15px 0;">
-
-            <p class="details-info">
-                <strong>Teacher:</strong>
-                <span id="detailsTeacher">Loading...</span>
-            </p>
-
-            <p class="details-info">
-                <strong>Due Date:</strong>
-                <span id="detailsDeadline"></span>
-            </p>
-
-            <p class="details-info">
-                <strong>Time Remaining:</strong>
-                <span id="detailsCountdown"></span>
-            </p>
-
-            <p class="details-info">
-                <strong>Submission Status:</strong>
-                <span id="detailsStatus"></span>
-            </p>
-
-            <div class="instructions-box">
-
-                <strong>Submission Instructions</strong>
-
-                <p style="margin-top:8px;">
-                    Complete the assignment and upload your work
-                    using the Submit Assignment button.
-                    Accepted formats: PDF, DOC, DOCX, JPG, and PNG.
-                    Maximum file size: 10 MB.
-                </p>
-
-            </div>
-
-            <div class="details-buttons">
-
-                <button
-                    id="detailsSubmitButton"
-                    class="primary"
-                    type="button"
-                >
-                    Submit Assignment
-                </button>
-
-                <button
-                    id="closeDetailsButton"
-                    class="cancel"
-                    type="button"
-                >
-                    Close
-                </button>
-
-            </div>
-
-        </div>
-
+    <section class="panel">
+        <h2 id="listTitle">Assignment List</h2>
+        <div id="assignmentList">Loading assignments...</div>
     </section>
-
-
-    <!-- TEACHER AND ADMIN ASSIGNMENT LIST -->
-    <section class="panel hidden" id="generalAssignmentPanel">
-
-        <h2>Assignment List</h2>
-
-        <input
-            type="text"
-            id="teacherAssignmentSearch"
-            placeholder="Search assignment title..."
-        >
-
-        <label for="teacherSubjectFilter">Filter by Subject</label>
-
-        <select id="teacherSubjectFilter">
-            <option value="all">All Subjects</option>
-        </select>
-
-        <label for="teacherDeadlineFilter">Filter by Deadline</label>
-
-        <select id="teacherDeadlineFilter">
-            <option value="all">All Assignments</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="overdue">Overdue</option>
-        </select>
-
-        <div id="assignmentList">
-            Loading assignments...
-        </div>
-
-    </section>
-
 </main>
 
-
 <script>
+const formPanel = document.getElementById("formPanel");
+const assignmentForm = document.getElementById("assignmentForm");
+const assignmentList = document.getElementById("assignmentList");
+const message = document.getElementById("message");
+const subjectSelect = document.getElementById("subjectId");
 
-    // =========================================
-    // GLOBAL VARIABLES
-    // =========================================
+let currentUser = null;
+let currentProfile = null;
+let editingId = null;
 
-    const formPanel = document.getElementById("formPanel");
-    const assignmentForm = document.getElementById("assignmentForm");
-    const assignmentList = document.getElementById("assignmentList");
-    const message = document.getElementById("message");
+function showMessage(text, isError = false) {
+    message.textContent = text;
+    message.style.color = isError ? "#dc4545" : "#16834a";
+}
 
-    let currentUser = null;
-    let currentProfile = null;
-    let editingId = null;
+function formatDate(date) {
+    if (!date) return "No deadline";
 
-    let countdownInterval = null;
-    let selectedAssignment = null;
-    let selectedSubmission = null;
+    return new Date(date).toLocaleString("en-PH", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+}
 
+async function initializePage() {
+    const { data: { user }, error: authError } =
+        await supabaseClient.auth.getUser();
 
-    // =========================================
-    // HELPER FUNCTIONS
-    // =========================================
-
-    function showMessage(text, isError = false) {
-        message.textContent = text;
-        message.style.color = isError ? "#dc4545" : "#16834a";
+    if (authError || !user) {
+        window.location.href = "login.html";
+        return;
     }
 
-    function formatDate(date) {
-        if (!date) return "No deadline";
+    currentUser = user;
 
-        return new Date(date).toLocaleString("en-PH", {
-            dateStyle: "medium",
-            timeStyle: "short"
-        });
+    const { data: profile, error: profileError } =
+        await supabaseClient
+            .from("profiles")
+            .select("full_name, role, school_id, is_active")
+            .eq("id", user.id)
+            .single();
+
+    if (profileError || !profile || !profile.school_id ||
+        profile.is_active === false) {
+        assignmentList.textContent =
+            "Unable to load your active school profile.";
+        return;
     }
 
-    function escapeHTML(value) {
-        const element = document.createElement("div");
-        element.textContent = value || "";
-        return element.innerHTML;
+    currentProfile = profile;
+
+    if (["teacher", "admin"].includes(profile.role)) {
+        formPanel.classList.remove("hidden");
+        await loadSubjects();
     }
 
-    function getDeadlineStatus(date) {
-        if (!date) return "No deadline";
+    await loadAssignments();
+}
 
-        const due = new Date(date);
-        const now = new Date();
+async function loadSubjects() {
+    subjectSelect.innerHTML =
+        '<option value="">Loading subjects...</option>';
 
-        if (due < now) {
-            return "Overdue";
-        }
+    let query = supabaseClient
+        .from("subjects")
+        .select("id, subject_name, subject_code")
+        .eq("school_id", currentProfile.school_id)
+        .order("subject_name");
 
-        return "Upcoming";
+    if (currentProfile.role === "teacher") {
+        query = query.eq("teacher_id", currentUser.id);
     }
 
+    const { data, error } = await query;
 
-    // =========================================
-    // PREVIEW AND DOWNLOAD SUBMITTED FILE
-    // =========================================
-
-    async function accessSubmittedFile(filePath, mode) {
-
-        if (!filePath) {
-            alert("Submitted file not found.");
-            return;
-        }
-
-        try {
-
-            const options = mode === "download"
-                ? { download: true }
-                : {};
-
-            const { data, error } = await supabaseClient
-                .storage
-                .from("assignment-files")
-                .createSignedUrl(filePath, 60, options);
-
-            if (error) throw error;
-
-            if (!data || !data.signedUrl) {
-                throw new Error("Unable to generate file link.");
-            }
-
-            const link = document.createElement("a");
-
-            link.href = data.signedUrl;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-
-            if (mode === "download") {
-                link.download = "";
-            }
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-        } catch (error) {
-
-            console.error("File access error:", error);
-
-            alert(
-                "Unable to access submitted file: " + error.message
-            );
-        }
-    }
-
-
-    // =========================================
-    // LOAD AVAILABLE SUBJECTS
-    // =========================================
-
-    async function loadAvailableSubjects() {
-
-        const subjectSelect = document.getElementById("subjectId");
-        const filterSelect = document.getElementById("teacherSubjectFilter");
-
+    if (error) {
         subjectSelect.innerHTML =
-            '<option value="">Loading subjects...</option>';
+            '<option value="">Unable to load subjects</option>';
+        showMessage(error.message, true);
+        return;
+    }
 
-        let query = supabaseClient
-            .from("subjects")
-            .select("id, subject_name, subject_code")
-            .eq("school_id", currentProfile.school_id)
-            .order("subject_name", { ascending: true });
+    subjectSelect.innerHTML =
+        '<option value="">Select a subject</option>';
 
-        if (currentProfile.role === "teacher") {
-            query = query.eq("teacher_id", currentUser.id);
-        }
+    (data || []).forEach(subject => {
+        const option = document.createElement("option");
+        option.value = subject.id;
+        option.textContent =
+            subject.subject_name + " (" + subject.subject_code + ")";
+        subjectSelect.appendChild(option);
+    });
 
-        const { data: subjects, error } = await query;
-
-        if (error) {
-
-            console.error("Subject loading error:", error);
-
-            subjectSelect.innerHTML =
-                '<option value="">Unable to load subjects</option>';
-
-            showMessage(
-                "Error loading subjects: " + error.message,
-                true
-            );
-
-            return;
-        }
-
+    if (!data || data.length === 0) {
         subjectSelect.innerHTML =
-            '<option value="">Select a subject</option>';
+            '<option value="">No assigned subjects available</option>';
+    }
+}
 
-        filterSelect.innerHTML =
-            '<option value="all">All Subjects</option>';
+async function loadAssignments() {
+    assignmentList.textContent = "Loading assignments...";
 
-        if (!subjects || subjects.length === 0) {
+    let query = supabaseClient
+        .from("assignments")
+        .select(`
+            id,
+            school_id,
+            teacher_id,
+            subject_id,
+            title,
+            description,
+            due_date,
+            subjects (
+                subject_name,
+                subject_code
+            )
+        `)
+        .eq("school_id", currentProfile.school_id)
+        .order("due_date", { ascending: true });
 
-            subjectSelect.innerHTML =
-                '<option value="">No subjects available</option>';
-
-            subjectSelect.disabled = true;
-            return;
-        }
-
-        subjectSelect.disabled = false;
-
-        subjects.forEach(subject => {
-
-            const option = document.createElement("option");
-
-            option.value = subject.id;
-            option.textContent =
-                `${subject.subject_name} (${subject.subject_code})`;
-
-            subjectSelect.appendChild(option);
-
-            const filterOption = document.createElement("option");
-
-            filterOption.value = subject.id;
-            filterOption.textContent =
-                `${subject.subject_name} (${subject.subject_code})`;
-
-            filterSelect.appendChild(filterOption);
-        });
+    if (currentProfile.role === "teacher") {
+        query = query.eq("teacher_id", currentUser.id);
     }
 
-
-    // =========================================
-    // INITIALIZE PAGE
-    // =========================================
-
-    async function initializePage() {
-
-        const {
-            data: { user },
-            error: authError
-        } = await supabaseClient.auth.getUser();
-
-        if (authError || !user) {
-            window.location.href = "login.html";
-            return;
-        }
-
-        currentUser = user;
-
-        const { data: profile, error: profileError } =
+    if (currentProfile.role === "student") {
+        const { data: enrollments, error: enrollmentError } =
             await supabaseClient
-                .from("profiles")
-                .select("full_name, role, school_id, is_active")
-                .eq("id", user.id)
-                .single();
-
-        if (profileError || !profile) {
-            await supabaseClient.auth.signOut();
-            window.location.href = "login.html";
-            return;
-        }
-
-        if (profile.is_active === false) {
-
-            alert(
-                "Your account has been deactivated. Please contact your school administrator."
-            );
-
-            await supabaseClient.auth.signOut();
-
-            window.location.href = "login.html";
-            return;
-        }
-
-        if (!profile.school_id) {
-            alert("Unable to load your school profile.");
-            return;
-        }
-
-        currentProfile = profile;
-
-        if (["teacher", "admin"].includes(profile.role)) {
-
-            formPanel.classList.remove("hidden");
-
-            document.getElementById("generalAssignmentPanel")
-                .classList.remove("hidden");
-
-            await loadAvailableSubjects();
-        }
-
-        if (profile.role === "student") {
-
-            document.getElementById("studentAssignmentPanel")
-                .classList.remove("hidden");
-        }
-
-        await loadAssignments();
-    }
-
-
-    // =========================================
-    // LOAD ASSIGNMENTS
-    // =========================================
-
-    async function loadAssignments() {
-
-        if (!currentProfile || !currentUser) {
-            return;
-        }
-
-
-        // =====================================
-        // STUDENT VIEW
-        // =====================================
-
-        if (currentProfile.role === "student") {
-
-            const pendingList =
-                document.getElementById("pendingAssignments");
-
-            const submittedList =
-                document.getElementById("submittedAssignments");
-
-            pendingList.textContent = "Loading pending assignments...";
-            submittedList.textContent = "Loading submitted assignments...";
-
-
-            // GET STUDENT ENROLLMENTS
-
-            const { data: enrollments, error: enrollmentError } =
-                await supabaseClient
-                    .from("subject_enrollments")
-                    .select("subject_id")
-                    .eq("student_id", currentUser.id)
-                    .eq("school_id", currentProfile.school_id);
-
-            if (enrollmentError) {
-
-                pendingList.textContent =
-                    "Error loading enrolled subjects: " +
-                    enrollmentError.message;
-
-                submittedList.textContent = "";
-                return;
-            }
-
-            const subjectIds = (enrollments || [])
-                .map(item => item.subject_id)
-                .filter(Boolean);
-
-            if (subjectIds.length === 0) {
-
-                pendingList.innerHTML =
-                    '<p class="empty-message">No pending assignments.</p>';
-
-                submittedList.innerHTML =
-                    '<p class="empty-message">No submitted assignments yet.</p>';
-
-                return;
-            }
-
-
-            // LOAD ENROLLED SUBJECT ASSIGNMENTS
-
-            const { data: assignments, error: assignmentError } =
-                await supabaseClient
-                    .from("assignments")
-                    .select("*")
-                    .eq("school_id", currentProfile.school_id)
-                    .in("subject_id", subjectIds)
-                    .order("due_date", { ascending: true });
-
-            if (assignmentError) {
-
-                pendingList.textContent =
-                    "Error loading assignments: " +
-                    assignmentError.message;
-
-                submittedList.textContent = "";
-                return;
-            }
-
-
-            // LOAD STUDENT SUBMISSIONS
-
-            const { data: submissions, error: submissionError } =
-                await supabaseClient
-                    .from("assignment_submissions")
-                    .select("assignment_id, grade, feedback, submitted_at, file_name, file_path")
-                    .eq("student_id", currentUser.id);
-
-            if (submissionError) {
-
-                pendingList.textContent =
-                    "Error loading submissions: " +
-                    submissionError.message;
-
-                submittedList.textContent = "";
-                return;
-            }
-
-            pendingList.innerHTML = "";
-            submittedList.innerHTML = "";
-
-            const submissionRecords = submissions || [];
-            const assignmentRecords = assignments || [];
-
-            const submittedIds = new Set(
-                submissionRecords.map(item => item.assignment_id)
-            );
-
-            const pending = assignmentRecords.filter(
-                item => !submittedIds.has(item.id)
-            );
-
-            const submitted = assignmentRecords.filter(
-                item => submittedIds.has(item.id)
-            );
-
-
-            // PENDING ASSIGNMENTS
-
-            if (pending.length === 0) {
-
-                const empty = document.createElement("p");
-                empty.className = "empty-message";
-                empty.textContent = "No pending assignments.";
-
-                pendingList.appendChild(empty);
-            }
-
-            for (const item of pending) {
-
-                const card = document.createElement("div");
-                card.className = "assignment";
-
-                card.dataset.assignmentTitle =
-                    (item.title || "").toLowerCase();
-
-                card.dataset.assignmentStatus = "pending";
-
-                card.dataset.deadline = item.due_date
-                    ? new Date(item.due_date).getTime()
-                    : 0;
-
-                const title = document.createElement("h3");
-                title.textContent = item.title;
-
-                const description = document.createElement("p");
-                description.textContent =
-                    item.description || "No description provided.";
-
-                const deadline = document.createElement("p");
-                deadline.textContent =
-                    "Due Date: " + formatDate(item.due_date);
-
-                const deadlineStatus = document.createElement("p");
-                const deadlineResult = getDeadlineStatus(item.due_date);
-
-                deadlineStatus.textContent =
-                    "Deadline Status: " + deadlineResult;
-
-                deadlineStatus.className =
-                    deadlineResult === "Overdue"
-                        ? "status-overdue"
-                        : "status-pending";
-
-                const status = document.createElement("p");
-                status.textContent = "Submission Status: Not Submitted";
-                status.className = "status-pending";
-
-
-                const viewButton = document.createElement("button");
-                viewButton.textContent = "View Details";
-                viewButton.className = "primary";
-                viewButton.style.marginTop = "10px";
-
-                viewButton.addEventListener("click", () => {
-                    openAssignmentDetails(item, null);
-                });
-
-
-                const submitButton = document.createElement("button");
-                submitButton.textContent = "Submit Assignment";
-                submitButton.className = "submit-button";
-
-                submitButton.addEventListener("click", () => {
-                    openSubmissionForm(item);
-                });
-
-                card.append(
-                    title,
-                    description,
-                    deadline,
-                    deadlineStatus,
-                    status,
-                    viewButton,
-                    submitButton
-                );
-
-                pendingList.appendChild(card);
-            }
-
-
-            // SUBMITTED ASSIGNMENTS
-
-            if (submitted.length === 0) {
-
-                const empty = document.createElement("p");
-                empty.className = "empty-message";
-                empty.textContent = "No submitted assignments yet.";
-
-                submittedList.appendChild(empty);
-            }
-
-            for (const item of submitted) {
-
-                const submission = submissionRecords.find(
-                    sub => sub.assignment_id === item.id
-                );
-
-                if (!submission) continue;
-
-                const card = document.createElement("div");
-                card.className = "assignment";
-
-                card.dataset.assignmentTitle =
-                    (item.title || "").toLowerCase();
-
-                card.dataset.assignmentStatus = "submitted";
-
-                card.dataset.deadline = item.due_date
-                    ? new Date(item.due_date).getTime()
-                    : 0;
-
-                const title = document.createElement("h3");
-                title.textContent = item.title;
-
-                const description = document.createElement("p");
-                description.textContent =
-                    item.description || "No description provided.";
-
-                const deadline = document.createElement("p");
-                deadline.textContent =
-                    "Due Date: " + formatDate(item.due_date);
-
-                const submittedDate = document.createElement("p");
-                submittedDate.textContent =
-                    "Submitted On: " + formatDate(submission.submitted_at);
-
-                const status = document.createElement("p");
-                status.textContent = "Submission Status: Submitted";
-                status.className = "status-submitted";
-
-                const grade = document.createElement("p");
-
-                grade.textContent =
-                    submission.grade !== null
-                        ? "Your Grade: " + submission.grade + "/100"
-                        : "Your Grade: Not graded yet";
-
-                const feedback = document.createElement("p");
-
-                feedback.textContent =
-                    "Teacher Feedback: " +
-                    (submission.feedback || "No feedback yet.");
-
-                const fileName = document.createElement("p");
-
-                fileName.textContent =
-                    "Submitted File: " +
-                    (submission.file_name || "File name unavailable");
-
-
-                const viewButton = document.createElement("button");
-                viewButton.textContent = "View Details";
-                viewButton.className = "primary";
-
-                viewButton.addEventListener("click", () => {
-                    openAssignmentDetails(item, submission);
-                });
-
-
-                const previewButton = document.createElement("button");
-                previewButton.textContent = "Preview File";
-                previewButton.className = "preview-button";
-
-                previewButton.addEventListener("click", () => {
-                    accessSubmittedFile(submission.file_path, "preview");
-                });
-
-
-                const downloadButton = document.createElement("button");
-                downloadButton.textContent = "Download File";
-                downloadButton.className = "download-button";
-
-                downloadButton.addEventListener("click", () => {
-                    accessSubmittedFile(submission.file_path, "download");
-                });
-
-                const actions = document.createElement("div");
-                actions.className = "actions";
-
-                actions.append(
-                    viewButton,
-                    previewButton,
-                    downloadButton
-                );
-
-                card.append(
-                    title,
-                    description,
-                    deadline,
-                    submittedDate,
-                    status,
-                    grade,
-                    feedback,
-                    fileName,
-                    actions
-                );
-
-                submittedList.appendChild(card);
-            }
-
-            applyAssignmentFilters();
-
-            return;
-        }
-
-
-        // =====================================
-        // TEACHER AND ADMIN VIEW
-        // =====================================
-
-        assignmentList.textContent = "Loading assignments...";
-
-        const { data, error } = await supabaseClient
-            .from("assignments")
-            .select("*")
-            .eq("school_id", currentProfile.school_id)
-            .order("due_date", { ascending: true });
-
-        if (error) {
-
-            assignmentList.textContent =
-                "Error loading assignments: " + error.message;
-
-            return;
-        }
-
-
-        // LOAD SUBJECT INFORMATION
-
-        const { data: subjects, error: subjectError } =
-            await supabaseClient
-                .from("subjects")
-                .select("id, subject_name, subject_code")
+                .from("subject_enrollments")
+                .select("subject_id")
+                .eq("student_id", currentUser.id)
                 .eq("school_id", currentProfile.school_id);
 
-        if (subjectError) {
-            console.error("Subject information error:", subjectError);
-        }
-
-        const subjectMap = new Map(
-            (subjects || []).map(subject => [
-                subject.id,
-                subject
-            ])
-        );
-
-        assignmentList.innerHTML = "";
-
-        if (!data || data.length === 0) {
-
-            assignmentList.innerHTML =
-                '<p class="empty-message">No assignments available yet.</p>';
-
+        if (enrollmentError) {
+            assignmentList.textContent =
+                "Unable to load enrolled subjects: " +
+                enrollmentError.message;
             return;
         }
 
-        for (const item of data) {
+        const subjectIds = (enrollments || []).map(
+            item => item.subject_id
+        );
 
-            const card = document.createElement("div");
-            card.className = "assignment";
-
-            const deadlineResult = getDeadlineStatus(item.due_date);
-
-            const subject = subjectMap.get(item.subject_id);
-
-            card.dataset.assignmentTitle =
-                (item.title || "").toLowerCase();
-
-            card.dataset.subjectId = item.subject_id || "";
-
-            card.dataset.deadlineStatus =
-                deadlineResult.toLowerCase();
-
-            const title = document.createElement("h3");
-            title.textContent = item.title;
-
-            const description = document.createElement("p");
-            description.textContent =
-                item.description || "No description provided.";
-
-            const subjectInfo = document.createElement("p");
-
-            subjectInfo.textContent = subject
-                ? `Subject: ${subject.subject_name} (${subject.subject_code})`
-                : "Subject: Unavailable";
-
-            const deadline = document.createElement("p");
-            deadline.textContent =
-                "Due Date: " + formatDate(item.due_date);
-
-            const deadlineStatus = document.createElement("p");
-
-            deadlineStatus.textContent =
-                "Deadline Status: " + deadlineResult;
-
-            deadlineStatus.className =
-                deadlineResult === "Overdue"
-                    ? "status-overdue"
-                    : "status-pending";
-
-            card.append(
-                title,
-                description,
-                subjectInfo,
-                deadline,
-                deadlineStatus
-            );
-
-
-            const canManage =
-                ["teacher", "admin"].includes(currentProfile.role) &&
-                (
-                    item.teacher_id === currentUser.id ||
-                    currentProfile.role === "admin"
-                );
-
-            if (canManage) {
-
-                const actions = document.createElement("div");
-                actions.className = "actions";
-
-                const editButton = document.createElement("button");
-                editButton.className = "edit";
-                editButton.textContent = "Edit";
-
-                editButton.addEventListener("click", () => {
-                    editAssignment(item);
-                });
-
-                const deleteButton = document.createElement("button");
-                deleteButton.className = "delete";
-                deleteButton.textContent = "Delete";
-
-                deleteButton.addEventListener("click", () => {
-                    deleteAssignment(item.id);
-                });
-
-                actions.append(editButton, deleteButton);
-                card.appendChild(actions);
-            }
-
-            assignmentList.appendChild(card);
-        }
-
-        applyTeacherAssignmentFilters();
-    }
-
-
-    // =========================================
-    // STUDENT SEARCH, FILTER, AND SORT
-    // =========================================
-
-    function applyAssignmentFilters() {
-
-        const search = document.getElementById("assignmentSearch");
-        const filter = document.getElementById("assignmentFilter");
-        const sort = document.getElementById("assignmentSort");
-
-        if (!search || !filter || !sort) return;
-
-        const searchText = search.value.toLowerCase().trim();
-        const filterValue = filter.value;
-        const sortValue = sort.value;
-
-        const containers = [
-            document.getElementById("pendingAssignments"),
-            document.getElementById("submittedAssignments")
-        ];
-
-        containers.forEach(container => {
-
-            if (!container) return;
-
-            const cards = Array.from(
-                container.querySelectorAll(".assignment")
-            ).filter(card => card.dataset.assignmentStatus);
-
-            cards.sort((a, b) => {
-
-                const dateA = Number(a.dataset.deadline);
-                const dateB = Number(b.dataset.deadline);
-
-                return sortValue === "nearest"
-                    ? dateA - dateB
-                    : dateB - dateA;
-            });
-
-            cards.forEach(card => {
-
-                const matchesSearch =
-                    (card.dataset.assignmentTitle || "")
-                        .includes(searchText);
-
-                const matchesFilter =
-                    filterValue === "all" ||
-                    card.dataset.assignmentStatus === filterValue;
-
-                card.classList.toggle(
-                    "hidden",
-                    !(matchesSearch && matchesFilter)
-                );
-
-                container.appendChild(card);
-            });
-        });
-
-        const pendingEmpty =
-            document.querySelector("#pendingAssignments .empty-message");
-
-        const submittedEmpty =
-            document.querySelector("#submittedAssignments .empty-message");
-
-        if (pendingEmpty) {
-            pendingEmpty.classList.toggle(
-                "hidden",
-                filterValue === "submitted" || searchText !== ""
-            );
-        }
-
-        if (submittedEmpty) {
-            submittedEmpty.classList.toggle(
-                "hidden",
-                filterValue === "pending" || searchText !== ""
-            );
-        }
-    }
-
-
-    document.getElementById("assignmentSearch")
-        .addEventListener("input", applyAssignmentFilters);
-
-    document.getElementById("assignmentFilter")
-        .addEventListener("change", applyAssignmentFilters);
-
-    document.getElementById("assignmentSort")
-        .addEventListener("change", applyAssignmentFilters);
-
-
-    // =========================================
-    // TEACHER AND ADMIN SEARCH AND FILTERS
-    // =========================================
-
-
-    function applyTeacherAssignmentFilters() {
-
-        const searchInput = document.getElementById("teacherAssignmentSearch");
-        const subjectFilter = document.getElementById("teacherSubjectFilter");
-        const deadlineFilter = document.getElementById("teacherDeadlineFilter");
-
-        if (!searchInput || !subjectFilter || !deadlineFilter) {
+        if (subjectIds.length === 0) {
+            assignmentList.textContent =
+                "You are not enrolled in any subjects yet.";
             return;
         }
 
-        const searchText = searchInput.value.toLowerCase().trim();
-        const subjectValue = subjectFilter.value;
-        const deadlineValue = deadlineFilter.value;
-
-        const assignmentContainer = document.getElementById("assignmentList");
-
-        const cards = Array.from(
-            assignmentContainer.querySelectorAll(".assignment")
-        );
-
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-
-            const title = card.dataset.assignmentTitle || "";
-            const subject = card.dataset.subjectId || "";
-            const deadline = card.dataset.deadlineStatus || "";
-
-            const matchesSearch = title.includes(searchText);
-
-            const matchesSubject =
-                subjectValue === "all" ||
-                subject === subjectValue;
-
-            const matchesDeadline =
-                deadlineValue === "all" ||
-                deadline === deadlineValue;
-
-            const isVisible =
-                matchesSearch &&
-                matchesSubject &&
-                matchesDeadline;
-
-            card.classList.toggle("hidden", !isVisible);
-
-            if (isVisible) {
-                visibleCount++;
-            }
-        });
-
-        let emptyMessage = document.getElementById(
-            "teacherAssignmentEmptyMessage"
-        );
-
-        if (!emptyMessage) {
-
-            emptyMessage = document.createElement("p");
-            emptyMessage.id = "teacherAssignmentEmptyMessage";
-            emptyMessage.className = "empty-message";
-
-            assignmentContainer.appendChild(emptyMessage);
-        }
-
-        emptyMessage.textContent = cards.length === 0
-            ? "No assignments available yet."
-            : "No assignments match your filters.";
-
-        emptyMessage.classList.toggle(
-            "hidden",
-            visibleCount > 0
-        );
+        query = query.in("subject_id", subjectIds);
     }
 
+    const { data, error } = await query;
 
+    if (error) {
+        assignmentList.textContent =
+            "Error loading assignments: " + error.message;
+        return;
+    }
 
-    document.getElementById("teacherAssignmentSearch")
-        .addEventListener("input", applyTeacherAssignmentFilters);
+    assignmentList.innerHTML = "";
 
-    document.getElementById("teacherSubjectFilter")
-        .addEventListener("change", applyTeacherAssignmentFilters);
+    if (!data || data.length === 0) {
+        assignmentList.textContent =
+            "No assignments available for your subjects yet.";
+        return;
+    }
 
-    document.getElementById("teacherDeadlineFilter")
-        .addEventListener("change", applyTeacherAssignmentFilters);
+    for (const item of data) {
+        const card = document.createElement("div");
+        card.className = "assignment";
 
+        const title = document.createElement("h3");
+        title.textContent = item.title;
 
-    // =========================================
-    // ASSIGNMENT DETAILS
-    // =========================================
+        const subject = document.createElement("p");
+        subject.className = "subject-label";
+        subject.textContent = "Subject: " +
+            (item.subjects?.subject_name || "Subject not available") +
+            (item.subjects?.subject_code
+                ? " (" + item.subjects.subject_code + ")"
+                : "");
 
-    async function openAssignmentDetails(assignment, submission) {
-
-        selectedAssignment = assignment;
-        selectedSubmission = submission;
-
-        const modal = document.getElementById(
-            "assignmentDetailsModal"
-        );
-
-        const title = document.getElementById("detailsTitle");
-        const description = document.getElementById("detailsDescription");
-        const teacher = document.getElementById("detailsTeacher");
-        const deadline = document.getElementById("detailsDeadline");
-        const countdown = document.getElementById("detailsCountdown");
-        const status = document.getElementById("detailsStatus");
-        const submitButton = document.getElementById("detailsSubmitButton");
-
-        title.textContent = assignment.title || "Untitled Assignment";
-
+        const description = document.createElement("p");
         description.textContent =
-            assignment.description || "No description provided.";
+            item.description || "No description provided.";
 
-        deadline.textContent = formatDate(assignment.due_date);
+        const deadline = document.createElement("p");
+        deadline.textContent = "Due: " + formatDate(item.due_date);
 
+        card.append(title, subject, description, deadline);
 
-        // TEACHER INFORMATION
-
-        teacher.textContent = "Loading teacher information...";
-
-        if (assignment.teacher_id) {
-
-            const { data: teacherProfile, error } = await supabaseClient
-                .from("profiles")
-                .select("full_name")
-                .eq("id", assignment.teacher_id)
-                .maybeSingle();
-
-            if (error) {
-
-                console.error("Teacher information error:", error);
-
-                teacher.textContent =
-                    "Teacher information unavailable.";
-
-            } else {
-
-                teacher.textContent =
-                    teacherProfile?.full_name || "Unknown Teacher";
-            }
-
-        } else {
-
-            teacher.textContent = "Not assigned";
-        }
-
-
-        // SUBMISSION STATUS
-
-        if (submission) {
-
-            status.textContent = "Submitted";
-            status.className = "status-submitted";
-
-            submitButton.textContent = "Already Submitted";
-            submitButton.disabled = true;
-
-        } else {
-
-            status.textContent = "Not Submitted";
-            status.className = "status-pending";
-
+        if (currentProfile.role === "student") {
+            const submitButton = document.createElement("button");
             submitButton.textContent = "Submit Assignment";
-            submitButton.disabled = false;
-        }
+            submitButton.className = "primary";
 
+            submitButton.addEventListener("click", () => {
+                openSubmissionForm(item);
+            });
 
-        // DEADLINE COUNTDOWN
+            card.appendChild(submitButton);
 
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-        }
+            const { data: existingSubmission, error: submissionError } =
+                await supabaseClient
+                    .from("assignment_submissions")
+                    .select("id")
+                    .eq("assignment_id", item.id)
+                    .eq("student_id", currentUser.id)
+                    .limit(1);
 
-        function updateCountdown() {
-
-            if (!assignment.due_date) {
-
-                countdown.textContent = "No deadline set.";
-                countdown.className = "";
-                return;
+            if (!submissionError && existingSubmission?.length) {
+                submitButton.textContent = "Already Submitted";
+                submitButton.disabled = true;
             }
-
-            const dueDate = new Date(assignment.due_date);
-            const now = new Date();
-
-            const difference =
-                dueDate.getTime() - now.getTime();
-
-            if (difference <= 0) {
-
-                countdown.textContent = "Deadline has passed.";
-                countdown.className = "status-overdue";
-
-                if (countdownInterval) {
-                    clearInterval(countdownInterval);
-                    countdownInterval = null;
-                }
-
-                return;
-            }
-
-            const days = Math.floor(
-                difference / (1000 * 60 * 60 * 24)
-            );
-
-            const hours = Math.floor(
-                (difference / (1000 * 60 * 60)) % 24
-            );
-
-            const minutes = Math.floor(
-                (difference / (1000 * 60)) % 60
-            );
-
-            const seconds = Math.floor(
-                (difference / 1000) % 60
-            );
-
-            countdown.textContent =
-                `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-
-            countdown.className = "";
         }
 
-        updateCountdown();
+        const canManage =
+            ["teacher", "admin"].includes(currentProfile.role) &&
+            (item.teacher_id === currentUser.id ||
+             currentProfile.role === "admin");
 
-        if (
-            assignment.due_date &&
-            new Date(assignment.due_date).getTime() > Date.now()
-        ) {
-            countdownInterval = setInterval(
-                updateCountdown,
-                1000
+        if (canManage) {
+            const actions = document.createElement("div");
+            actions.className = "actions";
+
+            const editButton = document.createElement("button");
+            editButton.className = "edit";
+            editButton.textContent = "Edit";
+            editButton.addEventListener("click", () => editAssignment(item));
+
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "delete";
+            deleteButton.textContent = "Delete";
+            deleteButton.addEventListener("click", () =>
+                deleteAssignment(item.id)
             );
+
+            actions.append(editButton, deleteButton);
+            card.appendChild(actions);
         }
 
-        modal.classList.remove("hidden");
+        assignmentList.appendChild(card);
     }
+}
 
+function openSubmissionForm(assignment) {
+    const existingForm = document.getElementById("submission-form");
 
-    // =========================================
-    // CLOSE ASSIGNMENT DETAILS
-    // =========================================
+    if (existingForm) existingForm.remove();
 
-    function closeAssignmentDetails() {
+    const form = document.createElement("div");
+    form.id = "submission-form";
+    form.className = "assignment";
 
-        document.getElementById("assignmentDetailsModal")
-            .classList.add("hidden");
+    const heading = document.createElement("h3");
+    heading.textContent = "Submit Assignment";
 
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-        }
+    const assignmentTitle = document.createElement("p");
+    assignmentTitle.textContent = assignment.title;
 
-        selectedAssignment = null;
-        selectedSubmission = null;
-    }
+    const label = document.createElement("label");
+    label.textContent = "Choose your file:";
 
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.id = "submission-file";
+    fileInput.accept = ".pdf,.doc,.docx,.jpg,.jpeg,.png";
 
-    document.getElementById("closeDetailsButton")
-        .addEventListener("click", closeAssignmentDetails);
+    const uploadButton = document.createElement("button");
+    uploadButton.type = "button";
+    uploadButton.className = "primary";
+    uploadButton.textContent = "Upload and Submit";
 
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.className = "edit";
+    cancelButton.textContent = "Cancel";
 
-    document.getElementById("assignmentDetailsModal")
-        .addEventListener("click", function(event) {
+    const status = document.createElement("p");
+    status.id = "submission-message";
 
-            if (event.target === this) {
-                closeAssignmentDetails();
-            }
+    form.append(
+        heading, assignmentTitle, label,
+        fileInput, uploadButton, cancelButton, status
+    );
 
-        });
+    assignmentList.prepend(form);
 
+    cancelButton.addEventListener("click", () => form.remove());
 
-    document.getElementById("detailsSubmitButton")
-        .addEventListener("click", function() {
-
-            if (!selectedAssignment || selectedSubmission) {
-                return;
-            }
-
-            const assignment = selectedAssignment;
-
-            closeAssignmentDetails();
-
-            openSubmissionForm(assignment);
-        });
-
-
-    // =========================================
-    // STUDENT SUBMISSION FORM
-    // =========================================
-
-    function openSubmissionForm(assignment) {
-
-        const existingForm =
-            document.getElementById("submission-form");
-
-        if (existingForm) {
-            existingForm.remove();
-        }
-
-        const form = document.createElement("div");
-
-        form.id = "submission-form";
-        form.className = "assignment submission-form";
-
-        const heading = document.createElement("h3");
-        heading.textContent = "Submit Assignment";
-
-        const assignmentTitle = document.createElement("p");
-        assignmentTitle.textContent = assignment.title;
-
-        const label = document.createElement("label");
-        label.textContent = "Choose your file:";
-        label.htmlFor = "submission-file";
-
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.id = "submission-file";
-        fileInput.accept = ".pdf,.doc,.docx,.jpg,.jpeg,.png";
-
-        const uploadButton = document.createElement("button");
-        uploadButton.type = "button";
-        uploadButton.id = "upload-submission";
-        uploadButton.className = "primary";
-        uploadButton.textContent = "Upload and Submit";
-
-        const cancelButton = document.createElement("button");
-        cancelButton.type = "button";
-        cancelButton.className = "cancel";
-        cancelButton.style.marginLeft = "8px";
-        cancelButton.textContent = "Cancel";
-
-        const uploadMessage = document.createElement("p");
-        uploadMessage.id = "submission-message";
-
-        form.append(
-            heading,
-            assignmentTitle,
-            label,
-            fileInput,
-            uploadButton,
-            cancelButton,
-            uploadMessage
-        );
-
-        document.getElementById("studentAssignmentPanel")
-            .prepend(form);
-
-        cancelButton.addEventListener("click", () => {
-            form.remove();
-        });
-
-        uploadButton.addEventListener("click", () => {
-            uploadSubmission(assignment);
-        });
-
-        form.scrollIntoView({ behavior: "smooth" });
-    }
-
-
-    // =========================================
-    // UPLOAD SUBMISSION
-    // =========================================
-
-    async function uploadSubmission(assignment) {
-
-        const fileInput =
-            document.getElementById("submission-file");
-
-        const uploadMessage =
-            document.getElementById("submission-message");
-
-        const uploadButton =
-            document.getElementById("upload-submission");
-
-        if (!fileInput || !uploadMessage || !uploadButton) {
-            return;
-        }
-
+    uploadButton.addEventListener("click", async () => {
         const file = fileInput.files[0];
 
         if (!file) {
-
-            uploadMessage.textContent =
-                "Please select a file first.";
-
+            status.textContent = "Please select a file first.";
             return;
         }
 
@@ -1744,42 +403,34 @@
         ];
 
         if (!allowedTypes.includes(file.type)) {
-
-            uploadMessage.textContent =
+            status.textContent =
                 "Only PDF, DOC, DOCX, JPG, and PNG files are allowed.";
-
             return;
         }
 
         if (file.size > 10 * 1024 * 1024) {
-
-            uploadMessage.textContent =
-                "File must not exceed 10 MB.";
-
+            status.textContent = "File must not exceed 10 MB.";
             return;
         }
 
         uploadButton.disabled = true;
-        uploadMessage.textContent = "Uploading file...";
+        status.textContent = "Uploading file...";
 
         const studentId = currentUser.id;
-
-        const safeFileName =
-            file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const safeFileName = file.name.replace(
+            /[^a-zA-Z0-9._-]/g, "_"
+        );
 
         const filePath =
             `${studentId}/${assignment.id}/${Date.now()}_${safeFileName}`;
 
         try {
-
             const { error: uploadError } = await supabaseClient
                 .storage
                 .from("assignment-files")
                 .upload(filePath, file);
 
-            if (uploadError) {
-                throw uploadError;
-            }
+            if (uploadError) throw uploadError;
 
             const { error: insertError } = await supabaseClient
                 .from("assignment_submissions")
@@ -1791,7 +442,6 @@
                 });
 
             if (insertError) {
-
                 await supabaseClient
                     .storage
                     .from("assignment-files")
@@ -1800,334 +450,141 @@
                 throw insertError;
             }
 
-            alert("Assignment submitted successfully!");
+            status.textContent =
+                "Assignment submitted successfully!";
 
-            await loadAssignments();
-
-            const form = document.getElementById("submission-form");
-
-            if (form) {
-                form.remove();
-            }
+            fileInput.disabled = true;
+            uploadButton.disabled = true;
 
         } catch (error) {
-
-            console.error("Submission error:", error);
-
-            uploadMessage.textContent =
+            status.textContent =
                 "Submission failed: " + error.message;
-
             uploadButton.disabled = false;
         }
+    });
+}
+
+assignmentForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!currentProfile ||
+        !["teacher", "admin"].includes(currentProfile.role)) {
+        showMessage("Only teachers and admins can manage assignments.", true);
+        return;
     }
 
+    const subjectId = subjectSelect.value;
+    const title = document.getElementById("title").value.trim();
+    const description =
+        document.getElementById("description").value.trim();
+    const dueDate = document.getElementById("dueDate").value;
 
-    // =========================================
-    // CREATE OR UPDATE ASSIGNMENT
-    // =========================================
+    if (!subjectId || !title || !dueDate) {
+        showMessage("Please select a subject, enter a title and deadline.", true);
+        return;
+    }
 
-    assignmentForm.addEventListener("submit", async function(event) {
+    const assignmentData = {
+        school_id: currentProfile.school_id,
+        teacher_id: currentUser.id,
+        subject_id: subjectId,
+        title,
+        description,
+        due_date: new Date(dueDate).toISOString()
+    };
 
+    let result;
+
+    if (editingId) {
+        result = await supabaseClient
+            .from("assignments")
+            .update(assignmentData)
+            .eq("id", editingId);
+    } else {
+        result = await supabaseClient
+            .from("assignments")
+            .insert([assignmentData]);
+    }
+
+    if (result.error) {
+        showMessage(result.error.message, true);
+        return;
+    }
+
+    showMessage(editingId
+        ? "Assignment updated successfully!"
+        : "Assignment added successfully!");
+
+    resetForm();
+    await loadAssignments();
+});
+
+function editAssignment(item) {
+    editingId = item.id;
+
+    subjectSelect.value = item.subject_id || "";
+    document.getElementById("title").value = item.title;
+    document.getElementById("description").value =
+        item.description || "";
+
+    document.getElementById("dueDate").value =
+        item.due_date
+            ? new Date(item.due_date).toISOString().slice(0, 16)
+            : "";
+
+    document.getElementById("formTitle").textContent =
+        "Edit Assignment";
+
+    document.getElementById("saveButton").textContent =
+        "Update Assignment";
+
+    document.getElementById("cancelButton").classList.remove("hidden");
+    formPanel.scrollIntoView({ behavior: "smooth" });
+}
+
+async function deleteAssignment(id) {
+    if (!confirm("Are you sure you want to delete this assignment?")) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("assignments")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert("Error deleting assignment: " + error.message);
+        return;
+    }
+
+    alert("Assignment deleted successfully!");
+    await loadAssignments();
+}
+
+function resetForm() {
+    editingId = null;
+    assignmentForm.reset();
+
+    document.getElementById("formTitle").textContent =
+        "Create Assignment";
+
+    document.getElementById("saveButton").textContent =
+        "Add Assignment";
+
+    document.getElementById("cancelButton").classList.add("hidden");
+}
+
+document.getElementById("cancelButton")
+    .addEventListener("click", resetForm);
+
+document.getElementById("logoutButton")
+    .addEventListener("click", async event => {
         event.preventDefault();
-
-        if (
-            !currentProfile ||
-            !["teacher", "admin"].includes(currentProfile.role)
-        ) {
-            showMessage(
-                "Only teachers and admins can manage assignments.",
-                true
-            );
-            return;
-        }
-
-        const title = document.getElementById("title").value.trim();
-        const description = document.getElementById("description").value.trim();
-        const dueDate = document.getElementById("dueDate").value;
-        const subjectId = document.getElementById("subjectId").value;
-
-        if (!subjectId) {
-            showMessage("Please select a subject.", true);
-            return;
-        }
-
-        if (!title) {
-            showMessage("Assignment title is required.", true);
-            return;
-        }
-
-        if (title.length > 150) {
-            showMessage(
-                "Assignment title must not exceed 150 characters.",
-                true
-            );
-            return;
-        }
-
-        if (description.length > 2000) {
-            showMessage(
-                "Description must not exceed 2,000 characters.",
-                true
-            );
-            return;
-        }
-
-        if (!dueDate) {
-            showMessage("Please select a deadline.", true);
-            return;
-        }
-
-        const parsedDueDate = new Date(dueDate);
-
-        if (Number.isNaN(parsedDueDate.getTime())) {
-            showMessage("Please enter a valid deadline.", true);
-            return;
-        }
-
-        if (parsedDueDate.getTime() <= Date.now()) {
-            showMessage(
-                "Deadline must be a future date and time.",
-                true
-            );
-            return;
-        }
-
-        const isEditing = Boolean(editingId);
-        const targetId = editingId;
-
-        const assignmentData = {
-            school_id: currentProfile.school_id,
-            teacher_id: currentUser.id,
-            subject_id: subjectId,
-            title,
-            description,
-            due_date: parsedDueDate.toISOString()
-        };
-
-        const saveButton = document.getElementById("saveButton");
-
-        saveButton.disabled = true;
-        saveButton.textContent = isEditing
-            ? "Updating..."
-            : "Creating...";
-
-        try {
-
-            let result;
-
-            if (isEditing) {
-
-                result = await supabaseClient
-                    .from("assignments")
-                    .update(assignmentData)
-                    .eq("id", targetId)
-                    .select("id")
-                    .maybeSingle();
-
-            } else {
-
-                result = await supabaseClient
-                    .from("assignments")
-                    .insert([assignmentData])
-                    .select("id")
-                    .single();
-            }
-
-            if (result.error) {
-                throw result.error;
-            }
-
-            if (!result.data) {
-                throw new Error(
-                    "No assignment was changed. Check your permissions or selected assignment."
-                );
-            }
-
-            showMessage(
-                isEditing
-                    ? "Assignment updated successfully!"
-                    : "Assignment created successfully!"
-            );
-
-            resetForm();
-
-            await loadAssignments();
-
-        } catch (error) {
-
-            console.error("Assignment save error:", error);
-
-            showMessage(
-                "Unable to save assignment: " + error.message,
-                true
-            );
-
-        } finally {
-
-            saveButton.disabled = false;
-            saveButton.textContent = editingId
-                ? "Update Assignment"
-                : "Add Assignment";
-        }
-
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
     });
 
-
-    // =========================================
-    // EDIT ASSIGNMENT
-    // =========================================
-
-    function editAssignment(item) {
-
-        editingId = item.id;
-
-        document.getElementById("subjectId").value =
-            item.subject_id || "";
-
-        document.getElementById("title").value =
-            item.title || "";
-
-        document.getElementById("description").value =
-            item.description || "";
-
-        const localDate = item.due_date
-            ? new Date(item.due_date)
-            : null;
-
-        if (localDate) {
-
-            const year = localDate.getFullYear();
-
-            const month = String(
-                localDate.getMonth() + 1
-            ).padStart(2, "0");
-
-            const day = String(
-                localDate.getDate()
-            ).padStart(2, "0");
-
-            const hours = String(
-                localDate.getHours()
-            ).padStart(2, "0");
-
-            const minutes = String(
-                localDate.getMinutes()
-            ).padStart(2, "0");
-
-            document.getElementById("dueDate").value =
-                `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
-
-        document.getElementById("formTitle").textContent =
-            "Edit Assignment";
-
-        document.getElementById("saveButton").textContent =
-            "Update Assignment";
-
-        document.getElementById("cancelButton")
-            .classList.remove("hidden");
-
-        formPanel.scrollIntoView({
-            behavior: "smooth"
-        });
-    }
-
-
-    // =========================================
-    // DELETE ASSIGNMENT
-    // =========================================
-
-    async function deleteAssignment(id) {
-
-        const confirmed = confirm(
-            "Are you sure you want to delete this assignment?"
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        try {
-
-            const { data, error } = await supabaseClient
-                .from("assignments")
-                .delete()
-                .eq("id", id)
-                .select("id")
-                .maybeSingle();
-
-            if (error) {
-                throw error;
-            }
-
-            if (!data) {
-                throw new Error(
-                    "Assignment was not deleted. Check your permissions."
-                );
-            }
-
-            alert("Assignment deleted successfully!");
-
-            await loadAssignments();
-
-        } catch (error) {
-
-            console.error("Assignment deletion error:", error);
-
-            alert(
-                "Unable to delete assignment: " + error.message
-            );
-        }
-    }
-
-
-    // =========================================
-    // RESET FORM
-    // =========================================
-
-    function resetForm() {
-
-        editingId = null;
-
-        assignmentForm.reset();
-
-        document.getElementById("formTitle").textContent =
-            "Create Assignment";
-
-        document.getElementById("saveButton").textContent =
-            "Add Assignment";
-
-        document.getElementById("cancelButton")
-            .classList.add("hidden");
-    }
-
-
-    document.getElementById("cancelButton")
-        .addEventListener("click", resetForm);
-
-
-    // =========================================
-    // LOGOUT
-    // =========================================
-
-    document.getElementById("logoutButton")
-        .addEventListener("click", async function(event) {
-
-            event.preventDefault();
-
-            await supabaseClient.auth.signOut();
-
-            window.location.href = "login.html";
-        });
-
-
-    // =========================================
-    // START APPLICATION
-    // =========================================
-
-    initializePage();
-
+initializePage();
 </script>
-
 </body>
 </html>
