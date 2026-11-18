@@ -134,6 +134,10 @@
             background: #dc3545;
         }
 
+        .generate-button {
+            background: #198754;
+        }
+
         .message {
             margin-top: 15px;
             font-weight: bold;
@@ -167,6 +171,30 @@
             border-radius: 20px;
             font-size: 13px;
             margin-bottom: 15px;
+        }
+
+        .enrollment-code-box {
+            margin-top: 15px;
+            padding: 13px;
+            background: #f0f6ff;
+            border: 1px dashed #1455a0;
+            border-radius: 8px;
+        }
+
+        .enrollment-code {
+            display: block;
+            margin-top: 7px;
+            color: #1455a0;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            overflow-wrap: anywhere;
+        }
+
+        .code-note {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 7px;
         }
 
         @media (max-width: 600px) {
@@ -205,12 +233,49 @@
         </span>
     </div>
 
+    <!-- STUDENT JOIN SUBJECT -->
+    <section class="card" id="joinSubjectCard" style="display: none;">
+
+        <h2>Join a Subject</h2>
+
+        <p class="empty">
+            Enter the enrollment code provided by your teacher.
+        </p>
+
+        <form id="joinSubjectForm">
+
+            <label for="enrollmentCode">
+                Enrollment Code
+            </label>
+
+            <input
+                type="text"
+                id="enrollmentCode"
+                placeholder="Enter your enrollment code"
+                maxlength="30"
+                autocomplete="off"
+                required
+            >
+
+            <button type="submit" id="joinButton">
+                Join Subject
+            </button>
+
+        </form>
+
+        <p id="joinMessage" class="message"></p>
+
+    </section>
+
+    <!-- ADD SUBJECT -->
     <section class="card" id="subjectFormCard">
+
         <h2>Add New Subject</h2>
 
         <form id="subjectForm">
 
             <label for="subjectName">Subject Name</label>
+
             <input
                 type="text"
                 id="subjectName"
@@ -219,6 +284,7 @@
             >
 
             <label for="subjectCode">Subject Code</label>
+
             <input
                 type="text"
                 id="subjectCode"
@@ -227,6 +293,7 @@
             >
 
             <label for="description">Description</label>
+
             <textarea
                 id="description"
                 placeholder="Enter subject description"
@@ -239,9 +306,12 @@
         </form>
 
         <p id="message" class="message"></p>
+
     </section>
 
+    <!-- SUBJECT LIST -->
     <section class="card">
+
         <h2 id="subjectsHeading">Available Subjects</h2>
 
         <p id="subjectsDescription" class="empty"></p>
@@ -249,6 +319,7 @@
         <div id="subjectsList">
             Loading subjects...
         </div>
+
     </section>
 
 </main>
@@ -264,6 +335,12 @@
     const pageSubtitle = document.getElementById("pageSubtitle");
     const subjectsHeading = document.getElementById("subjectsHeading");
     const subjectsDescription = document.getElementById("subjectsDescription");
+
+    const joinSubjectCard = document.getElementById("joinSubjectCard");
+    const joinSubjectForm = document.getElementById("joinSubjectForm");
+    const joinButton = document.getElementById("joinButton");
+    const joinMessage = document.getElementById("joinMessage");
+    const enrollmentCodeInput = document.getElementById("enrollmentCode");
 
     let currentUser = null;
     let currentProfile = null;
@@ -284,6 +361,11 @@
     function showMessage(text, type = "") {
         message.textContent = text;
         message.className = "message " + type;
+    }
+
+    function showJoinMessage(text, type = "") {
+        joinMessage.textContent = text;
+        joinMessage.className = "message " + type;
     }
 
     function canManageSubjects() {
@@ -362,6 +444,7 @@
                 "Subjects you are currently enrolled in.";
 
             formCard.style.display = "none";
+            joinSubjectCard.style.display = "block";
 
         } else if (profile.role === "teacher") {
 
@@ -479,19 +562,60 @@
             return;
         }
 
-        displaySubjects();
+        await displaySubjects();
     }
 
-    function displaySubjects() {
+    async function displaySubjects() {
 
-        subjectsList.innerHTML = subjects.map(subject => {
+        let subjectCards = [];
+
+        for (const subject of subjects) {
 
             let actionButtons = "";
+            let enrollmentCodeHTML = "";
 
             if (canManageSubjects()) {
 
+                // Retrieve the existing active code
+                const {
+                    data: currentCode,
+                    error: codeError
+                } = await supabaseClient.rpc(
+                    "get_subject_enrollment_code",
+                    {
+                        p_subject_id: subject.id
+                    }
+                );
+
+                const codeText = codeError
+                    ? "Unable to load code"
+                    : (currentCode || "No active code generated yet.");
+
+                enrollmentCodeHTML = `
+                    <div class="enrollment-code-box">
+
+                        <strong>Student Enrollment Code</strong>
+
+                        <span class="enrollment-code">
+                            ${escapeHTML(codeText)}
+                        </span>
+
+                        <p class="code-note">
+                            Share this code with students so they can join this subject.
+                        </p>
+
+                    </div>
+                `;
+
                 actionButtons = `
                     <div class="subject-actions">
+
+                        <button
+                            class="action-button generate-button"
+                            data-action="generate-code"
+                            data-id="${escapeHTML(subject.id)}">
+                            Generate New Code
+                        </button>
 
                         <button
                             class="action-button edit-button"
@@ -511,7 +635,7 @@
                 `;
             }
 
-            return `
+            subjectCards.push(`
                 <div class="subject">
 
                     <h3>${escapeHTML(subject.subject_name)}</h3>
@@ -528,13 +652,76 @@
                         )}
                     </p>
 
+                    ${enrollmentCodeHTML}
+
                     ${actionButtons}
 
                 </div>
-            `;
+            `);
+        }
 
-        }).join("");
+        subjectsList.innerHTML = subjectCards.join("");
     }
+
+    // STUDENT JOIN SUBJECT
+    joinSubjectForm.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        if (
+            !currentProfile ||
+            currentProfile.role !== "student"
+        ) {
+            showJoinMessage(
+                "Only student accounts can join subjects.",
+                "error"
+            );
+            return;
+        }
+
+        const code = enrollmentCodeInput.value.trim();
+
+        if (!code) {
+            showJoinMessage(
+                "Please enter an enrollment code.",
+                "error"
+            );
+            return;
+        }
+
+        joinButton.disabled = true;
+
+        showJoinMessage("Joining subject...");
+
+        const {
+            data,
+            error
+        } = await supabaseClient.rpc(
+            "join_subject_with_code",
+            {
+                p_code: code
+            }
+        );
+
+        joinButton.disabled = false;
+
+        if (error) {
+            showJoinMessage(
+                error.message,
+                "error"
+            );
+            return;
+        }
+
+        showJoinMessage(
+            data || "Successfully enrolled in the subject!",
+            "success"
+        );
+
+        joinSubjectForm.reset();
+
+        await loadSubjects();
+    });
 
     // ADD SUBJECT
     form.addEventListener("submit", async function(event) {
@@ -596,7 +783,7 @@
         await loadSubjects();
     });
 
-    // EDIT AND DELETE SUBJECT
+    // EDIT, DELETE AND GENERATE ENROLLMENT CODE
     subjectsList.addEventListener("click", async function(event) {
 
         const button = event.target.closest("button[data-action]");
@@ -624,6 +811,47 @@
 
         button.disabled = true;
 
+        // GENERATE ENROLLMENT CODE
+        if (action === "generate-code") {
+
+            const confirmed = confirm(
+                "Generate a new enrollment code for " +
+                selectedSubject.subject_name +
+                "?\n\nThe previous active code will stop working."
+            );
+
+            if (!confirmed) {
+                button.disabled = false;
+                return;
+            }
+
+            const {
+                data: newCode,
+                error
+            } = await supabaseClient.rpc(
+                "create_subject_enrollment_code",
+                {
+                    p_subject_id: subjectId
+                }
+            );
+
+            if (error) {
+                alert("Code generation failed: " + error.message);
+                button.disabled = false;
+                return;
+            }
+
+            alert(
+                "New enrollment code generated successfully!\n\n" +
+                "Subject: " + selectedSubject.subject_name +
+                "\nEnrollment Code: " + newCode
+            );
+
+            await loadSubjects();
+            return;
+        }
+
+        // EDIT SUBJECT
         if (action === "edit") {
 
             const newName = prompt(
@@ -683,6 +911,7 @@
             await loadSubjects();
         }
 
+        // DELETE SUBJECT
         if (action === "delete") {
 
             const confirmed = confirm(
