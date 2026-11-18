@@ -302,6 +302,24 @@ footer {
     line-height: 2;
 }
 
+.delete-notification-button {
+    background: #dc2626;
+    padding: 9px 15px;
+    margin-top: 12px;
+    margin-left: 8px;
+}
+
+.delete-notification-button:hover {
+    background: #b91c1c;
+}
+
+.notification-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
 /* RESPONSIVE DESIGN */
 @media (max-width: 900px) {
     .hero {
