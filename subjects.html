@@ -18,23 +18,42 @@
         }
 
         body {
-            background: #f4f7fb;
+            background: #f7f5fc;
             color: #263445;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         header {
-            background: #1455a0;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
-            padding: 22px 8%;
+            padding: 25px 8%;
+            box-shadow: 0 4px 15px rgba(91, 53, 165, 0.18);
         }
 
         header h1 {
-            font-size: 25px;
+            font-size: 26px;
+            font-weight: 700;
         }
 
         header p {
-            margin-top: 6px;
-            color: #dceaff;
+            margin-top: 7px;
+            color: #eee7ff;
         }
 
         main {
@@ -43,99 +62,164 @@
             margin: 35px auto;
         }
 
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #7952ce;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .back:hover {
+            color: #56339b;
+            transform: translateX(-3px);
+        }
+
+        .role-label {
+            display: inline-block;
+            background: #eee7ff;
+            color: #6842b5;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
         .card {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
+            padding: 27px;
+            border-radius: 15px;
             margin-bottom: 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border: 1px solid #eee8f8;
+            box-shadow: 0 5px 20px rgba(70, 45, 120, 0.06);
+            animation: fadeUp 0.5s ease both;
         }
 
         h2 {
-            color: #1455a0;
+            color: #6842b5;
             margin-bottom: 20px;
+            font-size: 21px;
         }
 
         label {
             display: block;
-            margin: 13px 0 7px;
+            margin: 15px 0 8px;
             font-weight: bold;
+            color: #39445a;
         }
 
         input, textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccd5e0;
-            border-radius: 7px;
+            padding: 13px;
+            border: 1px solid #dcd5e9;
+            border-radius: 9px;
             font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+            background: #fff;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #7952ce;
+            box-shadow: 0 0 0 3px rgba(121, 82, 206, 0.12);
         }
 
         textarea {
             resize: vertical;
-            min-height: 85px;
+            min-height: 90px;
         }
 
         button {
-            background: #1455a0;
+            background: #7952ce;
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 7px;
+            padding: 12px 21px;
+            border-radius: 9px;
             cursor: pointer;
             margin-top: 18px;
             font-size: 15px;
+            font-weight: bold;
+            transition: 0.2s;
         }
 
         button:hover {
-            background: #0d407e;
+            background: #613bb0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 53, 165, 0.2);
         }
 
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .subject {
-            border: 1px solid #e1e7ef;
-            border-left: 5px solid #1455a0;
-            padding: 18px;
-            border-radius: 8px;
-            margin-bottom: 14px;
+            background: #fff;
+            border: 1px solid #e9e2f5;
+            border-left: 5px solid #7952ce;
+            padding: 21px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 3px 12px rgba(70, 45, 120, 0.04);
+            transition: 0.25s;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .subject:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 18px rgba(70, 45, 120, 0.09);
         }
 
         .subject h3 {
-            margin-bottom: 8px;
-            color: #1455a0;
+            margin-bottom: 10px;
+            color: #6842b5;
+            font-size: 19px;
         }
 
         .subject p {
-            margin-top: 6px;
+            margin-top: 7px;
             color: #596779;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .subject-actions {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
 
         .action-button {
             margin-top: 0;
-            padding: 9px 16px;
+            padding: 10px 16px;
         }
 
         .edit-button {
             background: #e9a23b;
         }
 
+        .edit-button:hover {
+            background: #ca8524;
+        }
+
         .delete-button {
             background: #dc3545;
         }
 
+        .delete-button:hover {
+            background: #bb2635;
+        }
+
         .generate-button {
             background: #198754;
+        }
+
+        .generate-button:hover {
+            background: #146c43;
         }
 
         .message {
@@ -154,38 +238,22 @@
         .empty {
             color: #718096;
             padding: 12px 0;
-        }
-
-        .back {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #1455a0;
-            text-decoration: none;
-        }
-
-        .role-label {
-            display: inline-block;
-            background: #eaf2ff;
-            color: #1455a0;
-            padding: 7px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            margin-bottom: 15px;
+            line-height: 1.5;
         }
 
         .enrollment-code-box {
-            margin-top: 15px;
-            padding: 13px;
-            background: #f0f6ff;
-            border: 1px dashed #1455a0;
-            border-radius: 8px;
+            margin-top: 16px;
+            padding: 16px;
+            background: #f3effb;
+            border: 1px dashed #7952ce;
+            border-radius: 10px;
         }
 
         .enrollment-code {
             display: block;
-            margin-top: 7px;
-            color: #1455a0;
-            font-size: 20px;
+            margin-top: 9px;
+            color: #6842b5;
+            font-size: 21px;
             font-weight: bold;
             letter-spacing: 2px;
             overflow-wrap: anywhere;
@@ -194,21 +262,41 @@
         .code-note {
             font-size: 13px;
             color: #64748b;
-            margin-top: 7px;
+            margin-top: 8px;
         }
 
         @media (max-width: 600px) {
+            header {
+                padding: 22px 5%;
+            }
+
             main {
                 width: 94%;
-                margin: 20px auto;
+                margin: 22px auto;
             }
 
             .card {
-                padding: 18px;
+                padding: 19px;
+            }
+
+            .subject {
+                padding: 17px;
             }
 
             .subject-actions button {
                 flex: 1;
+                min-width: 100px;
+            }
+
+            button {
+                max-width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
