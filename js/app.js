@@ -24,6 +24,7 @@ if (registerForm) {
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
+
         const requestedRole = accountTypeInput
             ? accountTypeInput.value
             : "student";
@@ -85,7 +86,7 @@ if (registerForm) {
                     showMessage(
                         data.session
                             ? "Account created! Your teacher request is pending admin approval. You can log in as a student while waiting."
-                            : "Registration successful! Please confirm your email. Your teacher request will be sent for admin approval after account creation.",
+                            : "Registration successful! Please confirm your email. Your teacher request has been submitted and is pending admin approval.",
                         "success"
                     );
 
