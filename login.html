@@ -10,12 +10,13 @@
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
-            background: #f1f5fc;
+            background: linear-gradient(135deg, #f7f5fc, #eee8f8);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,91 +25,164 @@
         }
 
         .login-container {
-            background: white;
+            background: #ffffff;
             width: 100%;
             max-width: 430px;
             padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 5px 25px #00000010;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(91, 53, 165, 0.12);
+            animation: fadeUp 0.7s ease;
+            border: 1px solid #eee8f8;
         }
 
         .logo {
             text-align: center;
-            color: #155eef;
-            font-size: 28px;
+            color: #5b35a5;
+            font-size: 30px;
             font-weight: bold;
+            margin-bottom: 25px;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #7952ce;
         }
 
         h2 {
             text-align: center;
-            color: #172554;
+            color: #30204f;
             margin-bottom: 10px;
+            font-size: 26px;
         }
 
         .subtitle {
             text-align: center;
-            color: #64748b;
-            margin-bottom: 30px;
+            color: #827b91;
+            margin-bottom: 32px;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         label {
             display: block;
             font-weight: bold;
-            margin-bottom: 8px;
-            color: #172554;
+            margin-bottom: 9px;
+            color: #40345a;
+            font-size: 14px;
         }
 
         input {
             width: 100%;
-            padding: 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ded7eb;
+            border-radius: 10px;
+            margin-bottom: 22px;
             font-size: 15px;
+            background: #fcfbfe;
+            color: #30204f;
+            transition: 0.25s ease;
         }
 
         input:focus {
             outline: none;
-            border-color: #155eef;
+            border-color: #7952ce;
+            box-shadow: 0 0 0 4px rgba(121, 82, 206, 0.12);
+            background: #ffffff;
+        }
+
+        input::placeholder {
+            color: #aaa2b8;
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
-            background: #155eef;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.25s ease;
+            box-shadow: 0 5px 15px rgba(91, 53, 165, 0.2);
         }
 
         button:hover {
-            background: #104bc4;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(91, 53, 165, 0.3);
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
         }
 
         #message {
             text-align: center;
             margin-top: 18px;
             font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
         }
 
         .register-link {
             text-align: center;
-            margin-top: 25px;
-            color: #64748b;
+            margin-top: 28px;
+            color: #827b91;
+            font-size: 14px;
         }
 
         a {
-            color: #155eef;
+            color: #6842b5;
             font-weight: bold;
             text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        a:hover {
+            color: #4b288f;
+            text-decoration: underline;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 24px;
+                border-radius: 16px;
+            }
+
+            .logo {
+                font-size: 27px;
+            }
+
+            h2 {
+                font-size: 23px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
@@ -117,7 +191,7 @@
 
 <div class="login-container">
 
-    <div class="logo">EduConnect</div>
+    <div class="logo">Edu<span>Connect</span></div>
 
     <h2>Welcome Back!</h2>
 
@@ -127,19 +201,21 @@
 
     <form id="loginForm">
 
-        <label>Email Address</label>
+        <label for="email">Email Address</label>
         <input
             type="email"
             id="email"
             placeholder="Enter your email"
+            autocomplete="username"
             required
         >
 
-        <label>Password</label>
+        <label for="password">Password</label>
         <input
             type="password"
             id="password"
             placeholder="Enter your password"
+            autocomplete="current-password"
             required
         >
 
@@ -149,7 +225,7 @@
 
     </form>
 
-    <p id="message"></p>
+    <p id="message" role="status" aria-live="polite"></p>
 
     <div class="register-link">
         Don't have an account?
@@ -187,7 +263,7 @@ loginForm.addEventListener("submit", async function(e) {
 
         if (error) {
             throw error;
-        }   
+        }
 
         // Check account status
         const { data: profile, error: profileError } = await supabaseClient
@@ -210,13 +286,14 @@ loginForm.addEventListener("submit", async function(e) {
             );
         }
 
-        message.style.color = "green";
+        message.style.color = "#16a34a";
         message.textContent = "Login successful!";
 
         window.location.href = "dashboard.html";
+
     } catch (error) {
 
-        message.style.color = "red";
+        message.style.color = "#dc2626";
         message.textContent = error.message;
 
         loginBtn.disabled = false;
