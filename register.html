@@ -8,6 +8,250 @@
     <title>Create Account | EduConnect</title>
 
     <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.auth-page {
+            min-height: 100vh;
+            padding: 35px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at 85% 15%, #e9defa 0, transparent 30%),
+                linear-gradient(135deg, #f7f5fc, #eee8f8);
+            color: #30204f;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeUp 0.7s ease;
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            color: #5b35a5;
+            font-size: 27px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
+            color: white;
+            font-size: 23px;
+        }
+
+        .auth-card {
+            width: 100%;
+            padding: 38px;
+            background: #ffffff;
+            border: 1px solid #eee8f8;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(91, 53, 165, 0.12);
+        }
+
+        .auth-heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-heading h1 {
+            color: #30204f;
+            font-size: 27px;
+            margin-bottom: 11px;
+        }
+
+        .auth-heading p {
+            color: #827b91;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 9px;
+            color: #40345a;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #ded7eb;
+            border-radius: 10px;
+            background: #fcfbfe;
+            color: #30204f;
+            font-size: 14px;
+            transition: 0.25s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #aaa2b8;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #7952ce;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(121, 82, 206, 0.12);
+        }
+
+        .account-info {
+            padding: 16px;
+            margin: 24px 0;
+            border: 1px solid #e3d8f5;
+            border-radius: 11px;
+            background: #f7f3fd;
+        }
+
+        .account-info strong {
+            display: block;
+            color: #6842b5;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .account-info p {
+            color: #827b91;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        #registerButton {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(91, 53, 165, 0.2);
+            transition: 0.25s ease;
+        }
+
+        #registerButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(91, 53, 165, 0.3);
+        }
+
+        #registerButton:active {
+            transform: scale(0.98);
+        }
+
+        #registerButton:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-message {
+            margin-top: 17px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .auth-footer {
+            margin-top: 27px;
+            text-align: center;
+            color: #827b91;
+            font-size: 13px;
+        }
+
+        .auth-footer a {
+            color: #6842b5;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .auth-footer a:hover {
+            color: #4b288f;
+            text-decoration: underline;
+        }
+
+        .back-home {
+            margin-top: 25px;
+            color: #6842b5;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .back-home:hover {
+            color: #4b288f;
+            transform: translateX(-3px);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body.auth-page {
+                padding: 25px 15px;
+            }
+
+            .auth-card {
+                padding: 28px 22px;
+                border-radius: 16px;
+            }
+
+            .auth-heading h1 {
+                font-size: 23px;
+            }
+
+            .auth-logo {
+                font-size: 24px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="auth-page">
@@ -30,28 +274,47 @@
 
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName"
-                        placeholder="Enter your full name" required>
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Enter your full name"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email"
-                        placeholder="Enter your email" required>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password"
+                    <input
+                        type="password"
+                        id="password"
                         placeholder="Create a password"
-                        minlength="8" required>
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword"
+                    <input
+                        type="password"
+                        id="confirmPassword"
                         placeholder="Confirm your password"
-                        minlength="8" required>
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
                 </div>
 
                 <div class="account-info">
@@ -63,9 +326,12 @@
                     Create Account
                 </button>
 
-                <p id="registerMessage"
+                <p
+                    id="registerMessage"
                     class="form-message"
-                    role="status"></p>
+                    role="status"
+                    aria-live="polite"
+                ></p>
 
             </form>
 
