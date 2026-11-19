@@ -18,14 +18,16 @@
         }
 
         body {
-            background: #f4f7fb;
-            color: #263445;
+            background: #f7f5fc;
+            color: #302b3d;
+            animation: fadeIn 0.5s ease;
         }
 
         header {
-            background: #1455a0;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
-            padding: 22px 8%;
+            padding: 25px 8%;
+            box-shadow: 0 4px 15px rgba(91, 53, 165, 0.16);
         }
 
         header h1 {
@@ -34,7 +36,8 @@
 
         header p {
             margin-top: 6px;
-            color: #dceaff;
+            color: #eee8ff;
+            font-size: 14px;
         }
 
         main {
@@ -43,45 +46,70 @@
             margin: 30px auto;
         }
 
-        .back {
+        .back,
+        .back:visited,
+        .back:active {
             display: inline-block;
             margin-bottom: 20px;
-            color: #1455a0;
+            color: #6842b5 !important;
             text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .back:hover {
+            color: #4c278f !important;
+            transform: translateX(-4px);
         }
 
         .card {
             background: white;
             padding: 25px;
-            border-radius: 12px;
+            border-radius: 15px;
             margin-bottom: 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 18px rgba(91, 53, 165, 0.07);
+            border: 1px solid #eee8f8;
+            animation: fadeUp 0.55s ease;
         }
 
         h2 {
-            color: #1455a0;
+            color: #6842b5;
             margin-bottom: 18px;
+            font-size: 21px;
         }
 
         .description {
-            color: #68778a;
+            color: #777184;
             margin-bottom: 18px;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 14px;
         }
 
         label {
             display: block;
             margin: 13px 0 7px;
             font-weight: bold;
+            font-size: 13px;
+            color: #514761;
         }
 
         input, select, textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccd5e0;
-            border-radius: 7px;
-            font-size: 15px;
-            background: white;
+            border: 1px solid #e1d9ef;
+            border-radius: 9px;
+            font-size: 14px;
+            background: #fcfbff;
+            color: #302b3d;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #7952ce;
+            box-shadow: 0 0 0 3px rgba(121, 82, 206, 0.12);
         }
 
         textarea {
@@ -90,22 +118,27 @@
         }
 
         button {
-            background: #1455a0;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
             border: none;
-            padding: 11px 18px;
-            border-radius: 7px;
+            padding: 12px 19px;
+            border-radius: 9px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: bold;
+            transition: 0.25s;
         }
 
         button:hover {
-            background: #0d407e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(91, 53, 165, 0.2);
         }
 
         button:disabled {
-            background: #9aabba;
+            background: #b8aecb;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .primary-button {
@@ -119,22 +152,31 @@
         }
 
         .attendance-item {
-            border: 1px solid #e1e7ef;
-            border-left: 5px solid #1455a0;
-            border-radius: 9px;
+            background: #fbfaff;
+            border: 1px solid #e8e0f5;
+            border-left: 5px solid #7952ce;
+            border-radius: 11px;
             padding: 18px;
             margin-bottom: 14px;
+            transition: 0.25s;
+        }
+
+        .attendance-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(91, 53, 165, 0.08);
         }
 
         .attendance-item h3 {
-            color: #1455a0;
-            margin-bottom: 7px;
+            color: #6842b5;
+            margin-bottom: 9px;
+            font-size: 16px;
         }
 
         .attendance-item p {
-            color: #64748b;
-            margin-top: 6px;
+            color: #777184;
+            margin-top: 7px;
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .student-row {
@@ -142,16 +184,17 @@
             grid-template-columns: 1.3fr 1fr 1.5fr;
             gap: 12px;
             align-items: center;
-            border-bottom: 1px solid #e8edf3;
+            border-bottom: 1px solid #eee8f8;
             padding: 15px 0;
         }
 
         .student-name {
             font-weight: bold;
+            color: #393147;
         }
 
         .student-section {
-            color: #718096;
+            color: #898297;
             font-size: 13px;
             margin-top: 5px;
         }
@@ -171,20 +214,26 @@
         }
 
         .stat-card {
-            background: #f4f7fb;
+            background: #fbfaff;
             padding: 20px;
-            border-radius: 9px;
-            border: 1px solid #e4eaf2;
+            border-radius: 12px;
+            border: 1px solid #e8e0f5;
+            transition: 0.25s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(91, 53, 165, 0.08);
         }
 
         .stat-card p {
-            color: #64748b;
+            color: #777184;
             font-size: 13px;
             margin-bottom: 10px;
         }
 
         .stat-card h3 {
-            color: #1455a0;
+            color: #6842b5;
             font-size: 27px;
         }
 
@@ -204,8 +253,8 @@
         }
 
         .history-item {
-            border-bottom: 1px solid #e8edf3;
-            padding: 15px 0;
+            border-bottom: 1px solid #eee8f8;
+            padding: 16px 0;
         }
 
         .history-item:last-child {
@@ -214,20 +263,22 @@
 
         .history-item h3 {
             font-size: 16px;
-            margin-bottom: 7px;
-            color: #1455a0;
+            margin-bottom: 8px;
+            color: #6842b5;
         }
 
         .history-item p {
-            margin-top: 5px;
-            color: #64748b;
+            margin-top: 6px;
+            color: #777184;
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .message {
             margin-top: 15px;
             font-weight: bold;
             line-height: 1.5;
+            font-size: 14px;
         }
 
         .success {
@@ -239,7 +290,7 @@
         }
 
         .muted {
-            color: #718096;
+            color: #898297;
         }
 
         .hidden {
@@ -251,21 +302,46 @@
             grid-template-columns: 1.3fr 1fr 1.5fr;
             gap: 12px;
             padding-bottom: 12px;
-            border-bottom: 2px solid #e1e7ef;
+            border-bottom: 2px solid #e8e0f5;
             font-weight: bold;
-            color: #526174;
+            color: #6842b5;
             font-size: 13px;
         }
 
         .percentage-note {
             margin-top: 15px;
             font-size: 13px;
-            color: #718096;
+            color: #898297;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 700px) {
+            header {
+                padding: 22px 5%;
+            }
+
             main {
                 width: 94%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 19px;
             }
 
             .filter-grid {
@@ -278,7 +354,7 @@
 
             .student-row {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: 9px;
             }
 
             .table-header {
@@ -288,6 +364,22 @@
             .status-select,
             .remarks-input {
                 width: 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
             }
         }
     </style>
