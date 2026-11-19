@@ -16,206 +16,188 @@
             padding: 0;
         }
 
-        body.auth-page {
-            min-height: 100vh;
-            padding: 35px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        body {
             font-family: Arial, sans-serif;
-            background:
-                radial-gradient(circle at 85% 15%, #e9defa 0, transparent 30%),
-                linear-gradient(135deg, #f7f5fc, #eee8f8);
-            color: #30204f;
+            background: #f7f5fc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 15px;
+            color: #302747;
         }
 
         .auth-container {
             width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: fadeUp 0.7s ease;
+            max-width: 440px;
+            background: #ffffff;
+            padding: 38px;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(75, 45, 130, 0.10);
+            animation: fadeUp 0.6s ease;
         }
 
         .auth-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 25px;
+            display: block;
+            text-align: center;
+            text-decoration: none;
             color: #5b35a5;
             font-size: 27px;
-            font-weight: bold;
-            text-decoration: none;
+            font-weight: 800;
+            margin-bottom: 25px;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
+            display: inline-flex;
+            width: 42px;
+            height: 42px;
             align-items: center;
-            border-radius: 11px;
+            justify-content: center;
             background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
-            font-size: 23px;
+            border-radius: 12px;
+            margin-right: 7px;
+            vertical-align: middle;
         }
 
-        .auth-card {
-            width: 100%;
-            padding: 38px;
-            background: #ffffff;
-            border: 1px solid #eee8f8;
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(91, 53, 165, 0.12);
-        }
-
-        .auth-heading {
+        .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
-        .auth-heading h1 {
-            color: #30204f;
+        .auth-header h1 {
             font-size: 27px;
-            margin-bottom: 11px;
+            color: #39246b;
+            margin-bottom: 9px;
         }
 
-        .auth-heading p {
-            color: #827b91;
+        .auth-header p {
+            color: #777084;
             font-size: 14px;
             line-height: 1.6;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 9px;
-            color: #40345a;
+            margin-bottom: 8px;
+            color: #41365b;
+            font-weight: 600;
             font-size: 14px;
-            font-weight: bold;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 14px 15px;
+            padding: 13px 14px;
             border: 1px solid #ded7eb;
             border-radius: 10px;
-            background: #fcfbfe;
-            color: #30204f;
             font-size: 14px;
-            transition: 0.25s ease;
-        }
-
-        .form-group input::placeholder {
-            color: #aaa2b8;
-        }
-
-        .form-group input:focus {
             outline: none;
+            background: #fff;
+            color: #302747;
+            transition: 0.25s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
             border-color: #7952ce;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(121, 82, 206, 0.12);
+            box-shadow: 0 0 0 3px rgba(121, 82, 206, 0.12);
         }
 
         .account-info {
-            padding: 16px;
-            margin: 24px 0;
-            border: 1px solid #e3d8f5;
-            border-radius: 11px;
-            background: #f7f3fd;
+            background: #f3effb;
+            border: 1px solid #e3daf4;
+            border-radius: 10px;
+            padding: 13px 15px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
         }
 
         .account-info strong {
             display: block;
-            color: #6842b5;
+            color: #5b35a5;
             font-size: 14px;
-            margin-bottom: 7px;
+            margin-bottom: 5px;
         }
 
         .account-info p {
-            color: #827b91;
-            font-size: 12px;
-            line-height: 1.6;
+            color: #716781;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
-        #registerButton {
+        .auth-button {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             border: none;
             border-radius: 10px;
             background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(91, 53, 165, 0.2);
-            transition: 0.25s ease;
+            transition: 0.25s;
         }
 
-        #registerButton:hover {
+        .auth-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(91, 53, 165, 0.3);
+            box-shadow: 0 7px 18px rgba(91, 53, 165, 0.25);
         }
 
-        #registerButton:active {
-            transform: scale(0.98);
-        }
-
-        #registerButton:disabled {
-            opacity: 0.7;
+        .auth-button:disabled {
+            opacity: 0.65;
             cursor: not-allowed;
             transform: none;
         }
 
         .form-message {
-            margin-top: 17px;
-            text-align: center;
+            margin-top: 15px;
+            padding: 11px;
+            border-radius: 8px;
             font-size: 13px;
-            line-height: 1.6;
-            overflow-wrap: anywhere;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .form-message.success {
+            display: block;
+            color: #176b3a;
+            background: #eaf8ef;
+            border: 1px solid #bce8ca;
+        }
+
+        .form-message.error {
+            display: block;
+            color: #b42318;
+            background: #fff0ef;
+            border: 1px solid #f5c5c1;
         }
 
         .auth-footer {
-            margin-top: 27px;
             text-align: center;
-            color: #827b91;
-            font-size: 13px;
+            margin-top: 23px;
+            font-size: 14px;
+            color: #777084;
         }
 
         .auth-footer a {
             color: #6842b5;
-            font-weight: bold;
+            font-weight: 700;
             text-decoration: none;
-            transition: 0.2s ease;
         }
 
         .auth-footer a:hover {
-            color: #4b288f;
             text-decoration: underline;
-        }
-
-        .back-home {
-            margin-top: 25px;
-            color: #6842b5;
-            font-size: 13px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: 0.2s ease;
-        }
-
-        .back-home:hover {
-            color: #4b288f;
-            transform: translateX(-3px);
         }
 
         @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(25px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -223,21 +205,17 @@
             }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         @media (max-width: 480px) {
-            body.auth-page {
-                padding: 25px 15px;
+            .auth-container {
+                padding: 27px 22px;
             }
 
-            .auth-card {
-                padding: 28px 22px;
-                border-radius: 16px;
-            }
-
-            .auth-heading h1 {
-                font-size: 23px;
-            }
-
-            .auth-logo {
+            .auth-header h1 {
                 font-size: 24px;
             }
         }
@@ -247,7 +225,6 @@
             *::before,
             *::after {
                 animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
         }
@@ -263,94 +240,114 @@
             EduConnect
         </a>
 
-        <div class="auth-card">
-
-            <div class="auth-heading">
-                <h1>Create Your Account</h1>
-                <p>Join EduConnect and start your learning journey.</p>
-            </div>
-
-            <form id="registerForm">
-
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input
-                        type="text"
-                        id="fullName"
-                        placeholder="Enter your full name"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="Enter your email"
-                        autocomplete="email"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="Create a password"
-                        minlength="8"
-                        autocomplete="new-password"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        placeholder="Confirm your password"
-                        minlength="8"
-                        autocomplete="new-password"
-                        required
-                    >
-                </div>
-
-                <div class="account-info">
-                    <strong>Account type: Student</strong>
-                    <p>Teacher accounts require administrator approval.</p>
-                </div>
-
-                <button type="submit" id="registerButton">
-                    Create Account
-                </button>
-
-                <p
-                    id="registerMessage"
-                    class="form-message"
-                    role="status"
-                    aria-live="polite"
-                ></p>
-
-            </form>
-
-            <div class="auth-footer">
-                Already have an account?
-                <a href="login.html">Login here</a>
-            </div>
-
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Join EduConnect and start your learning journey.</p>
         </div>
 
-        <a href="index.html" class="back-home">
-            ← Back to Homepage
-        </a>
+        <form id="registerForm">
+
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Enter your full name"
+                    required
+                    autocomplete="name"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="accountType">Account Type</label>
+                <select id="accountType" required>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+            </div>
+
+            <div class="account-info" id="accountInfo">
+                <strong>Student Account</strong>
+                <p>Register as a student to access your classes and learning materials.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Create a password"
+                    minlength="8"
+                    required
+                    autocomplete="new-password"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm your password"
+                    required
+                    autocomplete="new-password"
+                >
+            </div>
+
+            <button type="submit" class="auth-button" id="registerButton">
+                Create Account
+            </button>
+
+            <div id="registerMessage" class="form-message"></div>
+
+        </form>
+
+        <div class="auth-footer">
+            Already have an account?
+            <a href="login.html">Log In</a>
+        </div>
 
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+        const accountTypeInput = document.getElementById("accountType");
+        const accountInfo = document.getElementById("accountInfo");
+
+        accountTypeInput.addEventListener("change", function () {
+
+            if (this.value === "teacher") {
+
+                accountInfo.innerHTML = `
+                    <strong>Teacher Account Request</strong>
+                    <p>Your registration will be submitted for admin approval. Your account will remain a student account until an administrator approves your request.</p>
+                `;
+
+            } else {
+
+                accountInfo.innerHTML = `
+                    <strong>Student Account</strong>
+                    <p>Register as a student to access your classes and learning materials.</p>
+                `;
+
+            }
+
+        });
+    </script>
 
 </body>
 </html>
