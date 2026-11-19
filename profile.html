@@ -18,12 +18,29 @@
         }
 
         body {
-            background: #f4f7fb;
-            color: #243247;
+            background: #f7f5fc;
+            color: #263445;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         header {
-            background: #1554a5;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
             padding: 20px 7%;
             display: flex;
@@ -31,12 +48,30 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            box-shadow: 0 4px 15px rgba(91, 53, 165, 0.18);
+        }
+
+        header h2 {
+            color: white;
+            font-size: 23px;
+        }
+
+        header nav {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         header a {
             color: white;
             text-decoration: none;
-            margin-left: 15px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        header a:hover {
+            color: #e3d6ff;
         }
 
         main {
@@ -47,19 +82,36 @@
 
         .panel {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            padding: 27px;
+            border-radius: 15px;
+            margin-bottom: 22px;
+            border: 1px solid #eee8f8;
+            box-shadow: 0 5px 20px rgba(70, 45, 120, 0.06);
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .panel:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .panel:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .panel:nth-child(4) {
+            animation-delay: 0.3s;
         }
 
         h1 {
-            color: #1554a5;
+            color: #6842b5;
             margin-bottom: 10px;
+            font-size: 25px;
         }
 
         h2 {
-            margin-bottom: 18px;
+            color: #6842b5;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
         .profile-header {
@@ -67,20 +119,26 @@
             margin-bottom: 20px;
         }
 
+        .profile-header p {
+            color: #718096;
+            font-size: 14px;
+        }
+
         .avatar {
-            width: 120px;
-            height: 120px;
-            background: #1554a5;
+            width: 125px;
+            height: 125px;
+            background: linear-gradient(135deg, #5b35a5, #7952ce);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 38px;
+            font-size: 40px;
             font-weight: bold;
-            margin: 0 auto 15px;
+            margin: 0 auto 17px;
             overflow: hidden;
-            border: 4px solid #e5eaf1;
+            border: 5px solid #eee8f8;
+            box-shadow: 0 5px 15px rgba(91, 53, 165, 0.15);
         }
 
         .avatar img {
@@ -103,58 +161,80 @@
         }
 
         .profile-item {
-            margin-bottom: 18px;
+            margin-bottom: 19px;
         }
 
         .profile-item label {
             display: block;
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 7px;
+            color: #718096;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
 
         .profile-item p {
-            background: #f4f7fb;
-            padding: 12px;
-            border-radius: 7px;
+            background: #f7f5fc;
+            border: 1px solid #eee8f8;
+            padding: 13px;
+            border-radius: 9px;
             overflow-wrap: anywhere;
+            color: #354258;
+            font-size: 15px;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccd7e5;
-            border-radius: 7px;
+            padding: 13px;
+            border: 1px solid #dcd5e9;
+            border-radius: 9px;
             font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+            background: white;
         }
 
         input:focus {
-            outline: none;
-            border-color: #1554a5;
+            border-color: #7952ce;
+            box-shadow: 0 0 0 3px rgba(121, 82, 206, 0.12);
         }
 
         button {
-            padding: 12px 18px;
+            padding: 12px 19px;
             border: none;
-            border-radius: 7px;
+            border-radius: 9px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: bold;
             margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
         }
 
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
 
         .primary {
-            background: #1554a5;
+            background: #7952ce;
             color: white;
         }
 
+        .primary:hover {
+            background: #613bb0;
+        }
+
         .secondary {
-            background: #e5eaf1;
-            color: #243247;
+            background: #eee8f8;
+            color: #6842b5;
+        }
+
+        .secondary:hover {
+            background: #e1d6f5;
         }
 
         .success {
@@ -162,8 +242,12 @@
             color: white;
         }
 
+        .success:hover {
+            background: #126b3d;
+        }
+
         .status {
-            margin-top: 12px;
+            margin-top: 13px;
             font-size: 14px;
             overflow-wrap: anywhere;
         }
@@ -180,23 +264,45 @@
             color: #16834a;
         }
 
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 600px) {
             header {
                 padding: 18px 5%;
             }
 
             header nav {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
+                gap: 14px;
             }
 
-            header a {
-                margin-left: 0;
+            main {
+                margin: 22px auto;
+                padding: 0 14px;
             }
 
             .panel {
-                padding: 18px;
+                padding: 20px;
+            }
+
+            .avatar {
+                width: 110px;
+                height: 110px;
+                font-size: 35px;
+            }
+
+            .form-actions button {
+                flex: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -217,7 +323,6 @@
 <main>
 
     <!-- PROFILE PICTURE -->
-
     <section class="panel">
 
         <div class="profile-header">
@@ -261,9 +366,7 @@
 
     </section>
 
-
     <!-- PERSONAL INFORMATION -->
-
     <section class="panel">
 
         <h2>Personal Information</h2>
@@ -299,9 +402,7 @@
 
     </section>
 
-
     <!-- EDIT PROFILE -->
-
     <section class="panel hidden" id="editProfilePanel">
 
         <h2>Edit Profile</h2>
@@ -330,13 +431,17 @@
                 >
             </div>
 
-            <button type="submit" class="success" id="saveProfileButton">
-                Save Changes
-            </button>
+            <div class="form-actions">
 
-            <button type="button" class="secondary" id="cancelEditButton">
-                Cancel
-            </button>
+                <button type="submit" class="success" id="saveProfileButton">
+                    Save Changes
+                </button>
+
+                <button type="button" class="secondary" id="cancelEditButton">
+                    Cancel
+                </button>
+
+            </div>
 
             <p class="status" id="profileStatus"></p>
 
@@ -344,9 +449,7 @@
 
     </section>
 
-
     <!-- CHANGE PASSWORD -->
-
     <section class="panel">
 
         <h2>Change Password</h2>
@@ -391,12 +494,10 @@
 
 </main>
 
-
 <script>
 
     let currentUser = null;
     let currentProfile = null;
-
 
     // AVATAR DISPLAY
 
@@ -438,7 +539,6 @@
 
         }
     }
-
 
     // LOAD PROFILE
 
@@ -522,7 +622,6 @@
         }
     }
 
-
     // LOAD SCHOOL
 
     async function loadSchool(schoolId) {
@@ -549,7 +648,6 @@
         schoolDisplay.textContent = data.name;
     }
 
-
     // OPEN FILE SELECTOR
 
     document.getElementById("uploadAvatarButton")
@@ -558,7 +656,6 @@
             document.getElementById("avatarInput").click();
 
         });
-
 
     // UPLOAD PROFILE PICTURE
 
@@ -711,7 +808,6 @@
 
         });
 
-
     // REMOVE PROFILE PICTURE
 
     document.getElementById("removeAvatarButton")
@@ -788,7 +884,6 @@
 
         });
 
-
     // SHOW EDIT PROFILE
 
     document.getElementById("editProfileButton")
@@ -809,7 +904,6 @@
 
         });
 
-
     // CANCEL EDIT
 
     document.getElementById("cancelEditButton")
@@ -821,7 +915,6 @@
             document.getElementById("profileStatus").textContent = "";
 
         });
-
 
     // SAVE PROFILE
 
@@ -896,7 +989,6 @@
 
         });
 
-
     // CHANGE PASSWORD
 
     document.getElementById("passwordForm")
@@ -968,7 +1060,6 @@
 
         });
 
-
     // LOGOUT
 
     document.getElementById("logoutButton")
@@ -981,7 +1072,6 @@
             window.location.href = "login.html";
 
         });
-
 
     // START PAGE
 
