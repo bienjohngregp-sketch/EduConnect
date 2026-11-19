@@ -130,26 +130,31 @@
             line-height: 1.5;
         }
 
-        /* BLUE CREATE ACCOUNT BUTTON */
-        .auth-button {
+        /* FORCE PURPLE CREATE ACCOUNT BUTTON */
+        button#registerButton.auth-button {
+            display: block;
             width: 100%;
             padding: 14px;
-            border: none;
+            border: none !important;
             border-radius: 10px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
+            background: linear-gradient(135deg, #5b35a5, #7952ce) !important;
+            background-color: #5b35a5 !important;
+            color: #ffffff !important;
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.25s;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
-        .auth-button:hover {
+        button#registerButton.auth-button:hover {
+            background: linear-gradient(135deg, #4b278f, #6842b5) !important;
+            box-shadow: 0 7px 18px rgba(91, 53, 165, 0.25);
             transform: translateY(-2px);
-            box-shadow: 0 7px 18px rgba(37, 99, 235, 0.25);
         }
 
-        .auth-button:disabled {
+        button#registerButton.auth-button:disabled {
             opacity: 0.65;
             cursor: not-allowed;
             transform: none;
