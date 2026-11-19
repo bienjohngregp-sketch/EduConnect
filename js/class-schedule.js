@@ -1,3 +1,4 @@
+
 let editingScheduleId = null;
 let currentUserRole = null;
 
@@ -5,7 +6,6 @@ async function loadClassSchedule() {
     const container = document.getElementById("schedule-list");
 
     try {
-        // Check logged-in user
         const { data: authData, error: authError } =
             await supabaseClient.auth.getUser();
 
@@ -16,9 +16,6 @@ async function loadClassSchedule() {
 
         const user = authData.user;
 
-        currentUserRole = null;
-
-        // Get student profile
         const { data: profile, error: profileError } =
             await supabaseClient
                 .from("profiles")
@@ -32,12 +29,9 @@ async function loadClassSchedule() {
             return;
         }
 
-        // Check account status
         if (profile.is_active === false) {
             alert("Your account has been deactivated. Please contact your school administrator.");
-
             await supabaseClient.auth.signOut();
-
             window.location.href = "login.html";
             return;
         }
@@ -54,13 +48,20 @@ async function loadClassSchedule() {
             return;
         }
 
+        // Show schedule form only to teachers and admins
         if (profile.role === "teacher" || profile.role === "admin") {
             document.getElementById("schedule-form-card").hidden = false;
-
             await loadScheduleFormOptions(profile.school_id);
         }
 
-        // Get schedules for the user's school
+        // Student must have an assigned section
+        if (profile.role === "student" && !profile.section) {
+            container.textContent =
+                "Your section has not been assigned yet. Please contact your school administrator.";
+            return;
+        }
+
+        // Load schedules and teacher information
         let query = supabaseClient
             .from("class_schedules")
             .select(`
@@ -73,12 +74,12 @@ async function loadClassSchedule() {
                 end_time,
                 room,
                 subjects(subject_name),
-                profiles!class_schedules_teacher_id_fkey(full_name)
+                teacher:profiles!class_schedules_teacher_id_fkey(full_name)
             `)
             .eq("school_id", profile.school_id)
             .order("start_time");
 
-        // Students can only see their own section
+        // Students only see schedules for their own section
         if (profile.role === "student") {
             query = query.eq("section", profile.section);
         }
@@ -92,7 +93,8 @@ async function loadClassSchedule() {
 
     } catch (error) {
         console.error("Class Schedule Error:", error);
-        container.textContent = "Unable to load class schedules.";
+        container.textContent =
+            "Unable to load class schedules: " + error.message;
     }
 }
 
@@ -143,40 +145,29 @@ async function loadScheduleFormOptions(schoolId) {
     });
 }
 
-    function editClassSchedule(item) {
-        editingScheduleId = item.id;
 
-        document.getElementById("subject_id").value =
-            item.subject_id;
+function editClassSchedule(item) {
+    editingScheduleId = item.id;
 
-        document.getElementById("teacher_id").value =
-            item.teacher_id;
+    document.getElementById("subject_id").value = item.subject_id;
+    document.getElementById("teacher_id").value = item.teacher_id;
+    document.getElementById("section").value = item.section;
+    document.getElementById("day_of_week").value = item.day_of_week;
+    document.getElementById("start_time").value = item.start_time.substring(0, 5);
+    document.getElementById("end_time").value = item.end_time.substring(0, 5);
+    document.getElementById("room").value = item.room || "";
 
-        document.getElementById("section").value =
-            item.section;
+    document.getElementById("schedule-message").textContent =
+        "Editing class schedule. Make your changes and click Save.";
 
-        document.getElementById("day_of_week").value =
-            item.day_of_week;
+    document.getElementById("schedule-form-card").scrollIntoView({
+        behavior: "smooth"
+    });
+}
 
-        document.getElementById("start_time").value =
-            item.start_time.substring(0, 5);
 
-        document.getElementById("end_time").value =
-            item.end_time.substring(0, 5);
-
-        document.getElementById("room").value =
-            item.room || "";
-
-        document.getElementById("schedule-message").textContent =
-            "Editing class schedule. Make your changes and click Save.";
-
-        document.getElementById("schedule-form-card").scrollIntoView({
-            behavior: "smooth"
-        });
-    }
-
-    async function saveClassSchedule(event) {
-        event.preventDefault();
+async function saveClassSchedule(event) {
+    event.preventDefault();
 
     const message = document.getElementById("schedule-message");
     const form = document.getElementById("schedule-form");
@@ -207,12 +198,9 @@ async function loadScheduleFormOptions(schoolId) {
             return;
         }
 
-        // Check account status
         if (profile.is_active === false) {
             alert("Your account has been deactivated. Please contact your school administrator.");
-
             await supabaseClient.auth.signOut();
-
             window.location.href = "login.html";
             return;
         }
@@ -232,9 +220,14 @@ async function loadScheduleFormOptions(schoolId) {
             room: document.getElementById("room").value.trim() || null
         };
 
-        if (!schedule.subject_id || !schedule.teacher_id ||
-            !schedule.section || !schedule.day_of_week ||
-            !schedule.start_time || !schedule.end_time) {
+        if (
+            !schedule.subject_id ||
+            !schedule.teacher_id ||
+            !schedule.section ||
+            !schedule.day_of_week ||
+            !schedule.start_time ||
+            !schedule.end_time
+        ) {
             throw new Error("Please complete all required fields.");
         }
 
@@ -271,8 +264,8 @@ async function loadScheduleFormOptions(schoolId) {
         message.style.color = "green";
 
         editingScheduleId = null;
-
         form.reset();
+
         document.getElementById("section").value = "BSBA MM-1B";
 
         await loadClassSchedule();
@@ -284,7 +277,8 @@ async function loadScheduleFormOptions(schoolId) {
     }
 }
 
-// Connect the form submit event
+
+// Connect form
 document.getElementById("schedule-form").addEventListener(
     "submit",
     saveClassSchedule
@@ -299,13 +293,15 @@ async function deleteClassSchedule(scheduleId) {
     if (!confirmed) return;
 
     try {
-        const { data: { user }, error: authError } =
+        const { data: authData, error: authError } =
             await supabaseClient.auth.getUser();
 
-        if (authError || !user) {
+        if (authError || !authData.user) {
             window.location.href = "login.html";
             return;
         }
+
+        const user = authData.user;
 
         const { data: profile, error: profileError } =
             await supabaseClient
@@ -339,6 +335,7 @@ async function deleteClassSchedule(scheduleId) {
         if (error) throw error;
 
         alert("Class schedule deleted successfully!");
+
         await loadClassSchedule();
 
     } catch (error) {
@@ -362,6 +359,13 @@ function displaySchedules(schedules) {
 
     container.innerHTML = "";
 
+    if (schedules.length === 0) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.textContent = "No class schedules available for your section.";
+        container.appendChild(emptyMessage);
+        return;
+    }
+
     const grid = document.createElement("div");
     grid.className = "schedule-grid";
 
@@ -371,7 +375,6 @@ function displaySchedules(schedules) {
 
         const heading = document.createElement("h3");
         heading.textContent = day;
-
         dayCard.appendChild(heading);
 
         const daySchedules = schedules.filter(
@@ -385,6 +388,9 @@ function displaySchedules(schedules) {
         }
 
         daySchedules.forEach(item => {
+            const scheduleItem = document.createElement("div");
+            scheduleItem.className = "schedule-item";
+
             const subject = document.createElement("p");
             subject.textContent =
                 item.subjects?.subject_name || "Unknown Subject";
@@ -392,7 +398,7 @@ function displaySchedules(schedules) {
             const teacher = document.createElement("p");
             teacher.textContent =
                 "Teacher: " +
-                (item.profiles?.full_name || "Not assigned");
+                (item.teacher?.full_name || "Not assigned");
 
             const time = document.createElement("p");
             time.textContent =
@@ -403,11 +409,21 @@ function displaySchedules(schedules) {
             const room = document.createElement("p");
             room.textContent = "Room: " + (item.room || "TBA");
 
-            dayCard.append(subject, teacher, time, room);
+            const section = document.createElement("p");
+            section.textContent = "Section: " + item.section;
 
-            // Edit and Delete buttons for teachers and admins
-            if (currentUserRole === "teacher" || currentUserRole === "admin") {
+            scheduleItem.append(
+                subject,
+                teacher,
+                time,
+                room,
+                section
+            );
 
+            if (
+                currentUserRole === "teacher" ||
+                currentUserRole === "admin"
+            ) {
                 const editButton = document.createElement("button");
                 editButton.textContent = "Edit";
                 editButton.type = "button";
@@ -425,10 +441,10 @@ function displaySchedules(schedules) {
                     deleteClassSchedule(item.id);
                 });
 
-                dayCard.append(editButton, deleteButton);
+                scheduleItem.append(editButton, deleteButton);
             }
 
-            dayCard.append(subject, teacher, time, room);
+            dayCard.appendChild(scheduleItem);
         });
 
         grid.appendChild(dayCard);
@@ -436,6 +452,7 @@ function displaySchedules(schedules) {
 
     container.appendChild(grid);
 }
+
 
 function formatTime(time) {
     if (!time) return "";
@@ -450,5 +467,6 @@ function formatTime(time) {
         minute: "2-digit"
     });
 }
+
 
 loadClassSchedule();
