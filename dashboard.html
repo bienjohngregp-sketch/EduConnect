@@ -1,1563 +1,2071 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduConnect | Dashboard</title>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EduConnect | Dashboard</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/config.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="js/config.js"></script>
 
     <style>
-    :root {
-        --primary: #7952CE;
-        --primary-dark: #603BB2;
-        --primary-light: #F0EAFE;
-        --purple-soft: #F8F5FF;
-        --text: #30264A;
-        --muted: #817792;
-        --white: #FFFFFF;
-        --border: #EAE4F5;
-        --success: #16A36A;
-        --danger: #DC4C64;
-        --warning: #D99127;
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body {
-        margin: 0;
-        font-family: "Segoe UI", Arial, sans-serif;
-        background: #F7F5FC;
-        color: var(--text);
-        line-height: 1.6;
-    }
-
-    /* HEADER */
-
-    header {
-        background: rgba(255,255,255,0.96);
-        padding: 16px 6%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        box-shadow: 0 3px 18px rgba(65,40,110,0.06);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        backdrop-filter: blur(12px);
-        animation: slideDown 0.6s ease;
-    }
-
-    .logo {
-        color: var(--primary);
-        font-size: 25px;
-        font-weight: 800;
-        letter-spacing: -0.8px;
-    }
-
-    .header-right {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 13px;
-    }
-
-    .header-avatar {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        border-radius: 50%;
-        overflow: hidden;
-        background: linear-gradient(135deg, #A78BFA, #6D45C5);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 17px;
-        font-weight: bold;
-        border: 3px solid #EAE1FF;
-        box-shadow: 0 3px 10px #7952CE25;
-    }
-
-    .header-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-    }
-
-    .user-summary {
-        text-align: right;
-        font-size: 13px;
-    }
-
-    .user-summary strong {
-        display: block;
-        color: var(--text);
-    }
-
-    .user-summary span {
-        color: var(--muted);
-        text-transform: capitalize;
-    }
-
-    .header-nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .header-nav a {
-        text-decoration: none;
-        color: var(--primary);
-        font-weight: 600;
-        padding: 10px 13px;
-        border-radius: 10px;
-        transition: 0.25s ease;
-    }
-
-    .header-nav a:hover {
-        background: var(--primary-light);
-        transform: translateY(-2px);
-    }
-
-    /* BUTTONS */
-
-    button {
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 11px 19px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 600;
-        font-family: inherit;
-        transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    button:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 13px #7952CE30;
-    }
-
-    button:active {
-        transform: scale(0.97);
-    }
-
-    button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    /* MAIN */
-
-    main {
-        max-width: 1200px;
-        margin: 35px auto;
-        padding: 0 24px;
-    }
-
-    h1, h2, h3, h4 {
-        line-height: 1.3;
-    }
-
-    h2 {
-        color: var(--text);
-        font-size: 23px;
-        letter-spacing: -0.4px;
-    }
-
-    .section {
-        margin-top: 35px;
-    }
-
-    /* WELCOME BANNER */
-
-    .welcome {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(120deg, #7952CE, #9B78E9 60%, #B49AF0);
-        color: white;
-        padding: 38px;
-        border-radius: 22px;
-        margin-bottom: 32px;
-        box-shadow: 0 12px 30px #7952CE30;
-        animation: fadeUp 0.7s ease both;
-    }
-
-    .welcome::before {
-        content: "";
-        position: absolute;
-        width: 250px;
-        height: 250px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.10);
-        right: -60px;
-        top: -100px;
-    }
-
-    .welcome::after {
-        content: "";
-        position: absolute;
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.08);
-        right: 120px;
-        bottom: -100px;
-    }
-
-    .welcome h1 {
-        margin-top: 0;
-        font-size: 31px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .welcome p {
-        position: relative;
-        z-index: 1;
-        color: #F2ECFF;
-    }
-
-    .profile-button {
-        display: inline-block;
-        background: white;
-        color: var(--primary);
-        padding: 11px 18px;
-        border-radius: 10px;
-        text-decoration: none;
-        margin-top: 10px;
-        font-weight: 700;
-        position: relative;
-        z-index: 2;
-        transition: 0.25s ease;
-    }
-
-    .profile-button:hover {
-        background: #F0EAFE;
-        transform: translateY(-3px);
-    }
-
-    /* CARDS */
-
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 20px;
-    }
-
-    .card {
-        background: var(--white);
-        padding: 24px;
-        border-radius: 17px;
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 16px rgba(55,35,95,0.045);
-        transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
-        animation: fadeUp 0.55s ease both;
-    }
-
-    .card h3 {
-        color: var(--primary);
-        margin-top: 0;
-        font-size: 17px;
-    }
-
-    .card p {
-        color: var(--muted);
-    }
-
-    .card-link {
-        display: block;
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .card-link:hover {
-        transform: translateY(-6px);
-        border-color: #CDBBF5;
-        box-shadow: 0 12px 28px rgba(90,55,160,0.12);
-    }
-
-    .card-link h3 {
-        transition: color 0.2s ease;
-    }
-
-    .card-link:hover h3 {
-        color: var(--primary-dark);
-    }
-
-    /* PROFILE */
-
-    .profile {
-        margin-top: 35px;
-        background: white;
-        padding: 28px;
-        border-radius: 17px;
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 16px rgba(55,35,95,0.045);
-        animation: fadeUp 0.6s ease both;
-    }
-
-    .profile p {
-        color: var(--muted);
-        overflow-wrap: anywhere;
-    }
-
-    .profile strong {
-        color: var(--text);
-    }
-
-    /* ASSIGNMENTS */
-
-    .assignment-card {
-        margin-bottom: 16px;
-    }
-
-    .assignment-status {
-        font-weight: bold;
-    }
-
-    .submitted {
-        color: var(--success);
-    }
-
-    .not-submitted {
-        color: var(--warning);
-    }
-
-    .view-button {
-        display: inline-block;
-        background: var(--primary);
-        color: white;
-        padding: 10px 16px;
-        border-radius: 9px;
-        text-decoration: none;
-        margin-top: 10px;
-        font-weight: 600;
-        transition: 0.25s ease;
-    }
-
-    .view-button:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px #7952CE30;
-    }
-
-    #status {
-        color: var(--muted);
-    }
-
-    /* NOTIFICATION HEADER */
-
-    .notification-bell {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--primary-light);
-        color: var(--primary);
-        border: 1px solid #E0D4FA;
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-size: 18px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: 0.25s ease;
-    }
-
-    .notification-bell:hover {
-        background: #E5D9FF;
-        transform: translateY(-2px);
-    }
-
-    .notification-badge {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        min-width: 21px;
-        height: 21px;
-        padding: 0 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--danger);
-        color: white;
-        border-radius: 50px;
-        font-size: 11px;
-        font-weight: bold;
-        border: 2px solid white;
-        animation: pulse 2s infinite;
-    }
-
-    .notification-badge:empty {
-        display: none;
-    }
-
-    /* NOTIFICATIONS */
-
-    .notification-section {
-        margin-top: 40px;
-        animation: fadeUp 0.6s ease both;
-    }
-
-    .notification-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .notification-count {
-        color: var(--muted);
-        font-weight: 600;
-        margin: 10px 0 15px;
-    }
-
-    .notification-controls {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 9px;
-        margin: 15px 0 20px;
-    }
-
-    .filter-button {
-        background: white;
-        color: var(--muted);
-        border: 1px solid var(--border);
-        padding: 9px 15px;
-        border-radius: 9px;
-    }
-
-    .filter-button:hover {
-        background: var(--primary-light);
-        color: var(--primary);
-    }
-
-    .filter-button.active {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-    }
-
-    .mark-all-button {
-        background: var(--success);
-        padding: 10px 16px;
-    }
-
-    .mark-all-button:hover {
-        background: #128454;
-    }
-
-    .notification-card {
-        padding: 20px;
-        margin-bottom: 13px;
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--primary);
-        border-radius: 13px;
-        background: white;
-        transition: 0.25s ease;
-        animation: fadeUp 0.4s ease both;
-    }
-
-    .notification-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 7px 20px rgba(55,35,95,0.08);
-    }
-
-    .notification-card h3 {
-        margin-top: 0;
-        margin-bottom: 8px;
-        color: var(--text);
-    }
-
-    .notification-card p {
-        line-height: 1.6;
-        color: var(--muted);
-    }
-
-    .notification-read {
-        background: #FBFAFD;
-        border-left-color: #B6AFC5;
-    }
-
-    .notification-read h3 {
-        color: var(--muted);
-    }
-
-    .notification-unread-label,
-    .notification-read-label {
-        display: inline-block;
-        padding: 4px 9px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-
-    .notification-unread-label {
-        background: #FCE7EF;
-        color: #BB315B;
-    }
-
-    .notification-read-label {
-        background: #EEEAF4;
-        color: #716780;
-    }
-
-    .notification-empty {
-        background: white;
-        padding: 30px;
-        border-radius: 13px;
-        color: var(--muted);
-        text-align: center;
-        border: 1px solid var(--border);
-    }
-
-    .notification-actions {
-        display: flex;
-        gap: 9px;
-        flex-wrap: wrap;
-        margin-top: 15px;
-    }
-
-    .delete-notification-button {
-        background: #FCE9ED;
-        color: #C43D58;
-    }
-
-    .delete-notification-button:hover {
-        background: #F8D6DF;
-        color: #A92B47;
-    }
-
-    /* ANNOUNCEMENTS */
-
-    .announcement-item {
-        padding: 14px 0;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .announcement-item:last-child {
-        border-bottom: none;
-    }
-
-    .announcement-item h4 {
-        color: var(--primary);
-    }
-
-    /* CHART */
-
-    .chart-card {
-        background: white;
-        padding: 25px;
-        border-radius: 17px;
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 16px rgba(55,35,95,0.045);
-        margin-top: 20px;
-    }
-
-    .chart-container {
-        position: relative;
-        width: 100%;
-        height: 350px;
-    }
-
-    .chart-note {
-        color: var(--muted);
-        font-size: 13px;
-        margin-top: 12px;
-    }
-
-    /* ATTENDANCE */
-
-    .attendance-number {
-        font-size: 29px;
-        font-weight: 800;
-        color: var(--primary);
-        margin: 10px 0;
-    }
-
-    .attendance-present {
-        color: var(--success);
-    }
-
-    .attendance-absent {
-        color: var(--danger);
-    }
-
-    .attendance-late {
-        color: var(--warning);
-    }
-
-    [hidden] {
-        display: none !important;
-    }
-
-    /* ANIMATIONS */
-
-    @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(18px);
+        :root {
+            --primary: #7952CE;
+            --primary-dark: #603BB2;
+            --primary-light: #F0EAFE;
+            --purple-soft: #F8F5FF;
+            --text: #30264A;
+            --muted: #817792;
+            --white: #FFFFFF;
+            --border: #EAE4F5;
+            --success: #16A36A;
+            --danger: #DC4C64;
+            --warning: #D99127;
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-15px);
+        * {
+            box-sizing: border-box;
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            box-shadow: 0 0 0 0 rgba(220,76,100,0.25);
+        html {
+            scroll-behavior: smooth;
         }
 
-        50% {
-            box-shadow: 0 0 0 5px rgba(220,76,100,0);
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #F7F5FC;
+            color: var(--text);
+            line-height: 1.6;
         }
-    }
 
-    /* MOBILE RESPONSIVE */
+        /* HEADER */
 
-    @media (max-width: 650px) {
         header {
-            padding: 15px 5%;
+            background: rgba(255,255,255,0.96);
+            padding: 16px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 3px 18px rgba(65,40,110,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            animation: slideDown 0.6s ease;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
         }
 
         .header-right {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 13px;
+        }
+
+        .header-avatar {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #A78BFA, #6D45C5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: bold;
+            border: 3px solid #EAE1FF;
+            box-shadow: 0 3px 10px #7952CE25;
+        }
+
+        .header-avatar img {
             width: 100%;
-            justify-content: space-between;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .user-summary {
-            text-align: left;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .user-summary strong {
+            display: block;
+            color: var(--text);
+        }
+
+        .user-summary span {
+            color: var(--muted);
+            text-transform: capitalize;
         }
 
         .header-nav {
-            flex-wrap: wrap;
-            gap: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .header-nav a {
-            padding: 9px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 10px 13px;
+            border-radius: 10px;
+            transition: 0.25s ease;
         }
+
+        .header-nav a:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* BUTTONS */
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 11px 19px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 13px #7952CE30;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* MAIN */
 
         main {
-            margin-top: 22px;
-            padding: 0 15px;
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 24px;
         }
 
+        h1, h2, h3, h4 {
+            line-height: 1.3;
+        }
+
+        h2 {
+            color: var(--text);
+            font-size: 23px;
+            letter-spacing: -0.4px;
+        }
+
+        .section {
+            margin-top: 35px;
+        }
+
+        /* WELCOME BANNER */
+
         .welcome {
-            padding: 26px 22px;
-            border-radius: 17px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(120deg, #7952CE, #9B78E9 60%, #B49AF0);
+            color: white;
+            padding: 38px;
+            border-radius: 22px;
+            margin-bottom: 32px;
+            box-shadow: 0 12px 30px #7952CE30;
+            animation: fadeUp 0.7s ease both;
+        }
+
+        .welcome::before {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.10);
+            right: -60px;
+            top: -100px;
+        }
+
+        .welcome::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            right: 120px;
+            bottom: -100px;
         }
 
         .welcome h1 {
-            font-size: 25px;
+            margin-top: 0;
+            font-size: 31px;
+            position: relative;
+            z-index: 1;
         }
 
+        .welcome p {
+            position: relative;
+            z-index: 1;
+            color: #F2ECFF;
+        }
+
+        .profile-button {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 11px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 10px;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            transition: 0.25s ease;
+        }
+
+        .profile-button:hover {
+            background: #F0EAFE;
+            transform: translateY(-3px);
+        }
+
+        /* CARDS */
+
         .cards {
-            grid-template-columns: 1fr;
-            gap: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
         }
 
         .card {
-            padding: 20px;
+            background: var(--white);
+            padding: 24px;
+            border-radius: 17px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(55,35,95,0.045);
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            animation: fadeUp 0.55s ease both;
         }
 
-        .chart-container {
-            height: 280px;
+        .card h3 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 17px;
+        }
+
+        .card p {
+            color: var(--muted);
+        }
+
+        .card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .card-link:hover {
+            transform: translateY(-6px);
+            border-color: #CDBBF5;
+            box-shadow: 0 12px 28px rgba(90,55,160,0.12);
+        }
+
+        .card-link h3 {
+            transition: color 0.2s ease;
+        }
+
+        .card-link:hover h3 {
+            color: var(--primary-dark);
+        }
+
+        /* PROFILE */
+
+        .profile {
+            margin-top: 35px;
+            background: white;
+            padding: 28px;
+            border-radius: 17px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(55,35,95,0.045);
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .profile p {
+            color: var(--muted);
+            overflow-wrap: anywhere;
+        }
+
+        .profile strong {
+            color: var(--text);
+        }
+
+        /* ASSIGNMENTS */
+
+        .assignment-card {
+            margin-bottom: 16px;
+        }
+
+        .assignment-status {
+            font-weight: bold;
+        }
+
+        .submitted {
+            color: var(--success);
+        }
+
+        .not-submitted {
+            color: var(--warning);
+        }
+
+        .view-button {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 9px;
+            text-decoration: none;
+            margin-top: 10px;
+            font-weight: 600;
+            transition: 0.25s ease;
+        }
+
+        .view-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px #7952CE30;
+        }
+
+        #status {
+            color: var(--muted);
+        }
+
+        /* NOTIFICATION HEADER */
+
+        .notification-bell {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid #E0D4FA;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 18px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .notification-bell:hover {
+            background: #E5D9FF;
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            min-width: 21px;
+            height: 21px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--danger);
+            color: white;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-badge:empty {
+            display: none;
+        }
+
+        /* NOTIFICATIONS */
+
+        .notification-section {
+            margin-top: 40px;
+            animation: fadeUp 0.6s ease both;
         }
 
         .notification-header {
-            align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .notification-count {
+            color: var(--muted);
+            font-weight: 600;
+            margin: 10px 0 15px;
         }
 
         .notification-controls {
-            width: 100%;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin: 15px 0 20px;
         }
 
         .filter-button {
-            padding: 8px 11px;
-            font-size: 12px;
+            background: white;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 9px 15px;
+            border-radius: 9px;
+        }
+
+        .filter-button:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .filter-button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .mark-all-button {
+            background: var(--success);
+            padding: 10px 16px;
+        }
+
+        .mark-all-button:hover {
+            background: #128454;
         }
 
         .notification-card {
-            padding: 16px;
-        }
-
-        .profile {
             padding: 20px;
+            margin-bottom: 13px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 13px;
+            background: white;
+            transition: 0.25s ease;
+            animation: fadeUp 0.4s ease both;
         }
-    }
 
-    /* REDUCE ANIMATION FOR ACCESSIBILITY */
-
-    @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            scroll-behavior: auto !important;
-            transition-duration: 0.01ms !important;
+        .notification-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(55,35,95,0.08);
         }
-    }
 
-    </style>
-</head>
+        .notification-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
 
-<body>
+        .notification-card p {
+            line-height: 1.6;
+            color: var(--muted);
+        }
 
-<header>
-    <div class="logo">EduConnect</div>
+        .notification-read {
+            background: #FBFAFD;
+            border-left-color: #B6AFC5;
+        }
 
-    <div class="header-right">
+        .notification-read h3 {
+            color: var(--muted);
+        }
 
-        <div class="header-avatar" id="headerAvatar">U</div>
+        .notification-unread-label,
+        .notification-read-label {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
 
-        <div class="user-summary">
-            <strong id="headerUserName">Loading...</strong>
-            <span id="headerUserRole">Loading...</span>
+        .notification-unread-label {
+            background: #FCE7EF;
+            color: #BB315B;
+        }
+
+        .notification-read-label {
+            background: #EEEAF4;
+            color: #716780;
+        }
+
+        .notification-empty {
+            background: white;
+            padding: 30px;
+            border-radius: 13px;
+            color: var(--muted);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .delete-notification-button {
+            background: #FCE9ED;
+            color: #C43D58;
+        }
+
+        .delete-notification-button:hover {
+            background: #F8D6DF;
+            color: #A92B47;
+        }
+
+        /* ANNOUNCEMENTS */
+
+        .announcement-item {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+
+        .announcement-item h4 {
+            color: var(--primary);
+        }
+
+        /* CHART */
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 17px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(55,35,95,0.045);
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+
+        .chart-note {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        /* ATTENDANCE */
+
+        .attendance-number {
+            font-size: 29px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .attendance-present {
+            color: var(--success);
+        }
+
+        .attendance-absent {
+            color: var(--danger);
+        }
+
+        .attendance-late {
+            color: var(--warning);
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* ANIMATIONS */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(220,76,100,0.25);
+            }
+
+            50% {
+                box-shadow: 0 0 0 5px rgba(220,76,100,0);
+            }
+        }
+
+        /* MOBILE RESPONSIVE */
+
+        @media (max-width: 650px) {
+            header {
+                padding: 15px 5%;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .user-summary {
+                text-align: left;
+            }
+
+            .header-nav {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .header-nav a {
+                padding: 9px;
+            }
+
+            main {
+                margin-top: 22px;
+                padding: 0 15px;
+            }
+
+            .welcome {
+                padding: 26px 22px;
+                border-radius: 17px;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+
+            .notification-header {
+                align-items: flex-start;
+            }
+
+            .notification-controls {
+                width: 100%;
+            }
+
+            .filter-button {
+                padding: 8px 11px;
+                font-size: 12px;
+            }
+
+            .notification-card {
+                padding: 16px;
+            }
+
+            .profile {
+                padding: 20px;
+            }
+        }
+
+        /* REDUCE ANIMATION FOR ACCESSIBILITY */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        </style>
+    </head>
+
+    <body>
+
+    <header>
+        <div class="logo">EduConnect</div>
+
+        <div class="header-right">
+
+            <div class="header-avatar" id="headerAvatar">U</div>
+
+            <div class="user-summary">
+                <strong id="headerUserName">Loading...</strong>
+                <span id="headerUserRole">Loading...</span>
+            </div>
+
+            <nav class="header-nav">
+
+                <a href="#notifications-section"
+                class="notification-bell"
+                title="View Notifications"
+                aria-label="View notifications">
+
+                    🔔
+                    <span
+                        id="headerNotificationBadge"
+                        class="notification-badge">
+                    </span>
+
+                </a>
+
+                <a href="profile.html">My Profile</a>
+
+                <button id="logoutBtn">Logout</button>
+
+            </nav>
         </div>
+    </header>
 
-        <nav class="header-nav">
+    <main>
 
-            <a href="#notifications-section"
-               class="notification-bell"
-               title="View Notifications"
-               aria-label="View notifications">
+        <section class="welcome">
+            <h1 id="welcomeName">Loading...</h1>
+            <p>Welcome to your EduConnect Dashboard!</p>
 
-                🔔
-                <span
-                    id="headerNotificationBadge"
-                    class="notification-badge">
-                </span>
-
+            <a href="profile.html" class="profile-button">
+                Manage My Profile
             </a>
+        </section>
 
-            <a href="profile.html">My Profile</a>
+        <!-- TEACHER DASHBOARD -->
+        <section id="teacher-dashboard" hidden>
 
-            <button id="logoutBtn">Logout</button>
+            <h2>Teacher Dashboard</h2>
+            <p>Manage your classes, assignments, and student submissions.</p>
 
-        </nav>
-    </div>
-</header>
-
-<main>
-
-    <section class="welcome">
-        <h1 id="welcomeName">Loading...</h1>
-        <p>Welcome to your EduConnect Dashboard!</p>
-
-        <a href="profile.html" class="profile-button">
-            Manage My Profile
-        </a>
-    </section>
-
-    <!-- TEACHER DASHBOARD -->
-    <section id="teacher-dashboard" hidden>
-
-        <h2>Teacher Dashboard</h2>
-        <p>Manage your classes, assignments, and student submissions.</p>
-
-        <h2 class="section">Teacher Statistics</h2>
-
-        <div class="cards">
-
-            <div class="card">
-                <h3>My Subjects</h3>
-                <p id="teacher-subject-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Assignments Created</h3>
-                <p id="teacher-assignment-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Student Submissions</h3>
-                <p id="teacher-submission-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Pending Grading</h3>
-                <p id="teacher-pending-count">Loading...</p>
-            </div>
-
-        </div>
-
-        <h2 class="section">Quick Access</h2>
-
-        <div class="cards">
-
-            <a href="teacher-submissions.html" class="card card-link">
-                <h3>Teacher Submissions</h3>
-                <p>View, download, and grade student submissions.</p>
-            </a>
-
-            <a href="subjects.html" class="card card-link">
-                <h3>My Subjects</h3>
-                <p>View your assigned subjects.</p>
-            </a>
-
-            <a href="assignments.html" class="card card-link">
-                <h3>Assignments</h3>
-                <p>Create and manage assignments.</p>
-            </a>
-
-            <a href="class-schedule.html" class="card card-link">
-                <h3>Class Schedule</h3>
-                <p>Manage your weekly class schedule.</p>
-            </a>
-
-            <a href="attendance.html" class="card card-link">
-                <h3>Attendance Management</h3>
-                <p>Record and manage student attendance.</p>
-            </a>
-
-            <a href="announcements.html" class="card card-link">
-                <h3>Announcements</h3>
-                <p>Post and manage school announcements.</p>
-            </a>
-
-            <a href="profile.html" class="card card-link">
-                <h3>My Profile</h3>
-                <p>View and update your account information.</p>
-            </a>
-
-        </div>
-
-    </section>
-
-    <!-- STUDENT DASHBOARD -->
-    <section id="student-cards" hidden>
-
-        <h2>My Academic Overview</h2>
-
-        <div class="cards">
-            <div class="card">
-                <h3>Assignment Completion Rate</h3>
-                <p id="student-completion-rate">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Total Subjects</h3>
-                <p id="student-subject-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Total Assignments</h3>
-                <p id="student-assignment-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Submitted Assignments</h3>
-                <p id="student-submitted-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Pending Assignments</h3>
-                <p id="student-pending-count">Loading...</p>
-            </div>
-
-            <div class="card">
-                <h3>Graded Assignments</h3>
-                <p id="student-graded-count">Loading...</p>
-            </div>
-
-        </div>
-
-        <!-- STUDENT ENROLLED SUBJECTS -->
-        <div class="section">
-
-            <h2>My Subjects</h2>
-            <p>Subjects you are currently enrolled in.</p>
-
-            <div id="student-my-subjects" class="cards">
-                <div class="card">
-                    <p>Loading your enrolled subjects...</p>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- STUDENT ATTENDANCE SUMMARY -->
-        <div class="section">
-
-            <h2>My Attendance Summary</h2>
+            <h2 class="section">Teacher Statistics</h2>
 
             <div class="cards">
 
                 <div class="card">
-                    <h3>Total Present</h3>
-                    <p class="attendance-number attendance-present"
-                       id="dashboard-present-count">Loading...</p>
+                    <h3>My Subjects</h3>
+                    <p id="teacher-subject-count">Loading...</p>
                 </div>
 
                 <div class="card">
-                    <h3>Total Absent</h3>
-                    <p class="attendance-number attendance-absent"
-                       id="dashboard-absent-count">Loading...</p>
+                    <h3>Assignments Created</h3>
+                    <p id="teacher-assignment-count">Loading...</p>
                 </div>
 
                 <div class="card">
-                    <h3>Total Late</h3>
-                    <p class="attendance-number attendance-late"
-                       id="dashboard-late-count">Loading...</p>
+                    <h3>Student Submissions</h3>
+                    <p id="teacher-submission-count">Loading...</p>
                 </div>
 
                 <div class="card">
-                    <h3>Attendance Percentage</h3>
-                    <p class="attendance-number"
-                       id="dashboard-attendance-percentage">Loading...</p>
+                    <h3>Pending Grading</h3>
+                    <p id="teacher-pending-count">Loading...</p>
                 </div>
 
             </div>
 
-            <a href="attendance.html" class="view-button">
-                View My Attendance History
-            </a>
-
-        </div>
-
-        <!-- UPCOMING ASSIGNMENTS -->
-        <div class="section">
-
-            <h2>Upcoming Assignments</h2>
-
-            <div id="student-upcoming-assignments">
-                <div class="card">
-                    <p>Loading upcoming assignments...</p>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- STUDENT GRADES OVERVIEW -->
-        <div class="section">
-
-            <h2>My Grades Overview</h2>
+            <h2 class="section">Quick Access</h2>
 
             <div class="cards">
 
+                <a href="teacher-submissions.html" class="card card-link">
+                    <h3>Teacher Submissions</h3>
+                    <p>View, download, and grade student submissions.</p>
+                </a>
+
+                <a href="subjects.html" class="card card-link">
+                    <h3>My Subjects</h3>
+                    <p>View your assigned subjects.</p>
+                </a>
+
+                <a href="assignments.html" class="card card-link">
+                    <h3>Assignments</h3>
+                    <p>Create and manage assignments.</p>
+                </a>
+
+                <a href="class-schedule.html" class="card card-link">
+                    <h3>Class Schedule</h3>
+                    <p>Manage your weekly class schedule.</p>
+                </a>
+
+                <a href="attendance.html" class="card card-link">
+                    <h3>Attendance Management</h3>
+                    <p>Record and manage student attendance.</p>
+                </a>
+
+                <a href="announcements.html" class="card card-link">
+                    <h3>Announcements</h3>
+                    <p>Post and manage school announcements.</p>
+                </a>
+
+                <a href="profile.html" class="card card-link">
+                    <h3>My Profile</h3>
+                    <p>View and update your account information.</p>
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- STUDENT DASHBOARD -->
+        <section id="student-cards" hidden>
+
+            <h2>My Academic Overview</h2>
+
+            <div class="cards">
                 <div class="card">
-                    <h3>Overall Average</h3>
-                    <p id="student-overall-average">Loading...</p>
+                    <h3>Assignment Completion Rate</h3>
+                    <p id="student-completion-rate">Loading...</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Subjects</h3>
+                    <p id="student-subject-count">Loading...</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Assignments</h3>
+                    <p id="student-assignment-count">Loading...</p>
+                </div>
+
+                <div class="card">
+                    <h3>Submitted Assignments</h3>
+                    <p id="student-submitted-count">Loading...</p>
+                </div>
+
+                <div class="card">
+                    <h3>Pending Assignments</h3>
+                    <p id="student-pending-count">Loading...</p>
                 </div>
 
                 <div class="card">
                     <h3>Graded Assignments</h3>
-                    <p id="student-total-graded">Loading...</p>
+                    <p id="student-graded-count">Loading...</p>
                 </div>
 
             </div>
 
+            <!-- STUDENT ENROLLED SUBJECTS -->
             <div class="section">
 
-                <h2>My Academic Performance</h2>
+                <h2>My Subjects</h2>
+                <p>Subjects you are currently enrolled in.</p>
 
-                <div class="chart-card">
+                <div id="student-my-subjects" class="cards">
+                    <div class="card">
+                        <p>Loading your enrolled subjects...</p>
+                    </div>
+                </div>
 
-                    <div class="chart-container">
-                        <canvas id="student-performance-chart"></canvas>
+            </div>
+
+            <!-- STUDENT ATTENDANCE SUMMARY -->
+            <div class="section">
+
+                <h2>My Attendance Summary</h2>
+
+                <div class="cards">
+
+                    <div class="card">
+                        <h3>Total Present</h3>
+                        <p class="attendance-number attendance-present"
+                        id="dashboard-present-count">Loading...</p>
                     </div>
 
-                    <p id="student-chart-message" class="chart-note">
-                        Loading academic performance...
-                    </p>
+                    <div class="card">
+                        <h3>Total Absent</h3>
+                        <p class="attendance-number attendance-absent"
+                        id="dashboard-absent-count">Loading...</p>
+                    </div>
 
+                    <div class="card">
+                        <h3>Total Late</h3>
+                        <p class="attendance-number attendance-late"
+                        id="dashboard-late-count">Loading...</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Attendance Percentage</h3>
+                        <p class="attendance-number"
+                        id="dashboard-attendance-percentage">Loading...</p>
+                    </div>
+
+                </div>
+
+                <a href="attendance.html" class="view-button">
+                    View My Attendance History
+                </a>
+
+            </div>
+
+            <!-- UPCOMING ASSIGNMENTS -->
+            <div class="section">
+
+                <h2>Upcoming Assignments</h2>
+
+                <div id="student-upcoming-assignments">
+                    <div class="card">
+                        <p>Loading upcoming assignments...</p>
+                    </div>
                 </div>
 
             </div>
 
-            <h3 class="section">My Graded Assignments</h3>
+            <!-- STUDENT GRADES OVERVIEW -->
+            <div class="section">
 
-            <div id="student-grades-list">
+                <h2>My Grades Overview</h2>
+
+                <div class="cards">
+
+                    <div class="card">
+                        <h3>Overall Average</h3>
+                        <p id="student-overall-average">Loading...</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Graded Assignments</h3>
+                        <p id="student-total-graded">Loading...</p>
+                    </div>
+
+                </div>
+
+                <div class="section">
+
+                    <h2>My Academic Performance</h2>
+
+                    <div class="chart-card">
+
+                        <div class="chart-container">
+                            <canvas id="student-performance-chart"></canvas>
+                        </div>
+
+                        <p id="student-chart-message" class="chart-note">
+                            Loading academic performance...
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <h3 class="section">My Graded Assignments</h3>
+
+                <div id="student-grades-list">
+                    <div class="card">
+                        <p>Loading grades...</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STUDENT QUICK ACCESS -->
+            <h2 class="section">Quick Access</h2>
+
+            <div class="cards">
+
+                <a href="subjects.html" class="card card-link">
+                    <h3>My Subjects</h3>
+                    <p>View your enrolled subjects.</p>
+                </a>
+
+                <a href="assignments.html" class="card card-link">
+                    <h3>Assignments</h3>
+                    <p>Check your activities and deadlines.</p>
+                </a>
+
+                <a href="class-schedule.html" class="card card-link">
+                    <h3>Class Schedule</h3>
+                    <p>View your weekly class schedule.</p>
+                </a>
+
+                <a href="attendance.html" class="card card-link">
+                    <h3>My Attendance</h3>
+                    <p>View your attendance summary and attendance history.</p>
+                </a>
+
+                <a href="announcements.html" class="card card-link">
+                    <h3>Announcements</h3>
+                    <p>Latest updates from your teachers.</p>
+
+                    <div id="dashboard-announcements">
+                        Loading announcements...
+                    </div>
+
+                    <p>View All Announcements</p>
+                </a>
+
+                <a href="profile.html" class="card card-link">
+                    <h3>My Profile</h3>
+                    <p>Manage your personal information and password.</p>
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- ADMIN DASHBOARD -->
+        <section id="admin-dashboard" hidden>
+
+            <h2>Admin Dashboard</h2>
+            <p>Manage your school's EduConnect platform.</p>
+
+            <div style="margin: 20px 0;">
+                <a href="admin-users.html" class="view-button">
+                    Manage Users
+                </a>
+            </div>
+
+            <div class="cards">
+
                 <div class="card">
-                    <p>Loading grades...</p>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- STUDENT QUICK ACCESS -->
-        <h2 class="section">Quick Access</h2>
-
-        <div class="cards">
-
-            <a href="subjects.html" class="card card-link">
-                <h3>My Subjects</h3>
-                <p>View your enrolled subjects.</p>
-            </a>
-
-            <a href="assignments.html" class="card card-link">
-                <h3>Assignments</h3>
-                <p>Check your activities and deadlines.</p>
-            </a>
-
-            <a href="class-schedule.html" class="card card-link">
-                <h3>Class Schedule</h3>
-                <p>View your weekly class schedule.</p>
-            </a>
-
-            <a href="attendance.html" class="card card-link">
-                <h3>My Attendance</h3>
-                <p>View your attendance summary and attendance history.</p>
-            </a>
-
-            <a href="announcements.html" class="card card-link">
-                <h3>Announcements</h3>
-                <p>Latest updates from your teachers.</p>
-
-                <div id="dashboard-announcements">
-                    Loading announcements...
+                    <h3>Total Students</h3>
+                    <p id="admin-student-count">Loading...</p>
                 </div>
 
-                <p>View All Announcements</p>
-            </a>
+                <div class="card">
+                    <h3>Total Teachers</h3>
+                    <p id="admin-teacher-count">Loading...</p>
+                </div>
 
-            <a href="profile.html" class="card card-link">
-                <h3>My Profile</h3>
-                <p>Manage your personal information and password.</p>
-            </a>
+                <div class="card">
+                    <h3>Total Subjects</h3>
+                    <p id="admin-subject-count">Loading...</p>
+                </div>
 
-        </div>
+                <div class="card">
+                    <h3>Total Assignments</h3>
+                    <p id="admin-assignment-count">Loading...</p>
+                </div>
 
-    </section>
-
-    <!-- ADMIN DASHBOARD -->
-    <section id="admin-dashboard" hidden>
-
-        <h2>Admin Dashboard</h2>
-        <p>Manage your school's EduConnect platform.</p>
-
-        <div style="margin: 20px 0;">
-            <a href="admin-users.html" class="view-button">
-                Manage Users
-            </a>
-        </div>
-
-        <div class="cards">
-
-            <div class="card">
-                <h3>Total Students</h3>
-                <p id="admin-student-count">Loading...</p>
             </div>
 
-            <div class="card">
-                <h3>Total Teachers</h3>
-                <p id="admin-teacher-count">Loading...</p>
+            <h2 class="section">Quick Access</h2>
+
+            <div class="cards">
+
+                <a href="admin-users.html" class="card card-link">
+                <h3>Manage Users</h3>
+                <p>Manage student and teacher accounts.</p>
+                </a>
+
+                <a href="profile.html" class="card card-link">
+                    <h3>My Profile</h3>
+                    <p>View and update your administrator account.</p>
+                </a>
+
             </div>
 
-            <div class="card">
-                <h3>Total Subjects</h3>
-                <p id="admin-subject-count">Loading...</p>
+        </section>
+
+        <!-- NOTIFICATIONS -->
+        <section class="notification-section" id="notifications-section">
+
+            <div class="notification-header">
+
+                <div>
+                    <h2>🔔 Notifications</h2>
+                    <p>Stay updated with your assignments and grades.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="mark-all-button"
+                    id="markAllReadBtn">
+                    Mark All as Read
+                </button>
+
             </div>
 
-            <div class="card">
-                <h3>Total Assignments</h3>
-                <p id="admin-assignment-count">Loading...</p>
+            <div id="notification-count" class="notification-count">
+                Loading notifications...
             </div>
 
-        </div>
+            <div class="notification-controls">
 
-        <h2 class="section">Quick Access</h2>
+                <button type="button" class="filter-button active" data-filter="all">
+                    All
+                </button>
 
-        <div class="cards">
+                <button type="button" class="filter-button" data-filter="unread">
+                    Unread
+                </button>
 
-            <a href="admin-users.html" class="card card-link">
-            <h3>Manage Users</h3>
-            <p>Manage student and teacher accounts.</p>
+                <button type="button" class="filter-button" data-filter="assignment">
+                    Assignments
+                </button>
+
+                <button type="button" class="filter-button" data-filter="grade">
+                    Grades
+                </button>
+
+                <button type="button" class="filter-button" data-filter="attendance">
+                    Attendance
+                </button>
+
+                <button type="button" class="filter-button" data-filter="announcement">
+                    Announcements
+                </button>
+
+                <button type="button" class="filter-button" data-filter="enrollment">
+                    Enrollment
+                </button>
+
+            </div>
+
+            <div id="notifications-list">
+                Loading notifications...
+            </div>
+
+        </section>
+
+        <!-- USER PROFILE SUMMARY -->
+        <section class="profile">
+
+            <h2>My Account Information</h2>
+
+            <p><strong>Full Name:</strong>
+                <span id="fullName">Loading...</span>
+            </p>
+
+            <p><strong>Role:</strong>
+                <span id="userRole">Loading...</span>
+            </p>
+
+            <p><strong>Email:</strong>
+                <span id="userEmail">Loading...</span>
+            </p>
+
+            <p><strong>School ID:</strong>
+                <span id="schoolId">Loading...</span>
+            </p>
+
+            <p id="status">Loading your profile...</p>
+
+            <a href="profile.html" class="profile-button">
+                Edit Profile and Account Settings
             </a>
 
-            <a href="profile.html" class="card card-link">
-                <h3>My Profile</h3>
-                <p>View and update your administrator account.</p>
-            </a>
+        </section>
 
-        </div>
+    </main>
 
-    </section>
+    <script>
 
-    <!-- NOTIFICATIONS -->
-    <section class="notification-section" id="notifications-section">
+    // ========================================
+    // GLOBAL VARIABLES
+    // ========================================
 
-        <div class="notification-header">
-
-            <div>
-                <h2>🔔 Notifications</h2>
-                <p>Stay updated with your assignments and grades.</p>
-            </div>
-
-            <button
-                type="button"
-                class="mark-all-button"
-                id="markAllReadBtn">
-                Mark All as Read
-            </button>
-
-        </div>
-
-        <div id="notification-count" class="notification-count">
-            Loading notifications...
-        </div>
-
-        <div class="notification-controls">
-
-            <button type="button" class="filter-button active" data-filter="all">
-                All
-            </button>
-
-            <button type="button" class="filter-button" data-filter="unread">
-                Unread
-            </button>
-
-            <button type="button" class="filter-button" data-filter="assignment">
-                Assignments
-            </button>
-
-            <button type="button" class="filter-button" data-filter="grade">
-                Grades
-            </button>
-
-            <button type="button" class="filter-button" data-filter="attendance">
-                Attendance
-            </button>
-
-            <button type="button" class="filter-button" data-filter="announcement">
-                Announcements
-            </button>
-
-            <button type="button" class="filter-button" data-filter="enrollment">
-                Enrollment
-            </button>
-
-        </div>
-
-        <div id="notifications-list">
-            Loading notifications...
-        </div>
-
-    </section>
-
-    <!-- USER PROFILE SUMMARY -->
-    <section class="profile">
-
-        <h2>My Account Information</h2>
-
-        <p><strong>Full Name:</strong>
-            <span id="fullName">Loading...</span>
-        </p>
-
-        <p><strong>Role:</strong>
-            <span id="userRole">Loading...</span>
-        </p>
-
-        <p><strong>Email:</strong>
-            <span id="userEmail">Loading...</span>
-        </p>
-
-        <p><strong>School ID:</strong>
-            <span id="schoolId">Loading...</span>
-        </p>
-
-        <p id="status">Loading your profile...</p>
-
-        <a href="profile.html" class="profile-button">
-            Edit Profile and Account Settings
-        </a>
-
-    </section>
-
-</main>
-
-<script>
-
-// ========================================
-// GLOBAL VARIABLES
-// ========================================
-
-let allNotifications = [];
-let currentNotificationFilter = "all";
-let studentPerformanceChart = null;
-let studentEnrolledSubjectIds = [];
+    let allNotifications = [];
+    let currentNotificationFilter = "all";
+    let studentPerformanceChart = null;
+    let studentEnrolledSubjectIds = [];
 
 
-// ========================================
-// LOAD DASHBOARD
-// ========================================
+    // ========================================
+    // LOAD DASHBOARD
+    // ========================================
 
-async function loadDashboard() {
+    async function loadDashboard() {
 
-    const {
-        data: { user },
-        error: authError
-    } = await supabaseClient.auth.getUser();
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
 
-    if (authError || !user) {
-        window.location.href = "login.html";
-        return;
+        if (authError || !user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const { data: profile, error } = await supabaseClient
+            .from("profiles")
+            .select("full_name, role, school_id, is_active, avatar_url")
+            .eq("id", user.id)
+            .single();
+
+        if (error || !profile) {
+            console.error("Profile loading error:", error);
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+            return;
+        }
+
+        if (profile.is_active === false) {
+            alert("Your account has been deactivated. Please contact your school administrator.");
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+            return;
+        }
+
+        // DISPLAY HEADER PROFILE PICTURE
+
+        const headerAvatar = document.getElementById("headerAvatar");
+
+        const userInitial = (profile.full_name || "U")
+            .trim()
+            .charAt(0)
+            .toUpperCase();
+
+        headerAvatar.textContent = userInitial;
+
+        if (profile.avatar_url) {
+
+            const { data } = supabaseClient
+                .storage
+                .from("profile-avatars")
+                .getPublicUrl(profile.avatar_url);
+
+            const avatarImage = document.createElement("img");
+
+            avatarImage.src = data.publicUrl;
+            avatarImage.alt = "Profile Picture";
+
+            avatarImage.onerror = function() {
+                headerAvatar.textContent = userInitial;
+            };
+
+            headerAvatar.textContent = "";
+            headerAvatar.appendChild(avatarImage);
+        }
+
+        document.getElementById("admin-dashboard").hidden =
+            profile.role !== "admin";
+
+        document.getElementById("teacher-dashboard").hidden =
+            profile.role !== "teacher";
+
+        document.getElementById("student-cards").hidden =
+            profile.role !== "student";
+
+        document.getElementById("headerUserName").textContent =
+            profile.full_name || "EduConnect User";
+
+        document.getElementById("headerUserRole").textContent =
+            profile.role || "User";
+
+        document.getElementById("welcomeName").textContent =
+            "Hello, " + (profile.full_name || "Student") + "!";
+
+        if (profile.role === "admin") {
+            await loadAdminStats();
+        }
+
+        if (profile.role === "teacher") {
+            await loadTeacherStats();
+        }
+
+        if (profile.role === "student") {
+
+            await loadStudentStats();
+
+            await loadStudentSubjects(user.id, profile.school_id);
+
+            await loadUpcomingAssignments(user.id, profile.school_id);
+
+            await loadStudentGrades(user.id, profile.school_id);
+
+            await loadDashboardAttendance(user.id);
+        }
+
+        document.getElementById("fullName").textContent =
+            profile.full_name || "Not available";
+
+        document.getElementById("userRole").textContent =
+            profile.role || "Not available";
+
+        document.getElementById("userEmail").textContent =
+            user.email || "Not available";
+
+        document.getElementById("schoolId").textContent =
+            profile.school_id || "Not assigned yet";
+
+        document.getElementById("status").textContent =
+            "Your profile loaded successfully!";
+
+        await loadNotifications();
+
+        await loadAnnouncementsPreview();
     }
 
-    const { data: profile, error } = await supabaseClient
-        .from("profiles")
-        .select("full_name, role, school_id, is_active, avatar_url")
-        .eq("id", user.id)
-        .single();
 
-    if (error || !profile) {
-        console.error("Profile loading error:", error);
-        await supabaseClient.auth.signOut();
-        window.location.href = "login.html";
-        return;
+    // ========================================
+    // ADMIN STATISTICS
+    // ========================================
+
+    async function loadAdminStats() {
+
+        const { data, error } = await supabaseClient
+            .rpc("get_admin_dashboard_stats");
+
+        if (error) {
+            console.error("Admin statistics error:", error);
+
+            document.getElementById("admin-student-count").textContent = "Error";
+            document.getElementById("admin-teacher-count").textContent = "Error";
+            document.getElementById("admin-subject-count").textContent = "Error";
+            document.getElementById("admin-assignment-count").textContent = "Error";
+
+            return;
+        }
+
+        const stats = data?.[0];
+
+        if (!stats) return;
+
+        document.getElementById("admin-student-count").textContent =
+            stats.total_students ?? 0;
+
+        document.getElementById("admin-teacher-count").textContent =
+            stats.total_teachers ?? 0;
+
+        document.getElementById("admin-subject-count").textContent =
+            stats.total_subjects ?? 0;
+
+        document.getElementById("admin-assignment-count").textContent =
+            stats.total_assignments ?? 0;
     }
 
-    if (profile.is_active === false) {
-        alert("Your account has been deactivated. Please contact your school administrator.");
-        await supabaseClient.auth.signOut();
-        window.location.href = "login.html";
-        return;
+
+    // ========================================
+    // TEACHER STATISTICS
+    // ========================================
+
+    async function loadTeacherStats() {
+
+        const { data, error } = await supabaseClient
+            .rpc("get_teacher_dashboard_stats");
+
+        if (error) {
+            console.error("Teacher statistics error:", error);
+
+            document.getElementById("teacher-subject-count").textContent = "Error";
+            document.getElementById("teacher-assignment-count").textContent = "Error";
+            document.getElementById("teacher-submission-count").textContent = "Error";
+            document.getElementById("teacher-pending-count").textContent = "Error";
+
+            return;
+        }
+
+        const stats = data?.[0];
+
+        if (!stats) return;
+
+        document.getElementById("teacher-subject-count").textContent =
+            stats.total_subjects ?? 0;
+
+        document.getElementById("teacher-assignment-count").textContent =
+            stats.total_assignments ?? 0;
+
+        document.getElementById("teacher-submission-count").textContent =
+            stats.total_submissions ?? 0;
+
+        document.getElementById("teacher-pending-count").textContent =
+            stats.pending_grading ?? 0;
     }
 
-    // DISPLAY HEADER PROFILE PICTURE
 
-    const headerAvatar = document.getElementById("headerAvatar");
+    // ========================================
+    // STUDENT STATISTICS
+    // ========================================
 
-    const userInitial = (profile.full_name || "U")
-        .trim()
-        .charAt(0)
-        .toUpperCase();
+    async function loadStudentStats() {
 
-    headerAvatar.textContent = userInitial;
+        const { data, error } = await supabaseClient
+            .rpc("get_student_dashboard_stats");
 
-    if (profile.avatar_url) {
+        if (error) {
+            console.error("Student statistics error:", error);
 
-        const { data } = supabaseClient
-            .storage
-            .from("profile-avatars")
-            .getPublicUrl(profile.avatar_url);
+            document.getElementById("student-subject-count").textContent = "Error";
+            document.getElementById("student-assignment-count").textContent = "Error";
+            document.getElementById("student-submitted-count").textContent = "Error";
+            document.getElementById("student-pending-count").textContent = "Error";
+            document.getElementById("student-graded-count").textContent = "Error";
 
-        const avatarImage = document.createElement("img");
+            return;
+        }
 
-        avatarImage.src = data.publicUrl;
-        avatarImage.alt = "Profile Picture";
+        const stats = data?.[0];
 
-        avatarImage.onerror = function() {
-            headerAvatar.textContent = userInitial;
-        };
+        document.getElementById("student-subject-count").textContent =
+            stats?.total_subjects ?? 0;
 
-        headerAvatar.textContent = "";
-        headerAvatar.appendChild(avatarImage);
+        document.getElementById("student-assignment-count").textContent =
+            stats?.total_assignments ?? 0;
+
+        document.getElementById("student-submitted-count").textContent =
+            stats?.submitted_assignments ?? 0;
+
+        document.getElementById("student-pending-count").textContent =
+            stats?.pending_assignments ?? 0;
+
+        document.getElementById("student-graded-count").textContent =
+            stats?.graded_assignments ?? 0;
+
+        const completionRateElement = document.getElementById(
+            "student-completion-rate"
+        );
+
+        const totalAssignments = Number(
+            stats?.total_assignments ?? 0
+        );
+
+        const submittedAssignments = Number(
+            stats?.submitted_assignments ?? 0
+        );
+
+        const completionRate = totalAssignments > 0
+            ? (submittedAssignments / totalAssignments) * 100
+            : 0;
+
+        completionRateElement.textContent =
+            totalAssignments > 0
+                ? completionRate.toFixed(2) + "%"
+                : "No assignments yet";
     }
 
-    document.getElementById("admin-dashboard").hidden =
-        profile.role !== "admin";
 
-    document.getElementById("teacher-dashboard").hidden =
-        profile.role !== "teacher";
+    // ========================================
+    // STUDENT ENROLLED SUBJECTS
+    // ========================================
 
-    document.getElementById("student-cards").hidden =
-        profile.role !== "student";
+    async function loadStudentSubjects(studentId, schoolId) {
 
-    document.getElementById("headerUserName").textContent =
-        profile.full_name || "EduConnect User";
+        const container = document.getElementById("student-my-subjects");
 
-    document.getElementById("headerUserRole").textContent =
-        profile.role || "User";
+        if (!container) return;
 
-    document.getElementById("welcomeName").textContent =
-        "Hello, " + (profile.full_name || "Student") + "!";
+        if (!schoolId) {
+            container.textContent = "Your account has no assigned school.";
+            return;
+        }
 
-    if (profile.role === "admin") {
-        await loadAdminStats();
-    }
-
-    if (profile.role === "teacher") {
-        await loadTeacherStats();
-    }
-
-    if (profile.role === "student") {
-
-        await loadStudentStats();
-
-        await loadStudentSubjects(user.id, profile.school_id);
-
-        await loadUpcomingAssignments(user.id, profile.school_id);
-
-        await loadStudentGrades(user.id, profile.school_id);
-
-        await loadDashboardAttendance(user.id);
-    }
-
-    document.getElementById("fullName").textContent =
-        profile.full_name || "Not available";
-
-    document.getElementById("userRole").textContent =
-        profile.role || "Not available";
-
-    document.getElementById("userEmail").textContent =
-        user.email || "Not available";
-
-    document.getElementById("schoolId").textContent =
-        profile.school_id || "Not assigned yet";
-
-    document.getElementById("status").textContent =
-        "Your profile loaded successfully!";
-
-    await loadNotifications();
-
-    await loadAnnouncementsPreview();
-}
-
-
-// ========================================
-// ADMIN STATISTICS
-// ========================================
-
-async function loadAdminStats() {
-
-    const { data, error } = await supabaseClient
-        .rpc("get_admin_dashboard_stats");
-
-    if (error) {
-        console.error("Admin statistics error:", error);
-
-        document.getElementById("admin-student-count").textContent = "Error";
-        document.getElementById("admin-teacher-count").textContent = "Error";
-        document.getElementById("admin-subject-count").textContent = "Error";
-        document.getElementById("admin-assignment-count").textContent = "Error";
-
-        return;
-    }
-
-    const stats = data?.[0];
-
-    if (!stats) return;
-
-    document.getElementById("admin-student-count").textContent =
-        stats.total_students ?? 0;
-
-    document.getElementById("admin-teacher-count").textContent =
-        stats.total_teachers ?? 0;
-
-    document.getElementById("admin-subject-count").textContent =
-        stats.total_subjects ?? 0;
-
-    document.getElementById("admin-assignment-count").textContent =
-        stats.total_assignments ?? 0;
-}
-
-
-// ========================================
-// TEACHER STATISTICS
-// ========================================
-
-async function loadTeacherStats() {
-
-    const { data, error } = await supabaseClient
-        .rpc("get_teacher_dashboard_stats");
-
-    if (error) {
-        console.error("Teacher statistics error:", error);
-
-        document.getElementById("teacher-subject-count").textContent = "Error";
-        document.getElementById("teacher-assignment-count").textContent = "Error";
-        document.getElementById("teacher-submission-count").textContent = "Error";
-        document.getElementById("teacher-pending-count").textContent = "Error";
-
-        return;
-    }
-
-    const stats = data?.[0];
-
-    if (!stats) return;
-
-    document.getElementById("teacher-subject-count").textContent =
-        stats.total_subjects ?? 0;
-
-    document.getElementById("teacher-assignment-count").textContent =
-        stats.total_assignments ?? 0;
-
-    document.getElementById("teacher-submission-count").textContent =
-        stats.total_submissions ?? 0;
-
-    document.getElementById("teacher-pending-count").textContent =
-        stats.pending_grading ?? 0;
-}
-
-
-// ========================================
-// STUDENT STATISTICS
-// ========================================
-
-async function loadStudentStats() {
-
-    const { data, error } = await supabaseClient
-        .rpc("get_student_dashboard_stats");
-
-    if (error) {
-        console.error("Student statistics error:", error);
-
-        document.getElementById("student-subject-count").textContent = "Error";
-        document.getElementById("student-assignment-count").textContent = "Error";
-        document.getElementById("student-submitted-count").textContent = "Error";
-        document.getElementById("student-pending-count").textContent = "Error";
-        document.getElementById("student-graded-count").textContent = "Error";
-
-        return;
-    }
-
-    const stats = data?.[0];
-
-    document.getElementById("student-subject-count").textContent =
-        stats?.total_subjects ?? 0;
-
-    document.getElementById("student-assignment-count").textContent =
-        stats?.total_assignments ?? 0;
-
-    document.getElementById("student-submitted-count").textContent =
-        stats?.submitted_assignments ?? 0;
-
-    document.getElementById("student-pending-count").textContent =
-        stats?.pending_assignments ?? 0;
-
-    document.getElementById("student-graded-count").textContent =
-        stats?.graded_assignments ?? 0;
-
-    const completionRateElement = document.getElementById(
-        "student-completion-rate"
-    );
-
-    const totalAssignments = Number(
-        stats?.total_assignments ?? 0
-    );
-
-    const submittedAssignments = Number(
-        stats?.submitted_assignments ?? 0
-    );
-
-    const completionRate = totalAssignments > 0
-        ? (submittedAssignments / totalAssignments) * 100
-        : 0;
-
-    completionRateElement.textContent =
-        totalAssignments > 0
-            ? completionRate.toFixed(2) + "%"
-            : "No assignments yet";
-}
-
-
-// ========================================
-// STUDENT ENROLLED SUBJECTS
-// ========================================
-
-async function loadStudentSubjects(studentId, schoolId) {
-
-    const container = document.getElementById("student-my-subjects");
-
-    if (!container) return;
-
-    if (!schoolId) {
-        container.textContent = "Your account has no assigned school.";
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="card">
-            <p>Loading your enrolled subjects...</p>
-        </div>
-    `;
-
-    const { data, error } = await supabaseClient
-        .from("subject_enrollments")
-        .select(`
-            id,
-            enrolled_at,
-            subject_id,
-            subjects (
-                id,
-                subject_name,
-                subject_code,
-                description
-            )
-        `)
-        .eq("student_id", studentId)
-        .eq("school_id", schoolId)
-        .order("enrolled_at", { ascending: false });
-
-    if (error) {
-        console.error("Student subjects error:", error);
-        container.textContent = "Unable to load your enrolled subjects.";
-        return;
-    }
-
-    const enrollments = (data || []).filter(item => item.subjects);
-
-    studentEnrolledSubjectIds = enrollments.map(
-        item => item.subjects.id
-    );
-
-    if (enrollments.length === 0) {
         container.innerHTML = `
             <div class="card">
-                <h3>No Enrolled Subjects</h3>
-                <p>You are not enrolled in any subjects yet.</p>
+                <p>Loading your enrolled subjects...</p>
             </div>
         `;
-        return;
-    }
 
-    const { data: assignments, error: assignmentError } =
-        await supabaseClient
-            .from("assignments")
-            .select("id, subject_id")
+        const { data, error } = await supabaseClient
+            .from("subject_enrollments")
+            .select(`
+                id,
+                enrolled_at,
+                subject_id,
+                subjects (
+                    id,
+                    subject_name,
+                    subject_code,
+                    description
+                )
+            `)
+            .eq("student_id", studentId)
             .eq("school_id", schoolId)
-            .in("subject_id", studentEnrolledSubjectIds);
+            .order("enrolled_at", { ascending: false });
 
-    if (assignmentError) {
-        console.error("Subject assignments error:", assignmentError);
-        container.textContent = "Unable to load subject progress.";
-        return;
+        if (error) {
+            console.error("Student subjects error:", error);
+            container.textContent = "Unable to load your enrolled subjects.";
+            return;
+        }
+
+        const enrollments = (data || []).filter(item => item.subjects);
+
+        studentEnrolledSubjectIds = enrollments.map(
+            item => item.subjects.id
+        );
+
+        if (enrollments.length === 0) {
+            container.innerHTML = `
+                <div class="card">
+                    <h3>No Enrolled Subjects</h3>
+                    <p>You are not enrolled in any subjects yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const { data: assignments, error: assignmentError } =
+            await supabaseClient
+                .from("assignments")
+                .select("id, subject_id")
+                .eq("school_id", schoolId)
+                .in("subject_id", studentEnrolledSubjectIds);
+
+        if (assignmentError) {
+            console.error("Subject assignments error:", assignmentError);
+            container.textContent = "Unable to load subject progress.";
+            return;
+        }
+
+        const allAssignments = assignments || [];
+
+        const assignmentIds = allAssignments.map(item => item.id);
+
+        let submissions = [];
+
+        if (assignmentIds.length > 0) {
+
+            const { data: submissionData, error: submissionError } =
+                await supabaseClient
+                    .from("assignment_submissions")
+                    .select("assignment_id")
+                    .eq("student_id", studentId)
+                    .in("assignment_id", assignmentIds);
+
+            if (submissionError) {
+                console.error("Subject submissions error:", submissionError);
+                container.textContent = "Unable to load submission progress.";
+                return;
+            }
+
+            submissions = submissionData || [];
+        }
+
+        const submittedIds = new Set(
+            submissions.map(item => item.assignment_id)
+        );
+
+        container.innerHTML = "";
+
+        enrollments.forEach(item => {
+
+            const subject = item.subjects;
+
+            const subjectAssignments = allAssignments.filter(
+                assignment => assignment.subject_id === subject.id
+            );
+
+            const total = subjectAssignments.length;
+
+            const submitted = subjectAssignments.filter(
+                assignment => submittedIds.has(assignment.id)
+            ).length;
+
+            const percentage = total > 0
+                ? (submitted / total) * 100
+                : 0;
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const title = document.createElement("h3");
+            title.textContent = subject.subject_name || "Untitled Subject";
+            title.style.color = "#7952CE";
+
+            const code = document.createElement("p");
+            code.textContent = "Subject Code: " +
+                (subject.subject_code || "Not provided");
+
+            const description = document.createElement("p");
+            description.textContent =
+                subject.description || "No subject description provided.";
+
+            const progressTitle = document.createElement("p");
+            progressTitle.style.fontWeight = "bold";
+            progressTitle.textContent = "Assignment Progress";
+
+            const progressInfo = document.createElement("p");
+            progressInfo.textContent = total > 0
+                ? submitted + " submitted out of " + total + " assignments"
+                : "No assignments yet.";
+
+            const percentageText = document.createElement("p");
+            percentageText.textContent = total > 0
+                ? percentage.toFixed(0) + "%"
+                : "0%";
+
+            percentageText.style.color = "#7952CE";
+            percentageText.style.fontWeight = "bold";
+
+            const progressTrack = document.createElement("div");
+            progressTrack.style.width = "100%";
+            progressTrack.style.height = "10px";
+            progressTrack.style.background = "#e2e8f0";
+            progressTrack.style.borderRadius = "20px";
+            progressTrack.style.overflow = "hidden";
+
+            const progressBar = document.createElement("div");
+            progressBar.style.width = percentage + "%";
+            progressBar.style.height = "100%";
+            progressBar.style.background = "#7952CE";
+            progressBar.style.borderRadius = "20px";
+            progressBar.style.transition = "width 0.3s ease";
+
+            progressTrack.appendChild(progressBar);
+
+            const enrolledDate = document.createElement("small");
+            enrolledDate.textContent = "Enrolled: " +
+                (item.enrolled_at
+                    ? new Date(item.enrolled_at).toLocaleDateString("en-PH")
+                    : "Date unavailable");
+
+            card.append(
+                title,
+                code,
+                description,
+                progressTitle,
+                progressInfo,
+                percentageText,
+                progressTrack,
+                enrolledDate
+            );
+
+            container.appendChild(card);
+        });
     }
 
-    const allAssignments = assignments || [];
 
-    const assignmentIds = allAssignments.map(item => item.id);
+    // ========================================
+    // STUDENT ATTENDANCE SUMMARY
+    // ========================================
 
-    let submissions = [];
+    async function loadDashboardAttendance(studentId) {
 
-    if (assignmentIds.length > 0) {
+        const presentElement = document.getElementById("dashboard-present-count");
+        const absentElement = document.getElementById("dashboard-absent-count");
+        const lateElement = document.getElementById("dashboard-late-count");
+        const percentageElement = document.getElementById("dashboard-attendance-percentage");
 
-        const { data: submissionData, error: submissionError } =
+        const { data, error } = await supabaseClient
+            .from("attendance")
+            .select("status")
+            .eq("student_id", studentId);
+
+        if (error) {
+            console.error("Dashboard attendance error:", error);
+
+            presentElement.textContent = "Unavailable";
+            absentElement.textContent = "Unavailable";
+            lateElement.textContent = "Unavailable";
+            percentageElement.textContent = "Unavailable";
+
+            return;
+        }
+
+        const records = data || [];
+
+        const present = records.filter(item => item.status === "present").length;
+        const absent = records.filter(item => item.status === "absent").length;
+        const late = records.filter(item => item.status === "late").length;
+
+        const total = records.length;
+
+        const percentage = total > 0
+            ? ((present + late) / total) * 100
+            : 0;
+
+        presentElement.textContent = present;
+        absentElement.textContent = absent;
+        lateElement.textContent = late;
+
+        percentageElement.textContent =
+            total > 0 ? percentage.toFixed(2) + "%" : "No records yet";
+    }
+
+
+    // ========================================
+    // STUDENT GRADES + PERFORMANCE CHART
+    // ========================================
+
+    async function loadStudentGrades(studentId, schoolId) {
+
+        const averageElement = document.getElementById("student-overall-average");
+        const totalElement = document.getElementById("student-total-graded");
+        const listElement = document.getElementById("student-grades-list");
+        const chartMessage = document.getElementById("student-chart-message");
+
+        if (!averageElement || !totalElement || !listElement) return;
+
+        const { data: enrollments, error: enrollmentError } =
+            await supabaseClient
+                .from("subject_enrollments")
+                .select("subject_id")
+                .eq("student_id", studentId)
+                .eq("school_id", schoolId);
+
+        if (enrollmentError) {
+
+            console.error("Grade enrollment error:", enrollmentError);
+
+            averageElement.textContent = "Unavailable";
+            totalElement.textContent = "Unavailable";
+            listElement.textContent = "Unable to load your enrolled subjects.";
+
+            if (chartMessage) {
+                chartMessage.textContent = "Unable to load academic performance.";
+            }
+
+            return;
+        }
+
+        const enrolledSubjectIds = (enrollments || []).map(
+            item => item.subject_id
+        );
+
+        if (enrolledSubjectIds.length === 0) {
+
+            averageElement.textContent = "No enrolled subjects";
+            totalElement.textContent = "0";
+            listElement.textContent = "You have no enrolled subjects yet.";
+
+            if (studentPerformanceChart) {
+                studentPerformanceChart.destroy();
+                studentPerformanceChart = null;
+            }
+
+            if (chartMessage) {
+                chartMessage.textContent =
+                    "Your academic performance will appear once you enroll in a subject and receive grades.";
+            }
+
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from("assignment_submissions")
+            .select(`
+                id,
+                grade,
+                feedback,
+                submitted_at,
+                assignments (
+                    title,
+                    subject_id
+                )
+            `)
+            .eq("student_id", studentId)
+            .not("grade", "is", null)
+            .order("submitted_at", { ascending: false });
+
+        if (error) {
+
+            console.error("Student grades error:", error);
+
+            averageElement.textContent = "Unavailable";
+            totalElement.textContent = "Unavailable";
+            listElement.textContent = "Unable to load grades.";
+
+            if (chartMessage) {
+                chartMessage.textContent = "Unable to load chart data.";
+            }
+
+            return;
+        }
+
+        const enrolledSubjectSet = new Set(enrolledSubjectIds);
+
+        const grades = (data || []).filter(item =>
+            item.assignments &&
+            enrolledSubjectSet.has(item.assignments.subject_id)
+        );
+
+        totalElement.textContent = grades.length;
+        listElement.innerHTML = "";
+
+        if (grades.length === 0) {
+
+            averageElement.textContent = "No grades yet";
+
+            listElement.textContent =
+                "You don't have any graded assignments for your enrolled subjects yet.";
+
+            if (studentPerformanceChart) {
+                studentPerformanceChart.destroy();
+                studentPerformanceChart = null;
+            }
+
+            if (chartMessage) {
+                chartMessage.textContent =
+                    "Your academic performance chart will appear once your teacher grades an assignment from one of your enrolled subjects.";
+            }
+
+            return;
+        }
+
+        const totalGrade = grades.reduce(
+            (sum, item) => sum + Number(item.grade),
+            0
+        );
+
+        const average = totalGrade / grades.length;
+
+        averageElement.textContent = average.toFixed(2) + " / 100";
+
+        grades.forEach(item => {
+
+            const card = document.createElement("div");
+            card.className = "card assignment-card";
+
+            const title = document.createElement("h3");
+            title.textContent = item.assignments?.title || "Untitled Assignment";
+
+            const grade = document.createElement("p");
+
+            const gradeLabel = document.createElement("strong");
+            gradeLabel.textContent = "Grade: ";
+
+            const gradeValue = document.createElement("span");
+            gradeValue.textContent = Number(item.grade).toFixed(2) + " / 100";
+            gradeValue.style.color = "#7952CE";
+            gradeValue.style.fontWeight = "bold";
+
+            grade.append(gradeLabel, gradeValue);
+
+            const feedback = document.createElement("p");
+
+            const feedbackLabel = document.createElement("strong");
+            feedbackLabel.textContent = "Teacher Feedback: ";
+
+            const feedbackText = document.createElement("span");
+            feedbackText.textContent = item.feedback || "No feedback provided.";
+
+            feedback.append(feedbackLabel, feedbackText);
+
+            const submittedDate = document.createElement("p");
+            submittedDate.textContent = "Submitted: " +
+                (item.submitted_at
+                    ? new Date(item.submitted_at).toLocaleString("en-PH")
+                    : "Not available");
+
+            card.append(title, grade, feedback, submittedDate);
+            listElement.appendChild(card);
+        });
+
+        const canvas = document.getElementById("student-performance-chart");
+
+        if (!canvas || typeof Chart === "undefined") {
+
+            if (chartMessage) {
+                chartMessage.textContent =
+                    "Chart library could not be loaded. Please refresh the page.";
+            }
+
+            return;
+        }
+
+        const orderedGrades = grades.slice().reverse();
+
+        const chartLabels = orderedGrades.map(
+            item => item.assignments?.title || "Untitled Assignment"
+        );
+
+        const chartGrades = orderedGrades.map(
+            item => Number(item.grade)
+        );
+
+        if (studentPerformanceChart) {
+            studentPerformanceChart.destroy();
+        }
+
+        studentPerformanceChart = new Chart(canvas, {
+
+            type: "bar",
+
+            data: {
+                labels: chartLabels,
+
+                datasets: [{
+                    label: "Assignment Grade",
+                    data: chartGrades,
+                    backgroundColor: "#7952CE",
+                    borderRadius: 7,
+                    maxBarThickness: 55
+                }]
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 100,
+
+                        title: {
+                            display: true,
+                            text: "Grade"
+                        }
+                    },
+
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Assignments"
+                        }
+                    }
+                },
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return "Grade: " + context.raw + " / 100";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (chartMessage) {
+            chartMessage.textContent =
+                "Showing your grades for " + grades.length +
+                " graded assignment(s) from your enrolled subjects.";
+        }
+    }
+
+
+    // ========================================
+    // STUDENT UPCOMING ASSIGNMENTS
+    // ENROLLED SUBJECTS ONLY
+    // ========================================
+
+    async function loadUpcomingAssignments(studentId, schoolId) {
+
+        const container = document.getElementById("student-upcoming-assignments");
+
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        if (!schoolId) {
+            container.textContent = "Your account has no assigned school.";
+            return;
+        }
+
+        container.innerHTML =
+            '<div class="card"><p>Loading upcoming assignments...</p></div>';
+
+        const { data: enrollments, error: enrollmentError } =
+            await supabaseClient
+                .from("subject_enrollments")
+                .select("subject_id")
+                .eq("student_id", studentId)
+                .eq("school_id", schoolId);
+
+        if (enrollmentError) {
+
+            console.error("Enrollment loading error:", enrollmentError);
+            container.textContent = "Unable to load your enrolled subjects.";
+            return;
+        }
+
+        const subjectIds = (enrollments || []).map(item => item.subject_id);
+
+        if (subjectIds.length === 0) {
+
+            container.innerHTML = `
+                <div class="card">
+                    <p>You have no enrolled subjects yet.</p>
+                    <p>Upcoming assignments will appear here once you are enrolled in a subject.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        const { data: assignments, error } = await supabaseClient
+            .from("assignments")
+            .select(`
+                id,
+                title,
+                description,
+                due_date,
+                subject_id,
+                subjects (
+                    subject_name,
+                    subject_code
+                )
+            `)
+            .eq("school_id", schoolId)
+            .in("subject_id", subjectIds)
+            .gte("due_date", new Date().toISOString())
+            .order("due_date", { ascending: true });
+
+        if (error) {
+
+            console.error("Upcoming assignments error:", error);
+            container.textContent = "Unable to load upcoming assignments.";
+            return;
+        }
+
+        container.innerHTML = "";
+
+        if (!assignments || assignments.length === 0) {
+
+            container.innerHTML = `
+                <div class="card">
+                    <p>No upcoming assignments for your enrolled subjects.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        const assignmentIds = assignments.map(assignment => assignment.id);
+
+        const { data: submissions, error: submissionError } =
             await supabaseClient
                 .from("assignment_submissions")
                 .select("assignment_id")
@@ -1565,707 +2073,236 @@ async function loadStudentSubjects(studentId, schoolId) {
                 .in("assignment_id", assignmentIds);
 
         if (submissionError) {
-            console.error("Subject submissions error:", submissionError);
-            container.textContent = "Unable to load submission progress.";
+
+            console.error("Submission status error:", submissionError);
+            container.textContent = "Unable to load submission statuses.";
             return;
         }
 
-        submissions = submissionData || [];
-    }
-
-    const submittedIds = new Set(
-        submissions.map(item => item.assignment_id)
-    );
-
-    container.innerHTML = "";
-
-    enrollments.forEach(item => {
-
-        const subject = item.subjects;
-
-        const subjectAssignments = allAssignments.filter(
-            assignment => assignment.subject_id === subject.id
+        const submittedIds = new Set(
+            (submissions || []).map(submission => submission.assignment_id)
         );
 
-        const total = subjectAssignments.length;
+        assignments.forEach(assignment => {
 
-        const submitted = subjectAssignments.filter(
-            assignment => submittedIds.has(assignment.id)
+            const card = document.createElement("div");
+            card.className = "card assignment-card";
+
+            const title = document.createElement("h3");
+            title.textContent = assignment.title || "Untitled Assignment";
+
+            const subject = document.createElement("p");
+            subject.textContent = "Subject: " +
+                (assignment.subjects?.subject_name || "Subject");
+
+            const description = document.createElement("p");
+            description.textContent =
+                assignment.description || "No description provided.";
+
+            const dueDate = document.createElement("p");
+            dueDate.textContent = "Due Date: " +
+                new Date(assignment.due_date).toLocaleString("en-PH", {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                });
+
+            const status = document.createElement("p");
+
+            const isSubmitted = submittedIds.has(assignment.id);
+
+            status.textContent = isSubmitted
+                ? "Submission Status: Submitted"
+                : "Submission Status: Not Submitted";
+
+            status.className = isSubmitted
+                ? "assignment-status submitted"
+                : "assignment-status not-submitted";
+
+            const viewButton = document.createElement("a");
+            viewButton.href = "assignments.html";
+            viewButton.textContent = "View Assignment";
+            viewButton.className = "view-button";
+
+            card.append(title, subject, description, dueDate, status, viewButton);
+            container.appendChild(card);
+        });
+    }
+
+
+    // ========================================
+    // UPDATE NOTIFICATION COUNTERS
+    // ========================================
+
+    function updateNotificationCounters() {
+
+        const unreadCount = allNotifications.filter(
+            item => !item.is_read
         ).length;
 
-        const percentage = total > 0
-            ? (submitted / total) * 100
-            : 0;
+        const countElement = document.getElementById("notification-count");
+        const badgeElement = document.getElementById("headerNotificationBadge");
 
-        const card = document.createElement("div");
-        card.className = "card";
+        countElement.textContent =
+            unreadCount + " unread notification(s) • " +
+            allNotifications.length + " total";
 
-        const title = document.createElement("h3");
-        title.textContent = subject.subject_name || "Untitled Subject";
-        title.style.color = "#155eef";
-
-        const code = document.createElement("p");
-        code.textContent = "Subject Code: " +
-            (subject.subject_code || "Not provided");
-
-        const description = document.createElement("p");
-        description.textContent =
-            subject.description || "No subject description provided.";
-
-        const progressTitle = document.createElement("p");
-        progressTitle.style.fontWeight = "bold";
-        progressTitle.textContent = "Assignment Progress";
-
-        const progressInfo = document.createElement("p");
-        progressInfo.textContent = total > 0
-            ? submitted + " submitted out of " + total + " assignments"
-            : "No assignments yet.";
-
-        const percentageText = document.createElement("p");
-        percentageText.textContent = total > 0
-            ? percentage.toFixed(0) + "%"
-            : "0%";
-
-        percentageText.style.color = "#155eef";
-        percentageText.style.fontWeight = "bold";
-
-        const progressTrack = document.createElement("div");
-        progressTrack.style.width = "100%";
-        progressTrack.style.height = "10px";
-        progressTrack.style.background = "#e2e8f0";
-        progressTrack.style.borderRadius = "20px";
-        progressTrack.style.overflow = "hidden";
-
-        const progressBar = document.createElement("div");
-        progressBar.style.width = percentage + "%";
-        progressBar.style.height = "100%";
-        progressBar.style.background = "#16a34a";
-        progressBar.style.borderRadius = "20px";
-        progressBar.style.transition = "width 0.3s ease";
-
-        progressTrack.appendChild(progressBar);
-
-        const enrolledDate = document.createElement("small");
-        enrolledDate.textContent = "Enrolled: " +
-            (item.enrolled_at
-                ? new Date(item.enrolled_at).toLocaleDateString("en-PH")
-                : "Date unavailable");
-
-        card.append(
-            title,
-            code,
-            description,
-            progressTitle,
-            progressInfo,
-            percentageText,
-            progressTrack,
-            enrolledDate
-        );
-
-        container.appendChild(card);
-    });
-}
-
-
-// ========================================
-// STUDENT ATTENDANCE SUMMARY
-// ========================================
-
-async function loadDashboardAttendance(studentId) {
-
-    const presentElement = document.getElementById("dashboard-present-count");
-    const absentElement = document.getElementById("dashboard-absent-count");
-    const lateElement = document.getElementById("dashboard-late-count");
-    const percentageElement = document.getElementById("dashboard-attendance-percentage");
-
-    const { data, error } = await supabaseClient
-        .from("attendance")
-        .select("status")
-        .eq("student_id", studentId);
-
-    if (error) {
-        console.error("Dashboard attendance error:", error);
-
-        presentElement.textContent = "Unavailable";
-        absentElement.textContent = "Unavailable";
-        lateElement.textContent = "Unavailable";
-        percentageElement.textContent = "Unavailable";
-
-        return;
-    }
-
-    const records = data || [];
-
-    const present = records.filter(item => item.status === "present").length;
-    const absent = records.filter(item => item.status === "absent").length;
-    const late = records.filter(item => item.status === "late").length;
-
-    const total = records.length;
-
-    const percentage = total > 0
-        ? ((present + late) / total) * 100
-        : 0;
-
-    presentElement.textContent = present;
-    absentElement.textContent = absent;
-    lateElement.textContent = late;
-
-    percentageElement.textContent =
-        total > 0 ? percentage.toFixed(2) + "%" : "No records yet";
-}
-
-
-// ========================================
-// STUDENT GRADES + PERFORMANCE CHART
-// ========================================
-
-async function loadStudentGrades(studentId, schoolId) {
-
-    const averageElement = document.getElementById("student-overall-average");
-    const totalElement = document.getElementById("student-total-graded");
-    const listElement = document.getElementById("student-grades-list");
-    const chartMessage = document.getElementById("student-chart-message");
-
-    if (!averageElement || !totalElement || !listElement) return;
-
-    const { data: enrollments, error: enrollmentError } =
-        await supabaseClient
-            .from("subject_enrollments")
-            .select("subject_id")
-            .eq("student_id", studentId)
-            .eq("school_id", schoolId);
-
-    if (enrollmentError) {
-
-        console.error("Grade enrollment error:", enrollmentError);
-
-        averageElement.textContent = "Unavailable";
-        totalElement.textContent = "Unavailable";
-        listElement.textContent = "Unable to load your enrolled subjects.";
-
-        if (chartMessage) {
-            chartMessage.textContent = "Unable to load academic performance.";
+        if (unreadCount > 0) {
+            badgeElement.textContent = unreadCount > 99 ? "99+" : unreadCount;
+        } else {
+            badgeElement.textContent = "";
         }
 
-        return;
+        document.getElementById("markAllReadBtn").disabled =
+            unreadCount === 0;
     }
 
-    const enrolledSubjectIds = (enrollments || []).map(
-        item => item.subject_id
-    );
 
-    if (enrolledSubjectIds.length === 0) {
+    // ========================================
+    // DISPLAY NOTIFICATIONS
+    // ========================================
 
-        averageElement.textContent = "No enrolled subjects";
-        totalElement.textContent = "0";
-        listElement.textContent = "You have no enrolled subjects yet.";
+    function displayNotifications() {
 
-        if (studentPerformanceChart) {
-            studentPerformanceChart.destroy();
-            studentPerformanceChart = null;
+        const listElement = document.getElementById("notifications-list");
+
+        listElement.innerHTML = "";
+
+        let filteredNotifications = allNotifications;
+
+        if (currentNotificationFilter === "unread") {
+
+            filteredNotifications = allNotifications.filter(
+                item => !item.is_read
+            );
+
+        } else if (currentNotificationFilter !== "all") {
+
+            filteredNotifications = allNotifications.filter(
+                item => item.type === currentNotificationFilter
+            );
+
         }
 
-        if (chartMessage) {
-            chartMessage.textContent =
-                "Your academic performance will appear once you enroll in a subject and receive grades.";
+        if (filteredNotifications.length === 0) {
+
+            const empty = document.createElement("div");
+            empty.className = "notification-empty";
+
+            empty.textContent =
+                currentNotificationFilter === "unread"
+                    ? "You're all caught up! No unread notifications."
+                    : "No notifications found in this category.";
+
+            listElement.appendChild(empty);
+            return;
         }
 
-        return;
-    }
+        filteredNotifications.forEach(item => {
 
-    const { data, error } = await supabaseClient
-        .from("assignment_submissions")
-        .select(`
-            id,
-            grade,
-            feedback,
-            submitted_at,
-            assignments (
-                title,
-                subject_id
-            )
-        `)
-        .eq("student_id", studentId)
-        .not("grade", "is", null)
-        .order("submitted_at", { ascending: false });
+            const card = document.createElement("div");
 
-    if (error) {
+            card.className = item.is_read
+                ? "notification-card notification-read"
+                : "notification-card";
 
-        console.error("Student grades error:", error);
+            const readLabel = document.createElement("span");
 
-        averageElement.textContent = "Unavailable";
-        totalElement.textContent = "Unavailable";
-        listElement.textContent = "Unable to load grades.";
+            readLabel.className = item.is_read
+                ? "notification-read-label"
+                : "notification-unread-label";
 
-        if (chartMessage) {
-            chartMessage.textContent = "Unable to load chart data.";
-        }
+            readLabel.textContent = item.is_read ? "READ" : "NEW";
 
-        return;
-    }
+            const title = document.createElement("h3");
+            title.textContent = item.title || "Notification";
 
-    const enrolledSubjectSet = new Set(enrolledSubjectIds);
+            const message = document.createElement("p");
+            message.textContent = item.message || "";
 
-    const grades = (data || []).filter(item =>
-        item.assignments &&
-        enrolledSubjectSet.has(item.assignments.subject_id)
-    );
+            const type = document.createElement("small");
+            type.textContent = "Category: " +
+                (item.type || "general").replace(/_/g, " ");
 
-    totalElement.textContent = grades.length;
-    listElement.innerHTML = "";
+            type.style.display = "block";
+            type.style.textTransform = "capitalize";
+            type.style.color = "#64748b";
+            type.style.marginBottom = "6px";
 
-    if (grades.length === 0) {
+            const date = document.createElement("small");
 
-        averageElement.textContent = "No grades yet";
+            date.textContent = item.created_at
+                ? new Date(item.created_at).toLocaleString("en-PH")
+                : "Date unavailable";
 
-        listElement.textContent =
-            "You don't have any graded assignments for your enrolled subjects yet.";
+            date.style.display = "block";
+            date.style.color = "#64748b";
 
-        if (studentPerformanceChart) {
-            studentPerformanceChart.destroy();
-            studentPerformanceChart = null;
-        }
+            card.append(readLabel, title, message, type, date);
 
-        if (chartMessage) {
-            chartMessage.textContent =
-                "Your academic performance chart will appear once your teacher grades an assignment from one of your enrolled subjects.";
-        }
+            const actions = document.createElement("div");
+            actions.className = "notification-actions";
 
-        return;
-    }
+            if (!item.is_read) {
 
-    const totalGrade = grades.reduce(
-        (sum, item) => sum + Number(item.grade),
-        0
-    );
+                const markButton = document.createElement("button");
 
-    const average = totalGrade / grades.length;
+                markButton.textContent = "Mark as Read";
 
-    averageElement.textContent = average.toFixed(2) + " / 100";
+                markButton.addEventListener("click", async () => {
 
-    grades.forEach(item => {
+                    markButton.disabled = true;
+                    markButton.textContent = "Updating...";
 
-        const card = document.createElement("div");
-        card.className = "card assignment-card";
+                    const { error } = await supabaseClient
+                        .from("notifications")
+                        .update({ is_read: true })
+                        .eq("id", item.id);
 
-        const title = document.createElement("h3");
-        title.textContent = item.assignments?.title || "Untitled Assignment";
+                    if (error) {
 
-        const grade = document.createElement("p");
+                        console.error("Mark as read error:", error);
 
-        const gradeLabel = document.createElement("strong");
-        gradeLabel.textContent = "Grade: ";
+                        alert("Unable to update notification: " + error.message);
 
-        const gradeValue = document.createElement("span");
-        gradeValue.textContent = Number(item.grade).toFixed(2) + " / 100";
-        gradeValue.style.color = "#155eef";
-        gradeValue.style.fontWeight = "bold";
+                        markButton.disabled = false;
+                        markButton.textContent = "Mark as Read";
 
-        grade.append(gradeLabel, gradeValue);
-
-        const feedback = document.createElement("p");
-
-        const feedbackLabel = document.createElement("strong");
-        feedbackLabel.textContent = "Teacher Feedback: ";
-
-        const feedbackText = document.createElement("span");
-        feedbackText.textContent = item.feedback || "No feedback provided.";
-
-        feedback.append(feedbackLabel, feedbackText);
-
-        const submittedDate = document.createElement("p");
-        submittedDate.textContent = "Submitted: " +
-            (item.submitted_at
-                ? new Date(item.submitted_at).toLocaleString("en-PH")
-                : "Not available");
-
-        card.append(title, grade, feedback, submittedDate);
-        listElement.appendChild(card);
-    });
-
-    const canvas = document.getElementById("student-performance-chart");
-
-    if (!canvas || typeof Chart === "undefined") {
-
-        if (chartMessage) {
-            chartMessage.textContent =
-                "Chart library could not be loaded. Please refresh the page.";
-        }
-
-        return;
-    }
-
-    const orderedGrades = grades.slice().reverse();
-
-    const chartLabels = orderedGrades.map(
-        item => item.assignments?.title || "Untitled Assignment"
-    );
-
-    const chartGrades = orderedGrades.map(
-        item => Number(item.grade)
-    );
-
-    if (studentPerformanceChart) {
-        studentPerformanceChart.destroy();
-    }
-
-    studentPerformanceChart = new Chart(canvas, {
-
-        type: "bar",
-
-        data: {
-            labels: chartLabels,
-
-            datasets: [{
-                label: "Assignment Grade",
-                data: chartGrades,
-                backgroundColor: "#155eef",
-                borderRadius: 7,
-                maxBarThickness: 55
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-            maintainAspectRatio: false,
-
-            scales: {
-
-                y: {
-                    beginAtZero: true,
-                    min: 0,
-                    max: 100,
-
-                    title: {
-                        display: true,
-                        text: "Grade"
+                        return;
                     }
-                },
 
-                x: {
-                    title: {
-                        display: true,
-                        text: "Assignments"
-                    }
-                }
-            },
+                    await loadNotifications();
+                });
 
-            plugins: {
-
-                legend: {
-                    display: false
-                },
-
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return "Grade: " + context.raw + " / 100";
-                        }
-                    }
-                }
+                actions.appendChild(markButton);
             }
-        }
-    });
 
-    if (chartMessage) {
-        chartMessage.textContent =
-            "Showing your grades for " + grades.length +
-            " graded assignment(s) from your enrolled subjects.";
-    }
-}
+            const deleteButton = document.createElement("button");
 
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete-notification-button";
 
-// ========================================
-// STUDENT UPCOMING ASSIGNMENTS
-// ENROLLED SUBJECTS ONLY
-// ========================================
+            deleteButton.addEventListener("click", async () => {
 
-async function loadUpcomingAssignments(studentId, schoolId) {
+                if (!confirm("Are you sure you want to delete this notification?")) {
+                    return;
+                }
 
-    const container = document.getElementById("student-upcoming-assignments");
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    if (!schoolId) {
-        container.textContent = "Your account has no assigned school.";
-        return;
-    }
-
-    container.innerHTML =
-        '<div class="card"><p>Loading upcoming assignments...</p></div>';
-
-    const { data: enrollments, error: enrollmentError } =
-        await supabaseClient
-            .from("subject_enrollments")
-            .select("subject_id")
-            .eq("student_id", studentId)
-            .eq("school_id", schoolId);
-
-    if (enrollmentError) {
-
-        console.error("Enrollment loading error:", enrollmentError);
-        container.textContent = "Unable to load your enrolled subjects.";
-        return;
-    }
-
-    const subjectIds = (enrollments || []).map(item => item.subject_id);
-
-    if (subjectIds.length === 0) {
-
-        container.innerHTML = `
-            <div class="card">
-                <p>You have no enrolled subjects yet.</p>
-                <p>Upcoming assignments will appear here once you are enrolled in a subject.</p>
-            </div>
-        `;
-
-        return;
-    }
-
-    const { data: assignments, error } = await supabaseClient
-        .from("assignments")
-        .select(`
-            id,
-            title,
-            description,
-            due_date,
-            subject_id,
-            subjects (
-                subject_name,
-                subject_code
-            )
-        `)
-        .eq("school_id", schoolId)
-        .in("subject_id", subjectIds)
-        .gte("due_date", new Date().toISOString())
-        .order("due_date", { ascending: true });
-
-    if (error) {
-
-        console.error("Upcoming assignments error:", error);
-        container.textContent = "Unable to load upcoming assignments.";
-        return;
-    }
-
-    container.innerHTML = "";
-
-    if (!assignments || assignments.length === 0) {
-
-        container.innerHTML = `
-            <div class="card">
-                <p>No upcoming assignments for your enrolled subjects.</p>
-            </div>
-        `;
-
-        return;
-    }
-
-    const assignmentIds = assignments.map(assignment => assignment.id);
-
-    const { data: submissions, error: submissionError } =
-        await supabaseClient
-            .from("assignment_submissions")
-            .select("assignment_id")
-            .eq("student_id", studentId)
-            .in("assignment_id", assignmentIds);
-
-    if (submissionError) {
-
-        console.error("Submission status error:", submissionError);
-        container.textContent = "Unable to load submission statuses.";
-        return;
-    }
-
-    const submittedIds = new Set(
-        (submissions || []).map(submission => submission.assignment_id)
-    );
-
-    assignments.forEach(assignment => {
-
-        const card = document.createElement("div");
-        card.className = "card assignment-card";
-
-        const title = document.createElement("h3");
-        title.textContent = assignment.title || "Untitled Assignment";
-
-        const subject = document.createElement("p");
-        subject.textContent = "Subject: " +
-            (assignment.subjects?.subject_name || "Subject");
-
-        const description = document.createElement("p");
-        description.textContent =
-            assignment.description || "No description provided.";
-
-        const dueDate = document.createElement("p");
-        dueDate.textContent = "Due Date: " +
-            new Date(assignment.due_date).toLocaleString("en-PH", {
-                dateStyle: "medium",
-                timeStyle: "short"
-            });
-
-        const status = document.createElement("p");
-
-        const isSubmitted = submittedIds.has(assignment.id);
-
-        status.textContent = isSubmitted
-            ? "Submission Status: Submitted"
-            : "Submission Status: Not Submitted";
-
-        status.className = isSubmitted
-            ? "assignment-status submitted"
-            : "assignment-status not-submitted";
-
-        const viewButton = document.createElement("a");
-        viewButton.href = "assignments.html";
-        viewButton.textContent = "View Assignment";
-        viewButton.className = "view-button";
-
-        card.append(title, subject, description, dueDate, status, viewButton);
-        container.appendChild(card);
-    });
-}
-
-
-// ========================================
-// UPDATE NOTIFICATION COUNTERS
-// ========================================
-
-function updateNotificationCounters() {
-
-    const unreadCount = allNotifications.filter(
-        item => !item.is_read
-    ).length;
-
-    const countElement = document.getElementById("notification-count");
-    const badgeElement = document.getElementById("headerNotificationBadge");
-
-    countElement.textContent =
-        unreadCount + " unread notification(s) • " +
-        allNotifications.length + " total";
-
-    if (unreadCount > 0) {
-        badgeElement.textContent = unreadCount > 99 ? "99+" : unreadCount;
-    } else {
-        badgeElement.textContent = "";
-    }
-
-    document.getElementById("markAllReadBtn").disabled =
-        unreadCount === 0;
-}
-
-
-// ========================================
-// DISPLAY NOTIFICATIONS
-// ========================================
-
-function displayNotifications() {
-
-    const listElement = document.getElementById("notifications-list");
-
-    listElement.innerHTML = "";
-
-    let filteredNotifications = allNotifications;
-
-    if (currentNotificationFilter === "unread") {
-
-        filteredNotifications = allNotifications.filter(
-            item => !item.is_read
-        );
-
-    } else if (currentNotificationFilter !== "all") {
-
-        filteredNotifications = allNotifications.filter(
-            item => item.type === currentNotificationFilter
-        );
-
-    }
-
-    if (filteredNotifications.length === 0) {
-
-        const empty = document.createElement("div");
-        empty.className = "notification-empty";
-
-        empty.textContent =
-            currentNotificationFilter === "unread"
-                ? "You're all caught up! No unread notifications."
-                : "No notifications found in this category.";
-
-        listElement.appendChild(empty);
-        return;
-    }
-
-    filteredNotifications.forEach(item => {
-
-        const card = document.createElement("div");
-
-        card.className = item.is_read
-            ? "notification-card notification-read"
-            : "notification-card";
-
-        const readLabel = document.createElement("span");
-
-        readLabel.className = item.is_read
-            ? "notification-read-label"
-            : "notification-unread-label";
-
-        readLabel.textContent = item.is_read ? "READ" : "NEW";
-
-        const title = document.createElement("h3");
-        title.textContent = item.title || "Notification";
-
-        const message = document.createElement("p");
-        message.textContent = item.message || "";
-
-        const type = document.createElement("small");
-        type.textContent = "Category: " +
-            (item.type || "general").replace(/_/g, " ");
-
-        type.style.display = "block";
-        type.style.textTransform = "capitalize";
-        type.style.color = "#64748b";
-        type.style.marginBottom = "6px";
-
-        const date = document.createElement("small");
-
-        date.textContent = item.created_at
-            ? new Date(item.created_at).toLocaleString("en-PH")
-            : "Date unavailable";
-
-        date.style.display = "block";
-        date.style.color = "#64748b";
-
-        card.append(readLabel, title, message, type, date);
-
-        const actions = document.createElement("div");
-        actions.className = "notification-actions";
-
-        if (!item.is_read) {
-
-            const markButton = document.createElement("button");
-
-            markButton.textContent = "Mark as Read";
-
-            markButton.addEventListener("click", async () => {
-
-                markButton.disabled = true;
-                markButton.textContent = "Updating...";
+                deleteButton.disabled = true;
+                deleteButton.textContent = "Deleting...";
 
                 const { error } = await supabaseClient
                     .from("notifications")
-                    .update({ is_read: true })
+                    .delete()
                     .eq("id", item.id);
 
                 if (error) {
 
-                    console.error("Mark as read error:", error);
+                    console.error("Delete notification error:", error);
 
-                    alert("Unable to update notification: " + error.message);
+                    alert("Unable to delete notification: " + error.message);
 
-                    markButton.disabled = false;
-                    markButton.textContent = "Mark as Read";
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = "Delete";
 
                     return;
                 }
@@ -2273,226 +2310,189 @@ function displayNotifications() {
                 await loadNotifications();
             });
 
-            actions.appendChild(markButton);
+            actions.appendChild(deleteButton);
+            card.appendChild(actions);
+
+            listElement.appendChild(card);
+        });
+    }
+
+
+    // ========================================
+    // LOAD NOTIFICATIONS
+    // ========================================
+
+    async function loadNotifications() {
+
+        const listElement = document.getElementById("notifications-list");
+
+        listElement.textContent = "Loading notifications...";
+
+        const { data, error } = await supabaseClient
+            .from("notifications")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) {
+
+            document.getElementById("notification-count").textContent =
+                "Unable to load notifications.";
+
+            document.getElementById("headerNotificationBadge").textContent = "";
+
+            listElement.textContent = error.message;
+
+            console.error("Notifications error:", error);
+            return;
         }
 
-        const deleteButton = document.createElement("button");
+        allNotifications = data || [];
 
-        deleteButton.textContent = "Delete";
-        deleteButton.className = "delete-notification-button";
+        updateNotificationCounters();
+        displayNotifications();
+    }
 
-        deleteButton.addEventListener("click", async () => {
 
-            if (!confirm("Are you sure you want to delete this notification?")) {
-                return;
-            }
+    // ========================================
+    // MARK ALL NOTIFICATIONS AS READ
+    // ========================================
 
-            deleteButton.disabled = true;
-            deleteButton.textContent = "Deleting...";
+    document.getElementById("markAllReadBtn").addEventListener(
+        "click",
+        async function() {
+
+            const unreadCount = allNotifications.filter(
+                item => !item.is_read
+            ).length;
+
+            if (unreadCount === 0) return;
+
+            const button = this;
+
+            button.disabled = true;
+            button.textContent = "Updating...";
 
             const { error } = await supabaseClient
                 .from("notifications")
-                .delete()
-                .eq("id", item.id);
+                .update({ is_read: true })
+                .eq("is_read", false);
 
             if (error) {
 
-                console.error("Delete notification error:", error);
+                console.error("Mark all as read error:", error);
 
-                alert("Unable to delete notification: " + error.message);
+                alert("Unable to mark notifications as read: " + error.message);
 
-                deleteButton.disabled = false;
-                deleteButton.textContent = "Delete";
-
+                button.disabled = false;
+                button.textContent = "Mark All as Read";
                 return;
             }
 
             await loadNotifications();
-        });
 
-        actions.appendChild(deleteButton);
-        card.appendChild(actions);
-
-        listElement.appendChild(card);
-    });
-}
-
-
-// ========================================
-// LOAD NOTIFICATIONS
-// ========================================
-
-async function loadNotifications() {
-
-    const listElement = document.getElementById("notifications-list");
-
-    listElement.textContent = "Loading notifications...";
-
-    const { data, error } = await supabaseClient
-        .from("notifications")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-
-        document.getElementById("notification-count").textContent =
-            "Unable to load notifications.";
-
-        document.getElementById("headerNotificationBadge").textContent = "";
-
-        listElement.textContent = error.message;
-
-        console.error("Notifications error:", error);
-        return;
-    }
-
-    allNotifications = data || [];
-
-    updateNotificationCounters();
-    displayNotifications();
-}
-
-
-// ========================================
-// MARK ALL NOTIFICATIONS AS READ
-// ========================================
-
-document.getElementById("markAllReadBtn").addEventListener(
-    "click",
-    async function() {
-
-        const unreadCount = allNotifications.filter(
-            item => !item.is_read
-        ).length;
-
-        if (unreadCount === 0) return;
-
-        const button = this;
-
-        button.disabled = true;
-        button.textContent = "Updating...";
-
-        const { error } = await supabaseClient
-            .from("notifications")
-            .update({ is_read: true })
-            .eq("is_read", false);
-
-        if (error) {
-
-            console.error("Mark all as read error:", error);
-
-            alert("Unable to mark notifications as read: " + error.message);
-
-            button.disabled = false;
             button.textContent = "Mark All as Read";
-            return;
         }
-
-        await loadNotifications();
-
-        button.textContent = "Mark All as Read";
-    }
-);
+    );
 
 
-// ========================================
-// NOTIFICATION FILTER BUTTONS
-// ========================================
+    // ========================================
+    // NOTIFICATION FILTER BUTTONS
+    // ========================================
 
-document.querySelectorAll(".filter-button").forEach(button => {
+    document.querySelectorAll(".filter-button").forEach(button => {
 
-    button.addEventListener("click", function() {
+        button.addEventListener("click", function() {
 
-        currentNotificationFilter = this.dataset.filter;
+            currentNotificationFilter = this.dataset.filter;
 
-        document.querySelectorAll(".filter-button").forEach(item => {
-            item.classList.remove("active");
+            document.querySelectorAll(".filter-button").forEach(item => {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            displayNotifications();
         });
-
-        this.classList.add("active");
-
-        displayNotifications();
     });
-});
 
 
-// ========================================
-// ANNOUNCEMENTS PREVIEW
-// ========================================
+    // ========================================
+    // ANNOUNCEMENTS PREVIEW
+    // ========================================
 
-async function loadAnnouncementsPreview() {
+    async function loadAnnouncementsPreview() {
 
-    const container = document.getElementById("dashboard-announcements");
+        const container = document.getElementById("dashboard-announcements");
 
-    if (!container) return;
+        if (!container) return;
 
-    const { data, error } = await supabaseClient
-        .from("announcements")
-        .select("id, title, content, created_at")
-        .order("created_at", { ascending: false })
-        .limit(3);
-
-    if (error) {
-
-        container.textContent = "Unable to load announcements.";
-        console.error("Announcements error:", error);
-        return;
-    }
-
-    container.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        container.textContent = "No announcements yet.";
-        return;
-    }
-
-    data.forEach(item => {
-
-        const card = document.createElement("div");
-        card.className = "announcement-item";
-
-        const title = document.createElement("h4");
-        title.textContent = item.title;
-
-        const content = document.createElement("p");
-        content.textContent = item.content;
-
-        const date = document.createElement("small");
-        date.textContent = new Date(item.created_at).toLocaleString("en-PH");
-
-        card.append(title, content, date);
-        container.appendChild(card);
-    });
-}
-
-
-// ========================================
-// LOGOUT
-// ========================================
-
-document.getElementById("logoutBtn").addEventListener(
-    "click",
-    async () => {
-
-        const { error } = await supabaseClient.auth.signOut();
+        const { data, error } = await supabaseClient
+            .from("announcements")
+            .select("id, title, content, created_at")
+            .order("created_at", { ascending: false })
+            .limit(3);
 
         if (error) {
-            alert(error.message);
+
+            container.textContent = "Unable to load announcements.";
+            console.error("Announcements error:", error);
             return;
         }
 
-        window.location.href = "login.html";
+        container.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            container.textContent = "No announcements yet.";
+            return;
+        }
+
+        data.forEach(item => {
+
+            const card = document.createElement("div");
+            card.className = "announcement-item";
+
+            const title = document.createElement("h4");
+            title.textContent = item.title;
+
+            const content = document.createElement("p");
+            content.textContent = item.content;
+
+            const date = document.createElement("small");
+            date.textContent = new Date(item.created_at).toLocaleString("en-PH");
+
+            card.append(title, content, date);
+            container.appendChild(card);
+        });
     }
-);
 
 
-// ========================================
-// START DASHBOARD
-// ========================================
+    // ========================================
+    // LOGOUT
+    // ========================================
 
-loadDashboard();
+    document.getElementById("logoutBtn").addEventListener(
+        "click",
+        async () => {
 
-</script>
+            const { error } = await supabaseClient.auth.signOut();
 
-</body>
-</html>
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            window.location.href = "login.html";
+        }
+    );
+
+
+    // ========================================
+    // START DASHBOARD
+    // ========================================
+
+    loadDashboard();
+
+    </script>
+
+    </body>
+    </html>
